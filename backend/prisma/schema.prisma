@@ -7,10 +7,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  phone     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+  id           String        @id @default(uuid())
+  phone        String        @unique
+  name         String?
+  createdAt    DateTime      @default(now())
+  applications Application[]
+  otpCodes     OtpCode[]
 }
 
 model OtpCode {
@@ -23,6 +25,8 @@ model OtpCode {
   usedAt    DateTime?
   createdAt DateTime  @default(now())
 
+  user User? @relation(fields: [userId], references: [id])
+
   @@index([phone, purpose])
   @@index([userId])
 }
@@ -33,6 +37,35 @@ model AdminUser {
   passwordHash String
   role         String   // 'admin' | 'operator'
   createdAt    DateTime @default(now())
+}
+
+model Application {
+  id            String   @id @default(uuid())
+  userId        String
+  applicantType String   // 'individual' | 'business'
+
+  // Common fields
+  amount   Float
+  termDays Int
+  status   String   @default("new") // 'new' | 'in_progress' | 'approved' | 'rejected'
+  comment  String?
+  createdAt DateTime @default(now())
+
+  // Individual fields
+  firstName String?
+  lastName  String?
+  email     String?
+
+  // Business fields
+  companyName        String?
+  registrationNumber String?
+  companyEmail       String?
+  companyPhone       String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
 }
 
 model FileAttachment {
