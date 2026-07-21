@@ -123,3 +123,21 @@ What I learned: Нельзя добавлять связи на модели, к
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 8
+
+Goal: Добавить модель Application в Prisma schema с полями для физлиц и бизнеса
+
+Prompt: 2.2 — схема БД: Application
+
+Добавь модель Application (id, userId, applicantType: individual | business, поля физлица/бизнеса из клиентского текста, amount, termDays, status: new | in_progress | approved | rejected, comment опционально, createdAt), связь на User.
+
+Result: Добавлена модель Application в prisma/schema.prisma. Поля: id, userId, applicantType (individual|business), amount, termDays, status (new|in_progress|approved|rejected, default new), comment?, createdAt. Поля для физлиц: firstName?, lastName?, email?. Поля для бизнеса: companyName?, registrationNumber?, companyEmail?, companyPhone?. Связь many-to-one с User (userId → User.id). Индексы по [userId] и [status]. Обновлена модель User — добавлены связи applications и otpCodes. npx prisma validate проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: При добавлении модели Application нужно одновременно обновить User модель с обратной связью (applications Application[]). Поля для физлиц/бизнеса сделаны опциональными — обязательность определяется бизнес-логикой в сервисах, а не схемой БД. Связи на Loan и другие модели не добавляются до их создания в Request 9.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
