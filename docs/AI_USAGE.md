@@ -249,3 +249,21 @@ What I learned: class-validator декораторы @IsIn и @IsEmail рабо�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 15
+
+Goal: Реализовать applications module: список с фильтрами, получение по id, смена статуса, добавление комментариев — всё под guard ролей admin/operator
+
+Prompt: 4.3 — applications module: список и управление
+
+Под guard ролей admin/operator: GET /applications (поиск/фильтр по статусу, имени, телефону), GET /applications/:id, PATCH /applications/:id/status (new → in_progress → approved/rejected), POST /applications/:id/comments. Создание займа при approved — в следующем шаге.
+
+Result: Обновлены applications.service.ts и applications.controller.ts. Добавлены DTOs: query-applications.dto.ts (search, status, firstName, lastName, phone фильтры), update-status.dto.ts (status с @IsIn валидацией, optional comment), create-comment.dto.ts (comment). Новые сервисные методы: findAll (фильтрация по статусу, имени, телефону, search по нескольким полям с mode: 'insensitive'), findOne (с include user и loans), updateStatus (с валидацией переходов статусов через validTransitions), addComment (обновление comment). Новые контроллерные эндпоинты: GET /applications (AdminJwtAuthGuard + RolesGuard @Roles('admin','operator')), GET /applications/:id, PATCH /applications/:id/status, POST /applications/:id/comments. Валидация переходов: new → in_progress, in_progress → approved/rejected, approved/rejected → ничего. Проверено через curl: список работает, фильтры работают, смена статуса работает, невалидный переход возвращает 400, без auth возвращает 401. Build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Valid status transitions map (Record<string, string[]>) — удобный паттерн для валидации finite state machine в NestJS. Prisma include с select для user позволяет вернуть только нужные поля (phone, name) без лишних данных. Query параметры с class-validator (@IsOptional + @IsString + @IsIn) работают для фильтрации — ValidationPipe преобразует query strings в объект. @Roles('admin', 'operator') через SetMetadata работает с RolesGuard через Reflector — оба role доступны для операторских эндпоинтов.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
