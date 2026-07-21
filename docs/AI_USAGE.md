@@ -267,3 +267,21 @@ What I learned: Valid status transitions map (Record<string, string[]>) — уд
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 15.5
+
+Goal: Установить @nestjs/event-emitter, зарегистрировать EventEmitterModule, добавить emit событий application.created и application.status.changed в applications module
+
+Prompt: 4.4 — event bus: @nestjs/event-emitter + события в applications
+
+Установи @nestjs/event-emitter, зарегистрируй EventEmitterModule в AppModule. Доработай modules/applications: после создания заявки (status new) и после каждого изменения статуса (PATCH /applications/:id/status) — emit события: `application.created`, `application.status.changed`. В событиях передавай applicationId, userId, новый статус. Это основа для уведомлений (Request 21) — каждый модуль только emit'ит события, не импортирует notifications module.
+
+Result: Установлен @nestjs/event-emitter. EventEmitterModule.forRoot() добавлен в AppModule. Обновлён applications.service.ts: инжектится EventEmitter2, после create emit 'application.created' (applicationId, userId, status), после updateStatus emit 'application.status.changed' (applicationId, userId, previousStatus, newStatus). Build проходит успешно. Проверено через curl: application создаётся и статус обновляется, events emit'ятся (verified by successful endpoint calls). EventEmitterModule dependencies initialized в логах NestJS.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: @nestjs/event-emitter: EventEmitterModule.forRoot() регистрируется в imports AppModule, EventEmitter2 инжектится в сервис через constructor. eventEmitter.emit(eventName, payload) — синхронный вызов в рамках одного event loop tick, не пробрасывает исключения в emitter. Паттерн "каждый модуль только emit'ит, notifications module слушает через @OnEvent" — ключевой для loosely coupled архитектуры уведомлений. Payload события — простой объект с applicationId, userId, status — без зависимостей от других модуей.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
