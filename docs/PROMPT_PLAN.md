@@ -18,9 +18,9 @@
 4. backend: калькулятор и заявки
     4.1. calculator module — аннуитетная формула
     4.2. applications module — создание заявки (individual/business), серверная валидация
- 4.3. applications module — список/детали/смена статуса/комментарий для админки
- 4.4. event bus: @nestjs/event-emitter + события в applications
- 5. backend: займы и подписание
+    4.3. applications module — список/детали/смена статуса/комментарий для админки
+    4.4. event bus: @nestjs/event-emitter + события в applications
+5. backend: займы и подписание
     5.1. создание займа при одобрении заявки (pending_signature)
     5.2. подписание займа через OTP: signedAt/signedIp/signedUserAgent
     5.3. автогенерация графика платежей после подписания
