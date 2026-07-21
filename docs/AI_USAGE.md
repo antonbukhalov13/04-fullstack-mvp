@@ -285,3 +285,21 @@ What I learned: @nestjs/event-emitter: EventEmitterModule.forRoot() регист
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 16
+
+Goal: Создавать Loan при одобрении заявки (status approved) с проверкой конфликтов и emit loan.created
+
+Prompt: 5.1 — создание займа при одобрении заявки
+
+При смене статуса заявки на approved создавай Loan со статусом pending_signature, суммой и сроком из заявки, dailyRate = 0.008. Верни созданный займ в ответе. Если заявка уже отклонена или по ней уже есть займ — верни ошибку конфликта. После создания займа emit событие `loan.created` (loanId, userId).
+
+Result: Обновлён applications.service.ts: добавлен ConflictException в импорты, в updateStatus добавлена проверка конфликтов (rejected → approved запрещён, loans.length > 0 запрещён), при status === 'approved' создаётся Loan (pending_signature, amount/termDays из application, dailyRate 0.008), emit 'loan.created' (loanId, userId). Response updateStatus теперь включает loan (null если не approved, объект Loan если created). TypeScript ошибки исправлены (let loan: any = null). Build проходит успешно. Проверено через curl: in_progress → approved создаёт Loan с правильными полями, повторный approve возвращает 400 (status transition validation).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: ConflictException в NestJS используется для ситуаций когда ресурс уже существует или состояние конфликтует (409). Проверку loans.length > 0 нужно делать до update статуса, иначе будет race condition. TypeScript strict mode требует явного указания типа для переменной инициализированной как null — `let loan: any = null` решает проблему. Response с nullable loan объектом удобен для фронтенда — можно проверить `if (response.loan)` и показать соответствующий UI.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
