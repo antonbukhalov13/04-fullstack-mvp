@@ -195,3 +195,21 @@ What I learned: class-validator и class-transformer обязательны дл
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 12
+
+Goal: Реализовать admin auth — POST /admin-auth/login с проверкой хэша и JWT с ролью, guard/декоратор для ограничения по ролям
+
+Prompt: 3.2 — admin auth и роли
+
+Реализуй в modules/admin-auth: POST /admin-auth/login (логин/пароль, сверка хэша, JWT с ролью в payload). Добавь guard/декоратор для ограничения эндпоинтов по ролям (@Roles('admin')). Проверь, что seed-аккаунты логинятся.
+
+Result: Создан модуль modules/admin-auth: admin-auth.module.ts (JwtModule, PassportModule с defaultStrategy 'admin-jwt'), admin-auth.controller.ts (POST /admin-auth/login), admin-auth.service.ts (login с bcrypt.compare, JWT payload содержит sub, login, role), dto/admin-login.dto.ts (login + password с валидацией). Добавлены admin-jwt.strategy.ts (отдельная стратегия для admin JWT, strategy name 'admin-jwt'), admin-jwt-auth.guard.ts (AuthGuard('admin-jwt')), roles.decorator.ts (@Roles с SetMetadata), roles.guard.ts (RolesGuard проверяет role из JWT через Reflector). AdminAuthModule добавлен в AppModule. Проверено через curl: admin/admin123 → role:"admin", operator/operator123 → role:"operator". JWT expires: '12h'. Build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: У user и admin JWT должна быть отдельная стратегия (strategy name 'admin-jwt'). RolesGuard использует Reflector для чтения метаданных из @Roles декоратора и проверяет role из request.user. Seed-аккаунты работают корректно, bcrypt.compare проверяет хэш пароля.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
