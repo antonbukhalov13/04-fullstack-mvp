@@ -7,12 +7,15 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  phone        String        @unique
-  name         String?
-  createdAt    DateTime      @default(now())
-  applications Application[]
-  otpCodes     OtpCode[]
+  id              String           @id @default(uuid())
+  phone           String           @unique
+  name            String?
+  createdAt       DateTime         @default(now())
+  applications    Application[]
+  loans           Loan[]
+  otpCodes        OtpCode[]
+  paymentRequests PaymentRequest[]
+  notifications   Notification[]
 }
 
 model OtpCode {
@@ -32,11 +35,12 @@ model OtpCode {
 }
 
 model AdminUser {
-  id           String   @id @default(uuid())
-  login        String   @unique
-  passwordHash String
-  role         String   // 'admin' | 'operator'
-  createdAt    DateTime @default(now())
+  id              String    @id @default(uuid())
+  login           String    @unique
+  passwordHash    String
+  role            String    // 'admin' | 'operator'
+  createdAt       DateTime  @default(now())
+  recordedPayments Payment[] @relation("RecordedBy")
 }
 
 model Application {
@@ -62,10 +66,95 @@ model Application {
   companyEmail       String?
   companyPhone       String?
 
-  user User @relation(fields: [userId], references: [id])
+  user  User   @relation(fields: [userId], references: [id])
+  loans Loan[]
 
   @@index([userId])
   @@index([status])
+}
+
+model Loan {
+  id              String   @id @default(uuid())
+  applicationId   String
+  userId          String
+  amount          Float
+  dailyRate       Float
+  termDays        Int
+  status          String   @default("pending_signature") // 'pending_signature' | 'active' | 'closed'
+  signedAt        DateTime?
+  signedIp        String?
+  signedUserAgent String?
+  createdAt       DateTime @default(now())
+
+  application Application    @relation(fields: [applicationId], references: [id])
+  user        User           @relation(fields: [userId], references: [id])
+
+  scheduleItems   PaymentScheduleItem[]
+  paymentRequests PaymentRequest[]
+  payments        Payment[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model PaymentScheduleItem {
+  id      String   @id @default(uuid())
+  loanId  String
+  dueDate DateTime
+  amount  Float
+  status  String   @default("pending") // 'pending' | 'paid' | 'overdue'
+
+  loan Loan @relation(fields: [loanId], references: [id])
+
+  @@index([loanId])
+  @@index([status])
+}
+
+model PaymentRequest {
+  id      String   @id @default(uuid())
+  loanId  String
+  userId  String
+  amount  Float
+  reference String
+  status  String   @default("pending") // 'pending' | 'approved' | 'rejected'
+  createdAt DateTime @default(now())
+
+  loan   Loan @relation(fields: [loanId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
+  payment Payment?
+
+  @@index([loanId])
+  @@index([userId])
+  @@index([status])
+}
+
+model Payment {
+  id               String   @id @default(uuid())
+  loanId           String
+  paymentRequestId String?  @unique
+  amount           Float
+  date             DateTime @default(now())
+  recordedByAdminId String
+
+  loan           Loan           @relation(fields: [loanId], references: [id])
+  paymentRequest PaymentRequest? @relation(fields: [paymentRequestId], references: [id])
+  recordedByAdmin AdminUser     @relation("RecordedBy", fields: [recordedByAdminId], references: [id])
+
+  @@index([loanId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([isRead])
 }
 
 model FileAttachment {
@@ -79,4 +168,16 @@ model FileAttachment {
   createdAt    DateTime @default(now())
 
   @@index([ownerType, ownerId])
+}
+
+model ContactMessage {
+  id           String   @id @default(uuid())
+  name         String
+  email        String
+  phone        String
+  message      String
+  attachmentId String?
+  createdAt    DateTime @default(now())
+
+  @@index([attachmentId])
 }
