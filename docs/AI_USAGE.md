@@ -321,3 +321,21 @@ What I learned: TypeScript с isolatedModules и emitDecoratorMetadata треб�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 18
+
+Goal: Автогенерация графика платежей после подписания займа
+
+Prompt: 5.3 — автогенерация графика платежей
+
+После успешного подписания сгенерируй PaymentScheduleItem[] с шагом в один день: ровно termDays элементов, каждый на сумму A из аннуитетного расчёта (округли последний платёж при расхождении из-за округления), статус каждого элемента — pending, dueDate — последовательные дни начиная со дня подписания. Для физлиц это подтверждено ментором; для бизнес-займов пока используй тот же подход как provisional default — см. AGENTS.md п.13, вопрос ещё открыт. После генерации графика emit событие `loan.schedule.generated` (loanId, userId).
+
+Result: Обновлён loans.service.ts: добавлен DAILY_RATE = 0.008, метод generatePaymentSchedule вычисляет аннуитетный платёж A = P × (r × (1 + r)^n) / ((1 + r)^n − 1), генерирует termDays элементов PaymentScheduleItem (status: pending, dueDate: последовательные дни от signedAt), последний платёж корректируется для точности округления. confirmSign создаёт график через createMany после обновления статуса займа на active, emit 'loan.schedule.generated' после 'loan.signed'. Исправлена TypeScript ошибка (необходимость явного типа массива items). npm run build проходит успешно. Проверено через curl: полный flow (request-otp → verify-otp → create application → approve → request-sign-otp → confirm-sign) создаёт 7 элементов графика для 7-дневного займа, суммы корректны (1000 EUR → 147.46 × 6 + 147.49 = 1032.25).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: TypeScript strict mode не выводит тип для items.push в пустом массиве — нужно указывать тип явно: `Array<{ loanId: string; dueDate: Date; amount: number; status: string }>`. Последний платёж корректируется вычитанием уже округлённых сумм из точного total — это надёжнее чем округлять each отдельно. Аннуитетная формула в confirmSign дублирует calculator service — в будущем можно вынести в shared utility.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
