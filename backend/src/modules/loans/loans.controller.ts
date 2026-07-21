@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { LoansService } from './loans.service';
+import { PaymentRequestsService } from '../payment-requests/payment-requests.service';
 import { ConfirmSignDto } from './dto/confirm-sign.dto';
+import { CreatePaymentRequestDto } from '../payment-requests/dto/create-payment-request.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import type { CurrentUserPayload } from '../../common/decorators/current-user.decorator';
@@ -18,7 +20,10 @@ import type { CurrentUserPayload } from '../../common/decorators/current-user.de
 @Controller('loans')
 @UseGuards(JwtAuthGuard)
 export class LoansController {
-  constructor(private readonly loansService: LoansService) {}
+  constructor(
+    private readonly loansService: LoansService,
+    private readonly paymentRequestsService: PaymentRequestsService,
+  ) {}
 
   @Post(':id/request-sign-otp')
   @HttpCode(HttpStatus.OK)
@@ -41,5 +46,15 @@ export class LoansController {
     const userAgent = req.headers['user-agent'] || 'unknown';
 
     return this.loansService.confirmSign(id, user.id, dto, ip, userAgent);
+  }
+
+  @Post(':id/payment-requests')
+  @HttpCode(HttpStatus.CREATED)
+  async createPaymentRequest(
+    @Param('id') id: string,
+    @CurrentUser() user: CurrentUserPayload,
+    @Body() dto: CreatePaymentRequestDto,
+  ) {
+    return this.paymentRequestsService.create(id, user.id, dto);
   }
 }

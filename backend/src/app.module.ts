@@ -10,6 +10,7 @@ import { AdminAuthModule } from './modules/admin-auth/admin-auth.module';
 import { CalculatorModule } from './modules/calculator/calculator.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { LoansModule } from './modules/loans/loans.module';
+import { PaymentRequestsModule } from './modules/payment-requests/payment-requests.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { LoansModule } from './modules/loans/loans.module';
     CalculatorModule,
     ApplicationsModule,
     LoansModule,
+    PaymentRequestsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
