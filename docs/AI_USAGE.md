@@ -51,3 +51,21 @@ What I learned: Не удалять стандартные NestJS-файлы (ap
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 4
+
+Goal: Добавить PostgreSQL через docker-compose и инициализировать Prisma ORM
+
+Prompt: 1.3 — PostgreSQL и ORM
+
+Добавь backend/docker-compose.yml с сервисом PostgreSQL (порт, volume, переменные из .env). Инициализируй ORM (Prisma) с подключением к БД через переменную окружения. Схему сущностей не описывай — только подключение, проверь что миграция на пустой схеме отрабатывает без ошибок.
+
+Result: Создан backend/docker-compose.yml с сервисом PostgreSQL 16-alpine (порт 5432, volume postgres-data, healthcheck). Инициализирован Prisma v7.9.0: prisma/schema.prisma (пустая схема с postgresql), prisma.config.ts (datasource.url из env("DATABASE_URL")), PrismaService и PrismaModule в src/prisma/. Добавлены prisma и @prisma/client в зависимости, dotenv для .env. npm run build проходит, prisma migrate dev и prisma generate работают. PostgreSQL запускается через docker compose up -d.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Prisma v7 перенесла url из schema.prisma в prisma.config.ts — нужно использовать defineConfig и env() из prisma/config. dotenv не поддерживает shell-style интерполяцию ${VAR} в .env файлах — нужно прописывать значения напрямую. Нужно убедиться, что prisma и @prisma/client установлены как зависимости, а не через npx.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
