@@ -5,3 +5,16 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model FileAttachment {
+  id           String   @id @default(uuid())
+  ownerType    String   // 'application' | 'contact_message' | 'upload'
+  ownerId      String?
+  s3Key        String
+  originalName String
+  mimeType     String
+  size         Int
+  createdAt    DateTime @default(now())
+
+  @@index([ownerType, ownerId])
+}
