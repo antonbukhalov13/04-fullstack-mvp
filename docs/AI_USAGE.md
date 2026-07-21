@@ -213,3 +213,21 @@ What I learned: У user и admin JWT должна быть отдельная с
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 13
+
+Goal: Реализовать calculator module — аннуитетная формула, POST /calculator/estimate, юнит-тесты
+
+Prompt: 4.1 — calculator module
+
+Реализуй в modules/calculator сервис с формулой A = P × (r × (1 + r)^n) / ((1 + r)^n − 1), Total = A × n, r = 0.008. Эндпоинт POST /calculator/estimate (amount, termDays → payment, total). Юнит-тест на паре контрольных значений.
+
+Result: Создан модуль modules/calculator: calculator.module.ts, calculator.controller.ts (POST /calculator/estimate), calculator.service.ts (estimate метод с аннуитетной формулой, DAILY_RATE = 0.008, округление до 2 знаков), dto/estimate.dto.ts (amount, termDays с валидацией Min/Max). CalculatorModule добавлен в AppModule. Создан calculator.service.spec.ts с 9 тестами: 4 контрольных значения (1000/30 → 37.63/1128.77, 5000/7 → 737.32/5161.27, 500/90 → 7.81/703.33, 10000/60 → 210.51/12630.46) и 4 на выброс ошибок при невалидных входных данных. Все тесты проходят. Build проходит успешно.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Контрольные значения для тестов нужно считать заранее через node.js, а не на глаз — мои первоначальные оценки (37.6, 739.6, 208.3) не совпали с точным результатом формулы. toBeCloseTo() в jest не подходит когда точные значения известны — лучше использовать toBe() с точным числом. Аннуитетная формула чувствительна к округлению промежуточных значений, поэтому payment и total считаются из одного A без дополнительного округления.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
