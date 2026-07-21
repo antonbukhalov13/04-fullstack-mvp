@@ -5,6 +5,9 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
+import { QueryApplicationsDto } from './dto/query-applications.dto';
+import { UpdateStatusDto } from './dto/update-status.dto';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 const INDIVIDUAL_LIMITS = {
   minAmount: 500,
@@ -78,6 +81,124 @@ export class ApplicationsService {
     };
   }
 
+  async findAll(query: QueryApplicationsDto) {
+    const where: any = {};
+
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    if (query.phone) {
+      where.user = { phone: { contains: query.phone } };
+    }
+
+    if (query.firstName) {
+      where.firstName = { contains: query.firstName, mode: 'insensitive' };
+    }
+
+    if (query.lastName) {
+      where.lastName = { contains: query.lastName, mode: 'insensitive' };
+    }
+
+    if (query.search) {
+      where.OR = [
+        { firstName: { contains: query.search, mode: 'insensitive' } },
+        { lastName: { contains: query.search, mode: 'insensitive' } },
+        { companyName: { contains: query.search, mode: 'insensitive' } },
+        { user: { phone: { contains: query.search } } },
+      ];
+    }
+
+    const applications = await this.prisma.application.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            phone: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return applications;
+  }
+
+  async findOne(id: string) {
+    const application = await this.prisma.application.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            phone: true,
+            name: true,
+          },
+        },
+        loans: true,
+      },
+    });
+
+    if (!application) {
+      throw new NotFoundException(`Application with id ${id} not found`);
+    }
+
+    return application;
+  }
+
+  async updateStatus(id: string, dto: UpdateStatusDto) {
+    const application = await this.prisma.application.findUnique({
+      where: { id },
+    });
+
+    if (!application) {
+      throw new NotFoundException(`Application with id ${id} not found`);
+    }
+
+    // Validate status transition
+    this.validateStatusTransition(application.status, dto.status);
+
+    const updatedApplication = await this.prisma.application.update({
+      where: { id },
+      data: {
+        status: dto.status,
+        comment: dto.comment || application.comment,
+      },
+    });
+
+    return {
+      id: updatedApplication.id,
+      status: updatedApplication.status,
+      comment: updatedApplication.comment,
+    };
+  }
+
+  async addComment(id: string, dto: CreateCommentDto) {
+    const application = await this.prisma.application.findUnique({
+      where: { id },
+    });
+
+    if (!application) {
+      throw new NotFoundException(`Application with id ${id} not found`);
+    }
+
+    const updatedApplication = await this.prisma.application.update({
+      where: { id },
+      data: {
+        comment: dto.comment,
+      },
+    });
+
+    return {
+      id: updatedApplication.id,
+      comment: updatedApplication.comment,
+      updatedAt: updatedApplication.createdAt,
+    };
+  }
+
   private validateApplication(dto: CreateApplicationDto) {
     const limits =
       dto.applicantType === 'individual' ? INDIVIDUAL_LIMITS : BUSINESS_LIMITS;
@@ -114,6 +235,21 @@ export class ApplicationsService {
           'Registration number is required for business applications',
         );
       }
+    }
+  }
+
+  private validateStatusTransition(currentStatus: string, newStatus: string) {
+    const validTransitions: Record<string, string[]> = {
+      new: ['in_progress'],
+      in_progress: ['approved', 'rejected'],
+      approved: [],
+      rejected: [],
+    };
+
+    if (!validTransitions[currentStatus]?.includes(newStatus)) {
+      throw new BadRequestException(
+        `Cannot transition from '${currentStatus}' to '${newStatus}'`,
+      );
     }
   }
 }
