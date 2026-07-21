@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -163,6 +164,7 @@ export class ApplicationsService {
   async updateStatus(id: string, dto: UpdateStatusDto) {
     const application = await this.prisma.application.findUnique({
       where: { id },
+      include: { loans: true },
     });
 
     if (!application) {
@@ -171,6 +173,16 @@ export class ApplicationsService {
 
     // Validate status transition
     this.validateStatusTransition(application.status, dto.status);
+
+    // Check for conflicts
+    if (dto.status === 'approved') {
+      if (application.status === 'rejected') {
+        throw new ConflictException('Cannot approve a rejected application');
+      }
+      if (application.loans.length > 0) {
+        throw new ConflictException('Loan already exists for this application');
+      }
+    }
 
     const updatedApplication = await this.prisma.application.update({
       where: { id },
@@ -188,10 +200,32 @@ export class ApplicationsService {
       newStatus: dto.status,
     });
 
+    // Create loan when approved
+    let loan: any = null;
+    if (dto.status === 'approved') {
+      loan = await this.prisma.loan.create({
+        data: {
+          applicationId: application.id,
+          userId: application.userId,
+          amount: application.amount,
+          dailyRate: 0.008,
+          termDays: application.termDays,
+          status: 'pending_signature',
+        },
+      });
+
+      // Emit loan.created event
+      this.eventEmitter.emit('loan.created', {
+        loanId: loan.id,
+        userId: application.userId,
+      });
+    }
+
     return {
       id: updatedApplication.id,
       status: updatedApplication.status,
       comment: updatedApplication.comment,
+      loan,
     };
   }
 
