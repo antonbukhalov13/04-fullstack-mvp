@@ -3,6 +3,7 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { QueryApplicationsDto } from './dto/query-applications.dto';
@@ -25,7 +26,10 @@ const BUSINESS_LIMITS = {
 
 @Injectable()
 export class ApplicationsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   async create(dto: CreateApplicationDto) {
     this.validateApplication(dto);
@@ -73,6 +77,13 @@ export class ApplicationsService {
         },
       });
     }
+
+    // Emit application.created event
+    this.eventEmitter.emit('application.created', {
+      applicationId: application.id,
+      userId: user.id,
+      status: application.status,
+    });
 
     return {
       id: application.id,
@@ -167,6 +178,14 @@ export class ApplicationsService {
         status: dto.status,
         comment: dto.comment || application.comment,
       },
+    });
+
+    // Emit application.status.changed event
+    this.eventEmitter.emit('application.status.changed', {
+      applicationId: application.id,
+      userId: application.userId,
+      previousStatus: application.status,
+      newStatus: dto.status,
     });
 
     return {
