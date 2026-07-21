@@ -69,3 +69,21 @@ What I learned: Prisma v7 перенесла url из schema.prisma в prisma.co
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 5
+
+Goal: Инициализировать frontend (Next.js + Tailwind CSS v4) с FSD-структурой
+
+Prompt: 1.4 — инициализация frontend (Next.js + FSD)
+
+Инициализируй в frontend/ проект Next.js (App Router, TypeScript, --src-dir). Подключи Tailwind CSS v4. Создай структуру Feature-Sliced Design внутри src/: app/, pages/, widgets/, features/, entities/, shared/{api,ui,lib,config}. Только структура и заглушки, без бизнес-компонентов.
+
+Result: Инициализирован Next.js 16.2.10 с TypeScript, App Router, --src-dir. Подключена Tailwind CSS v4 через @tailwindcss/postcss (postcss.config.mjs, globals.css с @import "tailwindcss" и @theme inline). Создана FSD-структура: src/{app,pages,widgets,features,entities,shared/{api,ui,lib,config}} с .gitkeep файлами. npm run build проходит успешно (Turbopack).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Next.js 16 использует Turbopack по умолчанию для build. Tailwind CSS v4 работает через @tailwindcss/postcss плагин и использует @import "tailwindcss" вместо @tailwind directives. FSD-структура совместима с App Router — pages/ слой существует для организации compositions, но роутинг идёт через app/.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
