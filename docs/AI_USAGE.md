@@ -15,3 +15,21 @@ What I learned: Клиентский текст и ТЗ содержат про�
 Model used: Claude Sonnet 5
 
 Instrument used: Claude.ai
+
+## Request 2
+
+Goal: Создать структуру репозитория — пустые директории frontend/ и backend/ по FSD и NestJS-схеме + .gitignore
+
+Prompt: 1.1 — структура репозитория
+
+Создай в корне папки frontend/ и backend/ (docs/ уже есть). На этом шаге больше ничего не инициализируй — только структура каталогов. Также добавь .gitignore в корне проекта
+
+Result: Созданы пустые директории: frontend/src/{app,pages,widgets,features,entities,shared/{api,ui,lib,config}} и backend/src/{modules/{auth,admin-auth,applications,loans,payments,payment-requests,notifications,clients,calculator,files,contact-messages},common,prisma}. Добавлен .gitignore с правилами для Node.js, NestJS, Next.js, .env, coverage, .DS_Store, minio-data/.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Структура полностью соответствует AGENTS.md п.4 — ничего не пришлось менять
+
+Model used: big-pickle
+
+Instrument used: OpenCode
