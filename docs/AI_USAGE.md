@@ -33,3 +33,21 @@ What I learned: Структура полностью соответствует
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 3
+
+Goal: Инициализировать backend (NestJS) с TypeScript, настроить .env, CORS и добавить GET /health
+
+Prompt: 1.2 — инициализация backend (NestJS)
+
+Инициализируй в backend/ проект NestJS на TypeScript. Настрой .env/.env.example (порт, URL базы данных, секрет JWT). Настрой CORS для локальной разработки (origin фронтенда — из env). Добавь GET /health. Бизнес-модули на этом шаге не создавай.
+
+Result: Инициализирован NestJS проект: package.json, tsconfig.json, tsconfig.build.json, nest-cli.json, .prettierrc, eslint.config.mjs. Настроен .env/.env.example с переменными PORT, DATABASE_URL, JWT_SECRET, FRONTEND_URL. В main.ts добавлены CORS (с configurable origin), ValidationPipe. Создан GET /health endpoint с AppService (возвращает { status: 'ok', timestamp }). Добавлен @nestjs/config для загрузки env переменных. Восстановлены app.service.ts и app.controller.spec.ts. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Не удалять стандартные NestJS-файлы (app.service, app.controller.spec) — они могут понадобиться позже для логики и тестов.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
