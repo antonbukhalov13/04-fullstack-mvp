@@ -303,3 +303,21 @@ What I learned: ConflictException в NestJS используется для си
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 17
+
+Goal: Реализовать подписание займа через OTP — request-sign-otp и confirm-sign эндпоинты в loans module
+
+Prompt: 5.2 — подписание займа через OTP
+
+Реализуй в modules/loans: POST /loans/:id/request-sign-otp (генерирует OtpCode purpose sign-loan для владельца займа) и POST /loans/:id/confirm-sign (проверяет код, переводит займ в active, сохраняет signedAt, signedIp, signedUserAgent из запроса). Доступ — только владельцу займа. После подтверждения подписания emit событие `loan.signed` (loanId, userId).
+
+Result: Создан модуль modules/loans: loans.module.ts, loans.controller.ts (POST /loans/:id/request-sign-otp, POST /loans/:id/confirm-sign, оба под JwtAuthGuard), loans.service.ts (requestSignOtp — генерация OTP purpose sign-loan, confirmSign — проверка OTP, обновление loan status на active, сохранение signedAt/signedIp/signedUserAgent), dto/confirm-sign.dto.ts (code: 6 цифр). Добавлена проверка владельца займа (userId должен совпадать). Emit 'loan.signed' (loanId, userId) после подтверждения. LoansModule добавлен в AppModule. Исправлена TS ошибка с import type для Request и CurrentUserPayload. Проверено через curl: полный flow (request-otp → verify-otp → create application → approve → request-sign-otp → confirm-sign) работает, loan переходит в active. Build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: TypeScript с isolatedModules и emitDecoratorMetadata требует `import type` для типов используемых в декорированных параметрах — иначе TS1272 ошибка. Purpose OTP (login vs sign-loan) — разные сущности в одной таблице OtpCode, различаются по полю purpose. req.ip или req.socket.remoteAddress — для получения IP клиента за прокси (NestJS). req.headers['user-agent'] для User-Agent. JwtAuthGuard на уровне контроллера (@UseGuards на классе) применяется ко всем методам — не нужно дублировать на каждом.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
