@@ -6,6 +6,35 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id        String   @id @default(uuid())
+  phone     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model OtpCode {
+  id        String    @id @default(uuid())
+  phone     String
+  userId    String?
+  code      String
+  purpose   String    // 'login' | 'sign-loan'
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([phone, purpose])
+  @@index([userId])
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  login        String   @unique
+  passwordHash String
+  role         String   // 'admin' | 'operator'
+  createdAt    DateTime @default(now())
+}
+
 model FileAttachment {
   id           String   @id @default(uuid())
   ownerType    String   // 'application' | 'contact_message' | 'upload'
