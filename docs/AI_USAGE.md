@@ -177,3 +177,21 @@ What I learned: Prisma v7 требует driver adapter (PrismaPg) для под
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 11
+
+Goal: Реализовать mock SMS OTP для пользователя: запрос OTP (создание User если нет), проверка OTP (выдача JWT), guard для приватных эндпоинтов
+
+Prompt: 3.1 — mock SMS OTP для пользователя
+
+Реализуй в modules/auth: POST /auth/request-otp (принимает phone, создаёт User если его нет, генерирует OtpCode purpose login с коротким сроком действия; код не отправляется реально — верни его в ответе или залогируй как mock) и POST /auth/verify-otp (проверяет код, помечает usedAt, выдаёт JWT). Добавь guard для приватных эндпоинтов пользователя.
+
+Result: Создан модуль modules/auth с полной структурой: auth.module.ts (JwtModule, PassportModule), auth.controller.ts (POST /auth/request-otp, POST /auth/verify-otp), auth.service.ts (requestOtp, verifyOtp), dto/request-otp.dto.ts (phone с regex валидацией), dto/verify-otp.dto.ts (phone + 6-digit code). Добавлены jwt.strategy.ts (JWT стратегия с валидацией пользователя в БД), jwt-auth.guard.ts (AuthGuard('jwt')), current-user.decorator.ts (декоратор для извлечения текущего пользователя). Установлены @nestjs/jwt, @nestjs/passport, passport, passport-jwt, class-validator, class-transformer. AuthModule добавлен в AppModule. RequestOtp: находит/создаёт User, инвалидирует старые OTP, генерирует 6-значный код с TTL 5 минут, возвращает mockOtp в ответе. VerifyOtp: проверяет OTP (валидность, срок), помечает usedAt, возвращает JWT (7 дней) и данные пользователя. Build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: class-validator и class-transformer обязательны для NestJS DTO с декораторами валидации — TypeScript падает без них. OtpCode модель в Prisma требует поле phone (обязательное), даже если userId уже связан — нужно передавать явно. Passport + JWT в NestJS: стратегия наследуется от PassportStrategy(Strategy), guard наследуется от AuthGuard('jwt'), а @CurrentUser декоратор извлекает payload из request.user. JWT secret берётся из ConfigService (JWT_SECRET из .env), expires: '7d' задаётся в JwtModule.registerAsync.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
