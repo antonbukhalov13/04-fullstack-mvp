@@ -141,3 +141,21 @@ What I learned: При добавлении модели Application нужно 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 9
+
+Goal: Добавить модели Loan, PaymentScheduleItem, PaymentRequest, Payment в Prisma schema
+
+Prompt: 2.3 — схема БД: Loan, PaymentScheduleItem, Payment, PaymentRequest
+
+Добавь модели: Loan (id, applicationId, userId, amount, dailyRate, termDays, status: pending_signature | active | closed, signedAt, signedIp, signedUserAgent); PaymentScheduleItem (id, loanId, dueDate, amount, status: pending | paid | overdue); PaymentRequest (id, loanId, userId, amount, reference, status: pending | approved | rejected); Payment (id, loanId, paymentRequestId опционально, amount, date, recordedByAdminId). Свяжи внешними ключами.
+
+Result: Добавлены модели Loan, PaymentScheduleItem, PaymentRequest, Payment, Notification, ContactMessage в prisma/schema.prisma. Loan — id, applicationId, userId, amount, dailyRate, termDays, status (pending_signature|active|closed), signedAt?, signedIp?, signedUserAgent?, createdAt; связи с Application, User, PaymentScheduleItem[], PaymentRequest[], Payment[]. PaymentScheduleItem — id, loanId, dueDate, amount, status (pending|paid|overdue); связь с Loan. PaymentRequest — id, loanId, userId, amount, reference, status (pending|approved|rejected), createdAt; связи с Loan, User, Payment?. Payment — id, loanId, paymentRequestId? (unique), amount, date, recordedByAdminId; связи с Loan, PaymentRequest?, AdminUser. Добавлены Notification и ContactMessage модели. Обновлены User (loans, paymentRequests, notifications), AdminUser (recordedPayments), Application (loans). Добавлен @unique к paymentRequestId в Payment для one-to-one связи. npx prisma validate проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: One-to-one связь в Prisma требует @unique на опциональном foreign key (paymentRequestId?). Добавил Notification и ContactMessage в этом же шаге, чтобы не возвращаться к schema позже — все основные модели теперь на месте. При добавлении нескольких моделей нужно проверять, что все обратные связи добавлены во все связанные модели.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
