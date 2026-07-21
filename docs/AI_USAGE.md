@@ -339,3 +339,21 @@ What I learned: TypeScript strict mode не выводит тип для items.p
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 19
+
+Goal: Реализовать payment-requests module — создание заявок на оплату пользователем, список для админки и пользователя
+
+Prompt: 6.1 — payment-requests module
+
+Реализуй: POST /loans/:id/payment-requests (пользователь указывает amount и reference, создаётся PaymentRequest со статусом pending), GET /payment-requests (для админки, фильтр по статусу), GET /users/me/payment-requests (статус для пользователя). После создания PaymentRequest emit событие `payment-request.created` (paymentRequestId, loanId, userId).
+
+Result: Создан модуль modules/payment-requests: payment-requests.module.ts, payment-requests.controller.ts (GET /payment-requests под AdminJwtAuthGuard+RolesGuard @Roles('admin','operator'), GET /payment-requests/users/me под JwtAuthGuard), payment-requests.service.ts (create — проверка владельца и статуса loan, findAll — фильтр по статусу с include loan+user, findUserPaymentRequests — список пользователя), dto/create-payment-request.dto.ts (amount, reference с валидацией), dto/query-payment-requests.dto.ts (status с @IsIn). Добавлен POST /loans/:id/payment-requests в loans.controller.ts (инжектирует PaymentRequestsService). LoansModule импортирует PaymentRequestsModule. PaymentRequestsModule добавлен в AppModule. Emit 'payment-request.created' (paymentRequestId, loanId, userId). npm run build проходит успешно. Проверено через curl: полный flow работает — пользователь создаёт заявку на оплату (147.46 EUR, reference), админ видит все заявки с даннымиloan и user, пользователь видит свои заявки.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: POST /loans/:id/payment-requests размещён в loans controller (поскольку это вложенный ресурс под loans), а GET /payment-requests и GET /users/me/payment-requests — в отдельном payment-requests controller. LoansModule импортирует PaymentRequestsModule для доступа к сервису. @IsIn(['pending', 'approved', 'rejected']) в QueryPaymentRequestsDto ограничивает фильтр допустимыми статусами. User endpoint /users/me используется вместо /users/{id} для безопасности — пользователь видит только свои заявки.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
