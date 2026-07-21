@@ -10,6 +10,7 @@ import { ConfirmSignDto } from './dto/confirm-sign.dto';
 
 const OTP_EXPIRY_MINUTES = 5;
 const OTP_LENGTH = 6;
+const DAILY_RATE = 0.008;
 
 @Injectable()
 export class LoansService {
@@ -136,18 +137,37 @@ export class LoansService {
     });
 
     // Update loan status
+    const signedAt = new Date();
     const updatedLoan = await this.prisma.loan.update({
       where: { id: loanId },
       data: {
         status: 'active',
-        signedAt: new Date(),
+        signedAt,
         signedIp: ip,
         signedUserAgent: userAgent,
       },
     });
 
+    // Generate payment schedule
+    const scheduleItems = this.generatePaymentSchedule(
+      loanId,
+      loan.amount,
+      loan.termDays,
+      signedAt,
+    );
+
+    await this.prisma.paymentScheduleItem.createMany({
+      data: scheduleItems,
+    });
+
     // Emit loan.signed event
     this.eventEmitter.emit('loan.signed', {
+      loanId: loan.id,
+      userId: loan.userId,
+    });
+
+    // Emit loan.schedule.generated event
+    this.eventEmitter.emit('loan.schedule.generated', {
       loanId: loan.id,
       userId: loan.userId,
     });
@@ -157,5 +177,53 @@ export class LoansService {
       status: updatedLoan.status,
       signedAt: updatedLoan.signedAt,
     };
+  }
+
+  private generatePaymentSchedule(
+    loanId: string,
+    amount: number,
+    termDays: number,
+    signedAt: Date,
+  ) {
+    const r = DAILY_RATE;
+    const n = termDays;
+    const P = amount;
+
+    // Calculate annuity payment
+    const factor = Math.pow(1 + r, n);
+    const A = (P * (r * factor)) / (factor - 1);
+    const paymentAmount = Math.round(A * 100) / 100;
+
+    // Calculate total without rounding for last payment adjustment
+    const totalExact = A * n;
+    const totalRounded = paymentAmount * (n - 1);
+
+    const items: Array<{
+      loanId: string;
+      dueDate: Date;
+      amount: number;
+      status: string;
+    }> = [];
+    const startDate = new Date(signedAt);
+
+    for (let i = 0; i < n; i++) {
+      const dueDate = new Date(startDate);
+      dueDate.setDate(dueDate.getDate() + i);
+
+      // Last payment gets the remainder to avoid rounding error
+      const itemAmount =
+        i === n - 1
+          ? Math.round((totalExact - totalRounded) * 100) / 100
+          : paymentAmount;
+
+      items.push({
+        loanId,
+        dueDate,
+        amount: itemAmount,
+        status: 'pending',
+      });
+    }
+
+    return items;
   }
 }
