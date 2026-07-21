@@ -105,3 +105,21 @@ What I learned: OwnerType/ownerId лучше передавать как query p
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 7
+
+Goal: Описать в Prisma schema модели User, OtpCode, AdminUser
+
+Prompt: 2.1 — схема БД: User, OtpCode, AdminUser
+
+Опиши в схеме ORM модели User (id, phone уникальный, name, createdAt), OtpCode (id, phone/userId, code, purpose: login | sign-loan, expiresAt, usedAt), AdminUser (id, login уникальный, passwordHash, role: admin | operator, createdAt). Без миграции.
+
+Result: Добавлены модели User, OtpCode, AdminUser в prisma/schema.prisma. User — id, phone (unique), name?, createdAt. OtpCode — id, phone, userId?, code, purpose (login|sign-loan), expiresAt, usedAt?, createdAt; индексы по [phone, purpose] и [userId]. AdminUser — id, login (unique), passwordHash, role (admin|operator), createdAt. Связи с другими моделями (Application, Loan и т.д.) не добавлены — они появятся в следующих шагах. npx prisma validate проходит успешно.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Нельзя добавлять связи на модели, которых ещё нет в schema — Prisma validate упадёт с ошибкой. Связи нужно добавлять по мере создания каждой модели, либо добавлять все модели за один раз.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
