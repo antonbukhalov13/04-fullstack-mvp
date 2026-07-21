@@ -231,3 +231,21 @@ What I learned: Контрольные значения для тестов ну
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 14
+
+Goal: Реализовать applications module — POST /applications с валидацией, созданием User и Application, привязкой файлов
+
+Prompt: 4.2 — applications module: создание заявки
+
+Реализуй POST /applications: принимает данные формы (individual/business), валидирует на сервере (обязательные поля, суммы и сроки — 500–50 000 EUR / 7–90 дней для физлиц, 30 000–500 000 EUR / 1–12 месяцев для бизнеса), создаёт или находит User по телефону, создаёт Application со статусом new, возвращает id заявки. Понятные ответы об ошибках валидации. Для business принимает необязательный массив id уже загруженных FileAttachment (документы — Certificate of Incorporation и т.п., загружаются заранее через POST /files/upload из Request 6) и проставляет им ownerType/ownerId на созданную заявку.
+
+Result: Создан модуль modules/applications: applications.module.ts, applications.controller.ts (POST /applications, HTTP 201), applications.service.ts (create с валидацией, findOrCreate User, привязка файлов через updateMany), dto/create-application.dto.ts (applicantType, phone, amount, termDays, индивидуальные и бизнес поля, fileAttachmentIds). Валидация: individual — 500-50000 EUR / 7-90 дней, firstName+lastName обязательны; business — 30000-500000 EUR / 30-365 дней, companyName+registrationNumber обязательны. ApplicationsModule добавлен в AppModule. Проверено через curl: индивидуальная заявка создаётся (id, status: new), бизнес-заявка создаётся, ошибки валидации возвращают понятные сообщения (400 Bad Request). Build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: class-validator декораторы @IsIn и @IsEmail работают из коробки с ValidationPipe — нужно только подключить ValidationPipe в main.ts (уже был). FileAttachment.ownerType/ownerId обновляются через updateMany после создания заявки — это надёжнее чем пытаться найти файлы до создания заявки. При валидации по типу заявки (individual/business) нужно проверять как количество/сроки, так и обязательные поля — два отдельных блока проверки.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
