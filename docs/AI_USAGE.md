@@ -87,3 +87,21 @@ What I learned: Next.js 16 использует Turbopack по умолчани�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 6
+
+Goal: Реализовать модуль файлового хранилища (S3-совместимое, MinIO) с эндпоинтом загрузки
+
+Prompt: 1.5 — backend: файловое хранилище (S3-совместимое)
+
+Реализуй modules/files: подключение S3-совместимого клиента (MinIO для локальной разработки) через переменные окружения (endpoint, bucket, ключи). Добавь POST /files/upload (multipart, ограничение размера и допустимых типов — pdf/jpg/png), который кладёт файл в bucket и создаёт запись FileAttachment (ownerType, ownerId нужно передавать отдельным вызовом или как query — реши на своё усмотрение и зафиксируй в AI_USAGE.md), возвращает id и ссылку на файл. Добавь MinIO в backend/docker-compose.yml (порт, volume, переменные из .env). Бизнес-модули, которые используют файлы (applications, contact-messages), подключаются к этому эндпоинту в следующих шагах.
+
+Result: Создан modules/files: files.module.ts, files.service.ts, files.controller.ts. FilesService использует @aws-sdk/client-s3 и @aws-sdk/s3-request-presigner для работы с MinIO. POST /files/upload принимает multipart/form-data с полем 'file', ограничение 10MB, допустимые типы: pdf/jpg/png. OwnerType/ownerId передаются как query parameters (?ownerType=application&ownerId=xxx). Создана модель FileAttachment в Prisma schema с миграцией. Добавлен MinIO в docker-compose.yml (порт 9000/9001, volume minio-data). Обновлены .env/.env.example с S3 переменными. FilesModule добавлен в AppModule. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: OwnerType/ownerId лучше передавать как query parameters — это проще для интеграции с фронтендом (можно добавить к URL загрузки) и не требует отдельного вызова для привязки файла. Важно использовать forcePathStyle: true для MinIO (S3-совместимые хранилища). Нужно добавить FileAttachment модель в Prisma schema до написания сервиса, иначе TypeScript будет ругаться на отсутствующие методы.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
