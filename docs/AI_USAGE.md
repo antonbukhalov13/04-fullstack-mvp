@@ -159,3 +159,21 @@ What I learned: One-to-one связь в Prisma требует @unique на оп
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 10
+
+Goal: Прогнать миграцию по полной схеме и создать seed-скрипт с тестовыми admin/operator аккаунтами
+
+Prompt: 2.4 — схема БД: Notification, FileAttachment, ContactMessage, миграция и seed
+
+Добавь модели: Notification (id, userId, type, message, isRead, createdAt); FileAttachment (id, ownerType: application | contact_message, ownerId, s3Key, originalName, mimeType, size, createdAt); ContactMessage (id, name, email, phone, message, attachmentId опционально, createdAt). Прогони миграцию по полной схеме. Добавь seed-скрипт с одним AdminUser роли admin и одним роли operator, пароли — захешированные, тестовые логин/пароль выведи в консоль.
+
+Result: Миграция add_all_models применена успешно. Создан prisma/seed.ts с bcrypt хешированием паролей: admin (admin123, роль admin) и operator (operator123, роль operator). Добавлен @prisma/adapter-pg и pg для Prisma v7 driver adapter. Обновлён PrismaService для использования PrismaPg adapter. Добавлен tsx для запуска seed-скрипта. Seed работает корректно, выводит учётные данные в консоль. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Prisma v7 требует driver adapter (PrismaPg) для подключения к БД — нельзя просто передать URL. Seed-скрипт должен загружать .env через dotenv/config. PrismaService тоже нужно обновить для использования adapter, иначе приложение не запустится. upsert удобен для seed — можно запускать повторно без дублирования записей.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
