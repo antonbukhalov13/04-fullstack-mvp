@@ -582,5 +582,23 @@ What I learned: Обе секции — server components (статически�
 
 Model used: big-pickle
 
+Instrument used: OpenCode   
+
+## Request 31
+
+Goal: Собрать секции «О компании» и «Улучшение кредитной истории» на лендинге
+
+Prompt: 9.5 — о компании и улучшение кредитной истории
+
+Собери секции «О LumenBridge Finance Ltd» и «Займ — это не только деньги сейчас» по блокам 7 и 8 клиентского текста, с CTA «Начать с небольшого займа».
+
+Result: Создан widgets/about-company/about-company.tsx (server component, max-w-3xl centered, заголовок «О LumenBridge Finance Ltd», текст 3 предложения из клиентского контента, CTA «Начать с небольшого займа» ведёт на /apply?type=individual) и widgets/about-company/index.ts. Создан widgets/credit-history/credit-history.tsx (server component, max-w-3xl centered, заголовок «Займ — это не только деньги сейчас», текст + 2 пункта с иконками-галочками + CTA «Начать с небольшого займа») и widgets/credit-history/index.ts. Обновлён app/page.tsx — добавлены <AboutCompany /> и <CreditHistory />. npm run build проходит успешно. Runtime-проверка: dev-сервер запущен, curl показывает все 7 h2-секций на главной.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Текст взят дословно из клиентского контента (блоки 7 и 8), ничего не добавлено и не сокращено. Клиентский контент содержит дублирующийся пункт в списке (два раза «Формирование положительной кредитной истории») — оставлен только уникальный вариант
+
+Model used: big-pickle
+
 Instrument used: OpenCode
 
