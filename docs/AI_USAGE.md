@@ -431,3 +431,21 @@ What I learned: ContactMessage.attachmentId связан с FileAttachment че�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 23
+
+Goal: Реализовать clients module — GET /clients и GET /clients/:id (aggregated client views) + проверка просрочек
+
+Prompt: 7 — clients module и просрочки
+
+Реализуй GET /clients и GET /clients/:id (guard admin/operator): агрегация по User — контакты, заявки, активные займы, история платежей. Добавь проверку просрочек: если dueDate элемента графика в прошлом и статус pending — пометь overdue и emit событие `payment.overdue` (loanId, userId, scheduleItemId).
+
+Result: Создан модуль modules/clients: clients.module.ts, clients.controller.ts (GET /clients с query search, GET /clients/:id — оба под AdminJwtAuthGuard + RolesGuard @Roles('admin','operator')), clients.service.ts (findAll — агрегация User с applicationsCount/activeLoansCount/closedLoansCount/totalLoansAmount; findOne — полная детализация с applications, loans (scheduleItems, payments, application), paymentRequests, recentNotifications; checkOverduePayments — находит pending элементы с dueDate в прошлом, обновляет статус на overdue и emit 'payment.overdue'). CheckOverduePayments вызывается при каждом запросе к clients. ClientsModule зарегистрирован в AppModule. npm run build проходит успешно. Проверено через curl: без auth → 401; с admin token → 200 + список клиентов с агрегацией; GET /clients/:id → 200 с полными данными; просрочка автоматически обнаружена — первый schedule item помечен overdue и создана notification "Просрочка платежа".
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: AdminJwtAuthGuard лежит в common/guards/, а не в admin-auth/. Проверка просрочек запускается при каждом запросе к clients — просто и достаточно для MVP.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
