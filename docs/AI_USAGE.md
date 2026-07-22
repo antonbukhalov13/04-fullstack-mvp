@@ -582,7 +582,7 @@ What I learned: Обе секции — server components (статически�
 
 Model used: big-pickle
 
-Instrument used: OpenCode   
+Instrument used: OpenCode
 
 ## Request 31
 
@@ -614,7 +614,25 @@ Result: Создан widgets/for-business/for-business.tsx (server component, ma
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована.
+What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 33
+
+Goal: Собрать превью FAQ, форму обратной связи и контакты на лендинге
+
+Prompt: 9.7 — FAQ-превью, форма обратная связи, контакты
+
+Собери на главной: превью FAQ (первые 3 вопроса из блока 11 + кнопка «Смотреть все вопросы»), секцию «Свяжитесь с нами» с формой обратной связи (имя, email, телефон, сообщение, чекбокс согласия, поле вложения файла — загружается через POST /files/upload из Request 6, см. AGENTS.md п.13) и секцию контактов (адрес, email, телефон) по блокам 11, 13, 14. Отправка формы вызывает POST /contact-messages (id загруженного файла — опционально), состояния submitting/success/error как в форме заявки.
+
+Result: Создан widgets/faq-preview/faq-preview.tsx (server component, 3 вопроса-ответа из блока 11, ссылка «Смотреть все вопросы →» → /faq) и widgets/faq-preview/index.ts. Создан widgets/contact-form/contact-form.tsx (client component, react-hook-form + valibot, 5 полей: имя/email/телефон/сообщение, file input для вложения, чекбокс согласия, submit → file upload через fetch к POST /files/upload → POST /contact-messages, состояния idle/submitting/success/error, success-состояние с сообщением). Создан widgets/contact-form/contact-section.tsx (обёртка с заголовком «Свяжитесь с нами» и текстом из блока 13). Создан widgets/contact-details/contact-details.tsx (server component, «Контактная информация», 2 абзаца текста + 3 колонки: адрес/email/телефон с SVG-иконками) и widgets/contact-details/index.ts. Обновлён app/page.tsx — добавлены <FaqPreview />, <ContactSection />, <ContactDetails />. npm run build проходит успешно. Runtime-проверка: все 12 секций рендерятся.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Форма обратной связи — client component (react-hook-form + valibot). Загрузка файла идёт через отдельный fetch (POST /files/upload с FormData), потом attachmentId передаётся в POST /contact-messages
 
 Model used: big-pickle
 
