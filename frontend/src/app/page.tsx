@@ -8,6 +8,9 @@ import { AboutCompany } from '@/widgets/about-company';
 import { CreditHistory } from '@/widgets/credit-history';
 import { ForBusiness } from '@/widgets/for-business';
 import { TrustBlock } from '@/widgets/trust-block';
+import { FaqPreview } from '@/widgets/faq-preview';
+import { ContactSection } from '@/widgets/contact-form';
+import { ContactDetails } from '@/widgets/contact-details';
 
 export default function Home() {
   return (
@@ -22,6 +25,9 @@ export default function Home() {
       <CreditHistory />
       <ForBusiness />
       <TrustBlock />
+      <FaqPreview />
+      <ContactSection />
+      <ContactDetails />
     </>
   );
 }
