@@ -485,3 +485,21 @@ What I learned: Все компоненты — client components (forwardRef с
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 26
+
+Goal: Собрать глобальный layout, публичный Header и Footer-заготовку
+
+Prompt: 8.3 — глобальный layout, header, footer
+
+Собери frontend/src/app/layout.tsx, публичный Header (LumenBridge Finance, навигация: Как это работает, Для бизнеса, FAQ, Контакты, кнопка «Получить займ») и Footer-заготовку. Личный кабинет и админку не трогай — отдельный layout в Request 41 и 49.
+
+Result: Созданы widgets/header/header.tsx (client component, sticky, навигация: Как это работает/Для бизнеса/FAQ/Контакты, CTA «Получить займ», мобильное меню с hamburger-иконкой, toggle state) и widgets/footer/footer.tsx (server component, 4 колонки: бренд/описание + 3 навигационные: Компания/Поддержка/Документы, контактная информация из клиентского текста: адрес Dublin, email, телефон, GDPR-уведомление, копирайт). Обновлён layout.tsx: lang="ru", metadata с title template, Header + main + Footer в body. Index-файлы для обоих виджетов. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Header — client component (useState для мобильного меню). Footer — server component (статический контент). Ссылки в футере ведут на страницы, которые будут созданы позже (Request 35-39). Footer-заготовка упрощённая — полные реквизиты будут в Request 34.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
