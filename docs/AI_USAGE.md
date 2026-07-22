@@ -529,3 +529,22 @@ What I learned: Hero — server component (нет хуков/состояния)
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 28
+
+Goal: Собрать widget калькулятора на лендинге — client component с react-hook-form + valibot, клиентский расчёт по аннуитетной формуле
+
+Prompt: 9.2 — калькулятор на лендинге
+
+Собери widget калькулятора (client component) на react-hook-form + valibot: поля сумма и срок (диапазоны физлица), мгновенный клиентский расчёт по формуле из shared/lib для превью. Отобрази размер платежа, общую сумму к возврату и сноску «Расчёт носит ознакомительный характер. Итоговые условия зависят от результатов проверки клиента.» Финальный расчёт при реальной заявке идёт через backend POST /calculator/estimate, не дублируй логику диапазонов только на фронте.
+
+Result: Установлены react-hook-form, valibot (v1.4.2), @hookform/resolvers. Создан shared/lib/calculator.ts (функция calculateAnnuity с DAILY_RATE=0.008, константа INDIVIDUAL_LIMITS: amount 500-50000, term 7-90). Создан widgets/calculator/calculator.tsx (client component, useForm с valibot-схемой, два number-поля сумма/срок, мгновенный расчёт при изменении полей, результат в indigo-50 блоке с платёжом и общей суммой, CTA «Получить-Semit» ведёт на /apply, сноска из клиентского текста). widgets/calculator/index.ts (barrel). Обновлён app/page.tsx — добавлен <Calculator /> после <Hero />. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Valibot v1.4 убрал namespace export `v` — нужно импортировать функции поимённо (object, pipe, number, minValue, maxValue). @hookform/resolvers нужен отдельный пакет для интеграции с valibot.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
