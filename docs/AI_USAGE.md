@@ -467,3 +467,21 @@ What I learned: Токен хранится в модульной перемен
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 25
+
+Goal: Собрать UI-примитивы для shared/ui — Button, Input, Select, Textarea, Checkbox, Card, StatusBadge, Spinner, EmptyState
+
+Prompt: 8.2 — frontend: shared/ui
+
+Собери UI-примитивы: Button, Input, Select, Textarea, Checkbox, Card, StatusBadge (цвет под каждый статус заявки/займа/платежа), Spinner, EmptyState. Tailwind v4, сдержанная палитра, подходящая финансовому сервису.
+
+Result: Созданы 10 файлов в frontend/src/shared/ui/: button.tsx (forwardRef, варианты primary/secondary/ghost/danger, размеры sm/md/lg, состояние loading с анимированным spin-нером), input.tsx (forwardRef, label, error, авто-id), select.tsx (forwardRef, label, placeholder, error, appearance-none), textarea.tsx (forwardRef, label, error, resize-y, min-h-[80px]), checkbox.tsx (forwardRef, label, error), card.tsx (Card/CardHeader/CardContent/CardFooter), status-badge.tsx (цвета для всех статусов: application new/in_progress/approved/rejected, loan pending_signature/active/closed, schedule/payment pending/paid/overdue, русские лейблы), spinner.tsx (размеры sm/md/lg, анимация spin), empty-state.tsx (icon, title, description, action, loading-состояние со Spinner), index.ts (barrel export). Палитра: indigo (primary), slate (нейтральные), green/amber/red (статусы). npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Все компоненты — client components (forwardRef с React 19). StatusBadge с предустановленными цветами и лейблами на русском для удобства. EmptyState включает встроенное loading-состояние со Spinner.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
