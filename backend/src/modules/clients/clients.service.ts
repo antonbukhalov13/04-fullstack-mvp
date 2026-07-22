@@ -1,0 +1,123 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
+@Injectable()
+export class ClientsService {
+  constructor(
+    private prisma: PrismaService,
+    private eventEmitter: EventEmitter2,
+  ) {}
+
+  async checkOverduePayments() {
+    const now = new Date();
+    const overdueItems = await this.prisma.paymentScheduleItem.findMany({
+      where: {
+        status: 'pending',
+        dueDate: { lt: now },
+      },
+      include: { loan: true },
+    });
+
+    for (const item of overdueItems) {
+      await this.prisma.paymentScheduleItem.update({
+        where: { id: item.id },
+        data: { status: 'overdue' },
+      });
+
+      this.eventEmitter.emit('payment.overdue', {
+        loanId: item.loanId,
+        userId: item.loan.userId,
+        scheduleItemId: item.id,
+      });
+    }
+
+    return overdueItems.length;
+  }
+
+  async findAll(search?: string) {
+    await this.checkOverduePayments();
+
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { phone: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
+    const users = await this.prisma.user.findMany({
+      where,
+      include: {
+        applications: { orderBy: { createdAt: 'desc' } },
+        loans: {
+          include: {
+            scheduleItems: true,
+            payments: true,
+          },
+        },
+        paymentRequests: {
+          include: { loan: true },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return users.map((user) => ({
+      id: user.id,
+      phone: user.phone,
+      name: user.name,
+      createdAt: user.createdAt,
+      applicationsCount: user.applications.length,
+      activeLoansCount: user.loans.filter((l) => l.status === 'active').length,
+      closedLoansCount: user.loans.filter((l) => l.status === 'closed').length,
+      totalLoansAmount: user.loans.reduce((sum, l) => sum + l.amount, 0),
+    }));
+  }
+
+  async findOne(id: string) {
+    await this.checkOverduePayments();
+
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        applications: {
+          orderBy: { createdAt: 'desc' },
+          include: { loans: true },
+        },
+        loans: {
+          include: {
+            scheduleItems: { orderBy: { dueDate: 'asc' } },
+            payments: { orderBy: { date: 'desc' } },
+            application: true,
+          },
+        },
+        paymentRequests: {
+          include: { loan: true, payment: true },
+          orderBy: { createdAt: 'desc' },
+        },
+        notifications: {
+          orderBy: { createdAt: 'desc' },
+          take: 10,
+        },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      phone: user.phone,
+      name: user.name,
+      createdAt: user.createdAt,
+      applications: user.applications,
+      loans: user.loans,
+      paymentRequests: user.paymentRequests,
+      recentNotifications: user.notifications,
+    };
+  }
+}
