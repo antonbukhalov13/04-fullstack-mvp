@@ -655,3 +655,21 @@ What I learned: Все три контакта (адрес/email/телефон)
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 35
+
+Goal: Собрать полную страницу «Как это работает»
+
+Prompt: 10.1 — страница «Как это работает» (полная)
+
+Собери отдельную страницу с полным текстом раздела «СТРАНИЦА «КАК ЭТО РАБОТАЕТ»» из клиентского контента: вступление, 5 шагов (регистрация, подача заявки, проверка и одобрение, получение средств, погашение), блок «Важно знать», заключение. Ничего не сокращай.
+
+Result: Создан app/how-it-works/page.tsx (server component, generateMetadata, заголовок «Как работает сервис», вступительный текст, 5 шагов с нумерованными кругами 1-5, блок «Важно знать» с 4 пунктами, заключение). npm run build проходит успешно. Runtime-проверка: страница /how-it-works рендерит h1 + 5 h3-шагов + h2 «Важно знать».
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Страница — server component. Добавил numbered circles (bg-indigo-100) для шагов и bullet points (rounded-full bg-indigo-400) для «Важно знать»
+
+Model used: big-pickle
+
+Instrument used: OpenCode
