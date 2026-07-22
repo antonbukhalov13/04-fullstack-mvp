@@ -11,6 +11,7 @@ import { CalculatorModule } from './modules/calculator/calculator.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { LoansModule } from './modules/loans/loans.module';
 import { PaymentRequestsModule } from './modules/payment-requests/payment-requests.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PaymentRequestsModule } from './modules/payment-requests/payment-reques
     ApplicationsModule,
     LoansModule,
     PaymentRequestsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
