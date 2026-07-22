@@ -10,7 +10,7 @@ Result: Создан docs/AGENTS.md (19 разделов: стек, структ
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: Клиентский текст и ТЗ содержат противоречия (бизнес-заявки, ставка, график) — их нужно фиксировать отдельным пунктом в AGENTS.md, чтобы AI не додумывал
+What I learned: Клиентский текст и ТЗ содержат противоречия — их нужно фиксировать отдельным пунктом в AGENTS.md
 
 Model used: Claude Sonnet 5
 
@@ -28,7 +28,7 @@ Result: Созданы пустые директории: frontend/src/{app,page
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Структура полностью соответствует AGENTS.md п.4 — ничего не пришлось менять
+What I learned: Структура полностью соответствует AGENTS.md п.4
 
 Model used: big-pickle
 
@@ -46,7 +46,7 @@ Result: Инициализирован NestJS проект: package.json, tsconf
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: Не удалять стандартные NestJS-файлы (app.service, app.controller.spec) — они могут понадобиться позже для логики и тестов.
+What I learned: Не удалять стандартные NestJS-файлы — они могут понадобиться
 
 Model used: big-pickle
 
@@ -64,7 +64,7 @@ Result: Создан backend/docker-compose.yml с сервисом PostgreSQL 1
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: Prisma v7 перенесла url из schema.prisma в prisma.config.ts — нужно использовать defineConfig и env() из prisma/config. dotenv не поддерживает shell-style интерполяцию ${VAR} в .env файлах — нужно прописывать значения напрямую. Нужно убедиться, что prisma и @prisma/client установлены как зависимости, а не через npx.
+What I learned: Prisma v7 перенесла URL из schema.prisma в prisma.config.ts. dotenv не поддерживает ${VAR} — нужно прописывать значения напрямую
 
 Model used: big-pickle
 
@@ -82,7 +82,7 @@ Result: Инициализирован Next.js 16.2.10 с TypeScript, App Router
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Next.js 16 использует Turbopack по умолчанию для build. Tailwind CSS v4 работает через @tailwindcss/postcss плагин и использует @import "tailwindcss" вместо @tailwind directives. FSD-структура совместима с App Router — pages/ слой существует для организации compositions, но роутинг идёт через app/.
+What I learned: Next.js 16 использует Turbopack. Tailwind v4 через @tailwindcss/postcss
 
 Model used: big-pickle
 
@@ -100,7 +100,7 @@ Result: Создан modules/files: files.module.ts, files.service.ts, files.con
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: OwnerType/ownerId лучше передавать как query parameters — это проще для интеграции с фронтендом (можно добавить к URL загрузки) и не требует отдельного вызова для привязки файла. Важно использовать forcePathStyle: true для MinIO (S3-совместимые хранилища). Нужно добавить FileAttachment модель в Prisma schema до написания сервиса, иначе TypeScript будет ругаться на отсутствующие методы.
+What I learned: OwnerType/ownerId удобнее передавать как query parameters. forcePathStyle: true обязателен для MinIO
 
 Model used: big-pickle
 
@@ -118,7 +118,7 @@ Result: Добавлены модели User, OtpCode, AdminUser в prisma/schem
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: Нельзя добавлять связи на модели, которых ещё нет в schema — Prisma validate упадёт с ошибкой. Связи нужно добавлять по мере создания каждой модели, либо добавлять все модели за один раз.
+What I learned: Нельзя добавлять связи на модели, которых ещё нет в schema
 
 Model used: big-pickle
 
@@ -136,7 +136,7 @@ Result: Добавлена модель Application в prisma/schema.prisma. П�
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: При добавлении модели Application нужно одновременно обновить User модель с обратной связью (applications Application[]). Поля для физлиц/бизнеса сделаны опциональными — обязательность определяется бизнес-логикой в сервисах, а не схемой БД. Связи на Loan и другие модели не добавляются до их создания в Request 9.
+What I learned: При добавлении модели нужно обновлять обратные связи в связанных моделях
 
 Model used: big-pickle
 
@@ -154,7 +154,7 @@ Result: Добавлены модели Loan, PaymentScheduleItem, PaymentReques
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: One-to-one связь в Prisma требует @unique на опциональном foreign key (paymentRequestId?). Добавил Notification и ContactMessage в этом же шаге, чтобы не возвращаться к schema позже — все основные модели теперь на месте. При добавлении нескольких моделей нужно проверять, что все обратные связи добавлены во все связанные модели.
+What I learned: @unique на optional foreign key обязателен для one-to-one связей в Prisma
 
 Model used: big-pickle
 
@@ -172,7 +172,7 @@ Result: Миграция add_all_models применена успешно. Со�
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: Prisma v7 требует driver adapter (PrismaPg) для подключения к БД — нельзя просто передать URL. Seed-скрипт должен загружать .env через dotenv/config. PrismaService тоже нужно обновить для использования adapter, иначе приложение не запустится. upsert удобен для seed — можно запускать повторно без дублирования записей.
+What I learned: Prisma v7 требует driver adapter (PrismaPg). Seed-скрипт загружает .env через dotenv/config
 
 Model used: big-pickle
 
@@ -190,7 +190,7 @@ Result: Создан модуль modules/auth с полной структур�
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: class-validator и class-transformer обязательны для NestJS DTO с декораторами валидации — TypeScript падает без них. OtpCode модель в Prisma требует поле phone (обязательное), даже если userId уже связан — нужно передавать явно. Passport + JWT в NestJS: стратегия наследуется от PassportStrategy(Strategy), guard наследуется от AuthGuard('jwt'), а @CurrentUser декоратор извлекает payload из request.user. JWT secret берётся из ConfigService (JWT_SECRET из .env), expires: '7d' задаётся в JwtModule.registerAsync.
+What I learned: class-validator и class-transformer обязательны для DTO. Passport + JWT: стратегия наследуется от PassportStrategy, guard от AuthGuard('jwt')
 
 Model used: big-pickle
 
@@ -208,7 +208,7 @@ Result: Создан модуль modules/admin-auth: admin-auth.module.ts (JwtM
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: У user и admin JWT должна быть отдельная стратегия (strategy name 'admin-jwt'). RolesGuard использует Reflector для чтения метаданных из @Roles декоратора и проверяет role из request.user. Seed-аккаунты работают корректно, bcrypt.compare проверяет хэш пароля.
+What I learned: Для user и admin JWT нужны отдельные стратегии. RolesGuard использует Reflector для чтения @Roles
 
 Model used: big-pickle
 
@@ -226,7 +226,7 @@ Result: Создан модуль modules/calculator: calculator.module.ts, calc
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: Контрольные значения для тестов нужно считать заранее через node.js, а не на глаз — мои первоначальные оценки (37.6, 739.6, 208.3) не совпали с точным результатом формулы. toBeCloseTo() в jest не подходит когда точные значения известны — лучше использовать toBe() с точным числом. Аннуитетная формула чувствительна к округлению промежуточных значений, поэтому payment и total считаются из одного A без дополнительного округления.
+What I learned: Контрольные значения для тестов считать через node.js, а не на глаз
 
 Model used: big-pickle
 
@@ -244,7 +244,7 @@ Result: Создан модуль modules/applications: applications.module.ts, 
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: class-validator декораторы @IsIn и @IsEmail работают из коробки с ValidationPipe — нужно только подключить ValidationPipe в main.ts (уже был). FileAttachment.ownerType/ownerId обновляются через updateMany после создания заявки — это надёжнее чем пытаться найти файлы до создания заявки. При валидации по типу заявки (individual/business) нужно проверять как количество/сроки, так и обязательные поля — два отдельных блока проверки.
+What I learned: FileAttachment.ownerType/ownerId обновляются через updateMany после создания заявки
 
 Model used: big-pickle
 
@@ -262,7 +262,7 @@ Result: Обновлены applications.service.ts и applications.controller.ts
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Valid status transitions map (Record<string, string[]>) — удобный паттерн для валидации finite state machine в NestJS. Prisma include с select для user позволяет вернуть только нужные поля (phone, name) без лишних данных. Query параметры с class-validator (@IsOptional + @IsString + @IsIn) работают для фильтрации — ValidationPipe преобразует query strings в объект. @Roles('admin', 'operator') через SetMetadata работает с RolesGuard через Reflector — оба role доступны для операторских эндпоинтов.
+What I learned: Record<string, string[]> — удобный паттерн для валидации переходов статусов
 
 Model used: big-pickle
 
@@ -280,7 +280,7 @@ Result: Установлен @nestjs/event-emitter. EventEmitterModule.forRoot()
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: @nestjs/event-emitter: EventEmitterModule.forRoot() регистрируется в imports AppModule, EventEmitter2 инжектится в сервис через constructor. eventEmitter.emit(eventName, payload) — синхронный вызов в рамках одного event loop tick, не пробрасывает исключения в emitter. Паттерн "каждый модуль только emit'ит, notifications module слушает через @OnEvent" — ключевой для loosely coupled архитектуры уведомлений. Payload события — простой объект с applicationId, userId, status — без зависимостей от других модуей.
+What I learned: EventEmitterModule.forRoot() в imports AppModule, EventEmitter2 в constructor сервиса
 
 Model used: big-pickle
 
@@ -298,7 +298,7 @@ Result: Обновлён applications.service.ts: добавлен ConflictExcep
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: ConflictException в NestJS используется для ситуаций когда ресурс уже существует или состояние конфликтует (409). Проверку loans.length > 0 нужно делать до update статуса, иначе будет race condition. TypeScript strict mode требует явного указания типа для переменной инициализированной как null — `let loan: any = null` решает проблему. Response с nullable loan объектом удобен для фронтенда — можно проверить `if (response.loan)` и показать соответствующий UI.
+What I learned: ConflictException для 409. Проверку loans.length > 0 делать до update статуса
 
 Model used: big-pickle
 
@@ -316,7 +316,7 @@ Result: Создан модуль modules/loans: loans.module.ts, loans.controll
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: TypeScript с isolatedModules и emitDecoratorMetadata требует `import type` для типов используемых в декорированных параметрах — иначе TS1272 ошибка. Purpose OTP (login vs sign-loan) — разные сущности в одной таблице OtpCode, различаются по полю purpose. req.ip или req.socket.remoteAddress — для получения IP клиента за прокси (NestJS). req.headers['user-agent'] для User-Agent. JwtAuthGuard на уровне контроллера (@UseGuards на классе) применяется ко всем методам — не нужно дублировать на каждом.
+What I learned: import type обязателен с isolatedModules + emitDecoratorMetadata. Purpose OTP различается по полю purpose
 
 Model used: big-pickle
 
@@ -334,7 +334,7 @@ Result: Обновлён loans.service.ts: добавлен DAILY_RATE = 0.008, 
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: TypeScript strict mode не выводит тип для items.push в пустом массиве — нужно указывать тип явно: `Array<{ loanId: string; dueDate: Date; amount: number; status: string }>`. Последний платёж корректируется вычитанием уже округлённых сумм из точного total — это надёжнее чем округлять each отдельно. Аннуитетная формула в confirmSign дублирует calculator service — в будущем можно вынести в shared utility.
+What I learned: Для items.push в пустом массиве нужно указывать тип явно
 
 Model used: big-pickle
 
@@ -352,7 +352,25 @@ Result: Создан модуль modules/payment-requests: payment-requests.mod
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: POST /loans/:id/payment-requests размещён в loans controller (поскольку это вложенный ресурс под loans), а GET /payment-requests и GET /users/me/payment-requests — в отдельном payment-requests controller. LoansModule импортирует PaymentRequestsModule для доступа к сервису. @IsIn(['pending', 'approved', 'rejected']) в QueryPaymentRequestsDto ограничивает фильтр допустимыми статусами. User endpoint /users/me используется вместо /users/{id} для безопасности — пользователь видит только свои заявки.
+What I learned: POST /loans/:id/payment-requests в loans controller, GET — в payment-requests controller
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 20
+
+Goal: Реализовать payments module — ручная фиксация платежей, одобрение заявок на оплату, пересчёт графика
+
+Prompt: 6.2 — payments module: ручная фиксация и пересчёт графика
+
+Под guard admin/operator: PATCH /payment-requests/:id (approve/reject), при approve — создание Payment с привязкой к paymentRequestId. Пересчёт графика: если Payment.amount больше суммы ближайшего pending PaymentScheduleItem, погаси его полностью и перенеси остаток на следующие элементы. Если график полностью погашен — Loan.status = closed. Добавь POST /loans/:id/payments для прямой фиксации администратором без предварительной PaymentRequest. При approve/reject PaymentRequest emit событие `payment-request.status.changed` (paymentRequestId, loanId, userId, новый статус). После фиксации Payment (через PATCH /payment-requests/:id approve или POST /loans/:id/payments) emit событие `payment.recorded` (paymentId, loanId, userId). При закрытии займа (график полностью погашен) emit событие `loan.closed` (loanId, userId).
+
+Result: Создан модуль modules/payments: payments.module.ts, payments.controller.ts (PATCH /payment-requests/:id и POST /loans/:id/payments, оба под AdminJwtAuthGuard+RolesGuard @Roles('admin','operator')), payments.service.ts (decidePaymentRequest — approve/reject с созданием Payment при approved, recordDirectPayment — прямая фиксация без PaymentRequest, recalculateSchedule — приватный метод пересчёта графика), dto/decide-payment-request.dto.ts (status: approved|rejected), dto/record-payment.dto.ts (amount). PaymentsModule добавлен в AppModule. npm run build проходит успешно. Проверено через curl: PATCH /payment-requests/:id approved создаёт Payment, помечает первый pending элемент графика как paid, emit payment-request.status.changed и payment.recorded; POST /loans/:id/payments создаёт Payment без paymentRequestId, погашает следующие pending элементы графика, emit payment.recorded; если все элементы погашены — Loan.status = closed, emit loan.closed.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Для переменной null нужно указывать тип явно. Пересчёт графика: погашаем pending элементы по dueDate, если все paid — Loan.closed
 
 Model used: big-pickle
 
