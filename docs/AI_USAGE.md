@@ -596,7 +596,25 @@ Result: Создан widgets/about-company/about-company.tsx (server component, 
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: Текст взят дословно из клиентского контента (блоки 7 и 8), ничего не добавлено и не сокращено. Клиентский контент содержит дублирующийся пункт в списке (два раза «Формирование положительной кредитной истории») — оставлен только уникальный вариант
+What I learned: Клиентский контент содержит дублирующийся пункт в списке (два раза «Формирование положительной кредитной истории») — оставлен только уникальный вариант
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 32
+
+Goal: Собрать секции «Для бизнеса» и «Блок доверия» на лендинге
+
+Prompt: 9.6 — для бизнеса (summary) и блок доверия
+
+Собери summary-секцию «Финансирование для бизнеса» (условия, примечание про специалиста, CTA «Оставить заявку» — ведёт на общую форму заявки с предвыбранным типом «бизнес», см. AGENTS.md п.13) и «Блок доверия» (GDPR, ответственная проверка заявок, защита данных, чёткие условия) по блокам 9 и 10.
+
+Result: Создан widgets/for-business/for-business.tsx (server component, max-w-3xl, заголовок «Финансирование для бизнеса», текст, 5 преимуществ с иконками indigo, amber-предупреждение про форму обратной связи, CTA «Оставить заявку» → /apply?type=business) и widgets/for-business/index.ts. Создан widgets/trust-block/trust-block.tsx (server component, заголовок «Работаем прозрачно и в рамках закона», 4 пункта в 2-col grid с иконками-галочками в зелёных кружках) и widgets/trust-block/index.ts. Обновлён app/page.tsx — добавлены <ForBusiness /> и <TrustBlock />. npm run build проходит успешно. Runtime-проверка: все 9 секций рендерятся на главной.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована.
 
 Model used: big-pickle
 
