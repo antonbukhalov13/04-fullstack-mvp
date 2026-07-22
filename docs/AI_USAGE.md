@@ -503,3 +503,29 @@ What I learned: Header — client component (useState для мобильног�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 27
+
+Goal: Собрать секцию hero на главной странице по клиентскому тексту
+
+Prompt: 9.1 — hero
+
+Собери секцию hero по блоку 1 клиентского текста:
+
+Заголовок: Получите деньги тогда, когда это действительно нужно
+Подзаголовок: Простые и прозрачные займы для частных лиц и бизнеса в Европе — быстрое решение и безопасное оформление
+Текст: Неожиданные расходы или срочные возможности не должны вас останавливать. Сервис помогает быстро получить финансирование — без сложных процедур и скрытых условий.
+CTA: Получить займ
+Микротекст: Без залога • Быстрое одобрение • Выплата на банковский счёт
+
+Ничего не сокращай и не добавляй от себя.
+
+Result: Создан widgets/hero/hero.tsx (server component, gradient bg-indigo-50 to-white, h1/subtitle/text/CTA-link на /apply/microtext с middot-разделителем) и widgets/hero/index.ts. Обновлён app/page.tsx — заменён дефолтный контент Next.js на <Hero />. Текст полностью из клиентского контента, ничего не сокращено и не добавлено. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Hero — server component (нет хуков/состояния). Ссылка CTA ведёт на /apply — форма заявки будет создана в Request 40-41.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
