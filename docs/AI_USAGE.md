@@ -548,3 +548,21 @@ Model used: big-pickle
 
 Instrument used: OpenCode
 
+## Request 29
+
+Goal: Собрать секции «Основные условия» и «Когда деньги нужны сейчас» на лендинге
+
+Prompt: 9.3 — условия займа и «когда деньги нужны сейчас»
+
+Собери секцию «Основные условия» по блоку 3 (сумма 500–50 000 EUR, срок 7–90 дней, ставка определяется индивидуально в тексте, но в MVP фиксирована — см. AGENTS.md п.13, погашение равными платежами) и секцию «Когда деньги нужны сейчас» по блоку 4 (4 карточки: срочные расходы, задержка дохода, бизнес-задачи, возможности).
+
+Result: Создан widgets/loan-terms/loan-terms.tsx (server component, 4 карточки в 2-col grid: Сумма/Срок/Ставка/Погашение, текст-сноска из клиентского контента) и widgets/loan-terms/index.ts. Создан widgets/when-money-needed/when-money-needed.tsx (server component, заголовок + описание + 4 карточки в responsive grid 1→2→4 col: Срочные расходы/Задержка дохода/Бизнес-задачи/Возможности с описаниями из клиентского текста) и widgets/when-money-needed/index.ts. Обновлён app/page.tsx — добавлены <LoanTerms /> и <WhenMoneyNeeded />. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Обе секции — server components (статический контент из клиентского текста). Текст взят дословно из 04-fullstack-client-content.md, ничего не сокращено и не добавлено.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
