@@ -1,0 +1,57 @@
+import Link from 'next/link';
+
+const benefits = [
+  'Возможность начать с небольшой суммы',
+  'Формирование положительной кредитной истории',
+];
+
+export function CreditHistory() {
+  return (
+    <section className="py-16 bg-slate-50">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+            Займ — это не только деньги сейчас
+          </h2>
+          <p className="mt-6 text-base text-slate-600 leading-relaxed">
+            Своевременное погашение займа помогает улучшить кредитный рейтинг и
+            открывает доступ к более выгодным условиям в будущем.
+          </p>
+          <ul className="mt-8 space-y-3 text-left inline-block">
+            {benefits.map((benefit) => (
+              <li
+                key={benefit}
+                className="flex items-center gap-3 text-slate-700"
+              >
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-700">
+                  <svg
+                    className="h-3 w-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2.5}
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5"
+                    />
+                  </svg>
+                </span>
+                {benefit}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8">
+            <Link
+              href="/apply?type=individual"
+              className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-500"
+            >
+              Начать с небольшого займа
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
