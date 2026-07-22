@@ -745,3 +745,21 @@ What I learned: Cookie Policy берётся из клиентского кон�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 40
+
+Goal: Создать юридические заглушки (Terms, Credit Policy, AML/KYC)
+
+Prompt: 10.6 — юридические заглушки
+
+Реализуй страницы-заглушки «документ в разработке» для Terms of Use, Credit Policy и AML/KYC Policy — см. AGENTS.md п.12, один и тот же подход для всех трёх.
+
+Result: Созданы 3 заглушки: frontend/src/app/terms/page.tsx, frontend/src/app/credit-policy/page.tsx, frontend/src/app/aml-kyc/page.tsx — каждая: заголовок + bordered блок «Документ в разработке», одинаковая структура. npm run build проходит успешно (11 маршрутов). Runtime-проверка: заглушки рендерят «Документ в разработке».
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Заглушки по AGENTS.md п.12 — один и тот же подход для Terms/Credit/AML-KYC. Server components, одинаковая структура с centered layout.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
