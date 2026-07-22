@@ -334,7 +334,7 @@ Result: Обновлён loans.service.ts: добавлен DAILY_RATE = 0.008, 
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Для items.push в пустом массиве нужно указывать тип явно
+What I learned: Для items.push в пустом массиве нужно указывать тип
 
 Model used: big-pickle
 
@@ -426,7 +426,7 @@ Result: Создан модуль modules/contact-messages: contact-messages.mod
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: ContactMessage.attachmentId связан с FileAttachment через прикладную логику, а не через Prisma @relation. FilesModule уже экспортирует FilesService — повторный экспорт не нужен.
+What I learned: ContactMessage.attachmentId связан с FileAttachment через прикладную логику, а не через Prisma @relation. FilesModule уже экспортирует FilesService — повторный экспорт не нужен
 
 Model used: big-pickle
 
@@ -444,7 +444,7 @@ Result: Создан модуль modules/clients: clients.module.ts, clients.co
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: AdminJwtAuthGuard лежит в common/guards/, а не в admin-auth/. Проверка просрочек запускается при каждом запросе к clients — просто и достаточно для MVP.
+What I learned: AdminJwtAuthGuard лежит в common/guards/, а не в admin-auth/. Проверка просрочек запускается при каждом запросе к clients — просто и достаточно для MVP
 
 Model used: big-pickle
 
@@ -462,7 +462,7 @@ Result: Созданы 3 файла в frontend/src/shared/api/: api-client.ts (
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Токен хранится в модульной переменной — реальное хранение (localStorage/cookie) будет в Request 42. Типы DTO берутся из Prisma schema, но на фронте описанные как интерфейсы, а не импортируемые из бэкенда.
+What I learned: Токен хранится в модульной переменной — реальное хранение (localStorage/cookie) будет в Request 42. Типы DTO берутся из Prisma schema, но на фронте описанные как интерфейсы, а не импортируемые из бэкенда
 
 Model used: big-pickle
 
@@ -480,7 +480,7 @@ Result: Созданы 10 файлов в frontend/src/shared/ui/: button.tsx (f
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Все компоненты — client components (forwardRef с React 19). StatusBadge с предустановленными цветами и лейблами на русском для удобства. EmptyState включает встроенное loading-состояние со Spinner.
+What I learned: Все компоненты — client components (forwardRef с React 19). StatusBadge с предустановленными цветами и лейблами на русском для удобства. EmptyState включает встроенное loading-состояние со Spinner
 
 Model used: big-pickle
 
@@ -498,7 +498,7 @@ Result: Созданы widgets/header/header.tsx (client component, sticky, на
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Header — client component (useState для мобильного меню). Footer — server component (статический контент). Ссылки в футере ведут на страницы, которые будут созданы позже (Request 35-39). Footer-заготовка упрощённая — полные реквизиты будут в Request 34.
+What I learned: Header — client component (useState для мобильного меню). Footer — server component (статический контент). Ссылки в футере ведут на страницы, которые будут созданы позже (Request 35-39). Footer-заготовка упрощённая — полные реквизиты будут в Request 34
 
 Model used: big-pickle
 
@@ -524,7 +524,7 @@ Result: Создан widgets/hero/hero.tsx (server component, gradient bg-indigo
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Hero — server component (нет хуков/состояния). Ссылка CTA ведёт на /apply — форма заявки будет создана в Request 40-41.
+What I learned: Hero — server component (нет хуков/состояния). Ссылка CTA ведёт на /apply — форма заявки будет создана в Request 40-41
 
 Model used: big-pickle
 
@@ -542,7 +542,7 @@ Result: Установлены react-hook-form, valibot (v1.4.2), @hookform/reso
 
 Used as-is / edited manually / rejected: edited manually
 
-What I learned: Valibot v1.4 убрал namespace export `v` — нужно импортировать функции поимённо (object, pipe, number, minValue, maxValue). @hookform/resolvers нужен отдельный пакет для интеграции с valibot.
+What I learned: Valibot v1.4 убрал namespace export `v` — нужно импортировать функции поимённо (object, pipe, number, minValue, maxValue). @hookform/resolvers нужен отдельный пакет для интеграции с valibot
 
 Model used: big-pickle
 
@@ -560,7 +560,25 @@ Result: Создан widgets/loan-terms/loan-terms.tsx (server component, 4 ка
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Обе секции — server components (статический контент из клиентского текста). Текст взят дословно из 04-fullstack-client-content.md, ничего не сокращено и не добавлено.
+What I learned: Обе секции — server components (статический контент из клиентского текста). Текст взят дословно из 04-fullstack-client-content.md, ничего не сокращено и не добавлено
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 30
+
+Goal: Собрать секции «Как это работает» и «Прозрачные условия» на лендинге
+
+Prompt: 9.4 — «как это работает» (summary) и прозрачные условия
+
+Собери summary «Как всё происходит» (3 шага: регистрация, заявка, получение средств) и секцию «Прозрачные условия» (5 пунктов: без скрытых комиссий, быстрое рассмотрение, безопасность данных, гибкое погашение, улучшение условий со временем) по блокам 5 и 6 клиентского текста.
+
+Result: Создан widgets/how-it-works/how-it-works.tsx (server component, 3 шага в numbered-cards layout: заголовок + вступление + 3 шага с круглыми номерами 01/02/03 в indigo-100) и widgets/how-it-works/index.ts. Создан widgets/transparent-terms/transparent-terms.tsx (server component, заголовок + 5 пунктов с иконками-галочками в зелёных кружках, max-w-3xl centered) и widgets/transparent-terms/index.ts. Обновлён app/page.tsx — добавлены <HowItWorks /> и <TransparentTerms />. Текст взят дословно из клиентского контента. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Обе секции — server components (статический контент). Добавил SVG-иконку галочки для «Прозрачные условия»
 
 Model used: big-pickle
 
