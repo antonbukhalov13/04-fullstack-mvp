@@ -449,3 +449,21 @@ What I learned: AdminJwtAuthGuard лежит в common/guards/, а не в admin
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 24
+
+Goal: Реализовать frontend/shared/api — обёртка над fetch с базовым URL, обработкой ошибок, подстановкой токена и типизированными DTO
+
+Prompt: 8.1 — frontend: shared/api
+
+Реализуй в frontend/src/shared/api обёртку над fetch с базовым URL из NEXT_PUBLIC_API_URL, единообразной обработкой ошибок backend и подстановкой токена авторизации. Типизируй базовые DTO под сущности из Request 6-9.
+
+Result: Созданы 3 файла в frontend/src/shared/api/: api-client.ts (функция apiRequest<T> — fetch с baseURL из NEXT_PUBLIC_API_URL, подстановка Bearer-токена из модульной переменной, обработка ошибок через ApiError с status и body, helpers api.get/post/patch/delete; setAuthToken/getAuthToken для управления токеном), types.ts (TypeScript интерфейсы для User, AdminUser, Application, Loan, PaymentScheduleItem, PaymentRequest, Payment, Notification, FileAttachment, ContactMessage, CalculatorEstimate, ClientSummary, ClientDetail + DTO типы и query-типы), index.ts (barrel export). Добавлен .env.local с NEXT_PUBLIC_API_URL=http://localhost:3001. npm run build проходит успешно.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Токен хранится в модульной переменной — реальное хранение (localStorage/cookie) будет в Request 42. Типы DTO берутся из Prisma schema, но на фронте описанные как интерфейсы, а не импортируемые из бэкенда.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
