@@ -413,3 +413,21 @@ What I learned: @OnEvent декоратор из @nestjs/event-emitter рабо�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 22
+
+Goal: Реализовать modules/contact-messages — публичный POST /contact-messages для формы обратной связи
+
+Prompt: 6.4 — contact-messages module
+
+Реализуй modules/contact-messages: POST /contact-messages (name, email, phone, message, attachmentId опционально) создаёт ContactMessage, привязывает FileAttachment по id, если передан. Публичный эндпоинт, без авторизации. Ответ — подтверждение приёма без бизнес-логики дальше (менеджерского UI для просмотра сообщений в этом MVP не требуется — см. AGENTS.md).
+
+Result: Создан модуль modules/contact-messages: contact-messages.module.ts (импортирует FilesModule), contact-messages.controller.ts (POST /contact-messages, HttpCode 201, без guard — публичный эндпоинт), contact-messages.service.ts (create — создаёт ContactMessage, если передан attachmentId — проверяет существование FileAttachment через FilesService и обновляет ownerType/ownerId), dto/create-contact-message.dto.ts (name, email с @IsEmail, phone, message — обязательные; attachmentId опционально @IsUUID). ContactMessagesModule зарегистрирован в AppModule. npm run build проходит успешно. Проверено через curl: валидный запрос → 201 + объект ContactMessage; невалидные данные → 400 Bad Request с массивом ошибок валидации.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: ContactMessage.attachmentId связан с FileAttachment через прикладную логику, а не через Prisma @relation. FilesModule уже экспортирует FilesService — повторный экспорт не нужен.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
