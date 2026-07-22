@@ -691,3 +691,21 @@ What I learned: CTA «Оставить заявку» ведёт на /apply?typ
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 37
+
+Goal: Собрать полную страницу FAQ
+
+Prompt: 10.3 — страница FAQ (полная)
+
+Собери отдельную страницу с полным текстом раздела «СТРАНИЦА FAQ»: вступление, блок «Для физических лиц» и «Для бизнеса» полностью, заключение. Аккордеон или иная удобная структура вопрос-ответ.
+
+Result: Создан app/faq/page.tsx (client component из-за useState для аккордеона, AccordionItem с toggle, 10 вопросов для физлиц + 8 для бизнеса, заключение). Аккордеон: кнопка с вопросом + SVG chevron, раскрывается/сворачивается по клику. npm run build проходит успешно. Runtime-проверка: страница /faq рендерит h1 + 2 h2-секции.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: FAQ — client component из-за состояния аккордеона (useState). Каждый вопрос — отдельный AccordionItem. Chevron-иконка поворачивается на 180° при открытии.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
