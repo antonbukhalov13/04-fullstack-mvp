@@ -727,3 +727,21 @@ What I learned: Server component. Списки через <ul>/<li>
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 39
+
+Goal: Собрать страницу Cookie Policy
+
+Prompt: 10.5 — Cookie Policy
+
+Собери страницу с полным текстом «Политики использования файлов cookies» (6 пунктов). Ничего не сокращай и не добавляй от себя.
+
+Result: Создан frontend/src/app/cookie-policy/page.tsx (server component, 6 разделов из клиентского контента). npm run build проходит успешно. Runtime-проверка: cookie-policy рендерит 6 h2-разделов.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Cookie Policy берётся из клиентского контента целиком — server component, 6 h2-разделов, без интерактивности
+
+Model used: big-pickle
+
+Instrument used: OpenCode
