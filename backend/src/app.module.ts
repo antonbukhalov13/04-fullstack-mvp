@@ -13,6 +13,7 @@ import { LoansModule } from './modules/loans/loans.module';
 import { PaymentRequestsModule } from './modules/payment-requests/payment-requests.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ContactMessagesModule } from './modules/contact-messages/contact-messages.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     PaymentRequestsModule,
     PaymentsModule,
     NotificationsModule,
+    ContactMessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
