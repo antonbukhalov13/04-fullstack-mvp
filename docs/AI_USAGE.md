@@ -375,3 +375,41 @@ What I learned: Для переменной null нужно указывать �
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 21
+
+Goal: Реализовать notifications module — создание уведомлений через @OnEvent-слушатели
+
+Prompt: 6.3 — notifications module (через события)
+
+Реализуй modules/notifications с сервисом создания уведомлений (userId, type,
+message) и GET /users/me/notifications. Уведомления создаются не прямым вызовом
+из других модулей, а через @OnEvent-слушатели (из @nestjs/event-emitter).
+Подпишись на события из Request 15.5–20:
+
+| Событие | Текст уведомления |
+|---|---|
+| `application.status.changed` → approved | «Заявка одобрена» |
+| `application.status.changed` → rejected | «Заявка отклонена» |
+| `loan.created` | «Займ ожидает подписания» |
+| `loan.signed` | «Займ подписан и активирован» |
+| `payment-request.created` | «Заявка на оплату создана» |
+| `payment-request.status.changed` → approved | «Платёж подтверждён» |
+| `payment-request.status.changed` → rejected | «Платёж отклонён» |
+| `payment.recorded` | «Платёж зафиксирован» |
+| `payment.overdue` | «Просрочка платежа» |
+| `loan.closed` | «Займ закрыт» |
+
+Остальные события (schedule.generated, application.created,
+payment-request.status.changed для других статусов) — создавать уведомления по
+усмотрению, если несут смысловую нагрузку для пользователя.
+
+Result: Создан модуль modules/notifications: notifications.module.ts, notifications.controller.ts (GET /users/me/notifications под JwtAuthGuard), notifications.service.ts (create, findByUser, @OnEvent-слушатели для application.status.changed, loan.created, loan.signed, payment-request.created, payment-request.status.changed, payment.recorded, payment.overdue, loan.closed). NotificationsModule добавлен в AppModule. npm run build проходит успешно. Проверено через curl: полный flow (создание заявки → одобрение → подписание займа) создаёт 3 уведомления: "Заявка одобрена", "Займ ожидает подписания", "Займ подписан и активирован".
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: @OnEvent декоратор из @nestjs/event-emitter работает на методах сервиса. Слушатели создаются отдельно для каждого имени события
+
+Model used: big-pickle
+
+Instrument used: OpenCode
