@@ -997,3 +997,21 @@ What I learned: useSearchParams() требует Suspense boundary в Next.js 16
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 54
+
+Goal: Собрать раздел «Клиенты» в админ-панели — список с поиском + карточка клиента (контакты, заявки, займы, платежи)
+
+Prompt: 15.2 — админ-панель: раздел «Клиенты»
+
+Собери список клиентов (имя, телефон, количество займов, текущий статус) с поиском/фильтром, карточку клиента (контакты, история заявок, активные займы, история платежей) по GET /clients из Request 21.
+
+Result: Backend не изменён — используются существующие GET /clients (search param, AdminJwtAuthGuard + RolesGuard), GET /clients/:id (полная информация: applications, loans с scheduleItems + payments, paymentRequests). На frontend созданы: `features/admin-clients/admin-clients-list.tsx` (client component, fetch `/clients?search=` с `admin: true`, таблица — Имя, Телефон, Заявок, Активных, Общая сумма, Регистрация, строки кликабельные, input поиска + кнопка «Найти», loading/error/empty), `features/admin-clients/admin-client-detail.tsx` (client component, fetch `/clients/:id` с `admin: true`, 4 секции: контакты (имя, телефон, дата регистрации, кол-во займов, активных, выплачено), заявки (тип, сумма, срок, дата, статус), активные займы (сумма, следующий платёж), заявки на оплату (сумма, reference, дата, статус)), `features/admin-clients/index.ts` (barrel), обновлены `admin/(dashboard)/clients/page.tsx` и `clients/[id]/page.tsx` (dynamic route). npm run build проходит успешно (26 маршрутов). Runtime-проверка: /admin/clients рендерит список с поиском, /admin/clients/test-id рендерит карточку.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: findOne в clients.service включает applications, loans (с scheduleItems + payments), paymentRequests, notifications — полная информация для карточки клиента
+
+Model used: big-pickle
+
+Instrument used: OpenCode
