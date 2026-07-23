@@ -13,6 +13,7 @@ import {
   type InferOutput,
 } from 'valibot';
 import { valibotResolver } from '@hookform/resolvers/valibot';
+import { api, ApiError } from '@/shared/api';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/button';
@@ -50,6 +51,7 @@ export function ApplyForm() {
   const [applicantType, setApplicantType] = useState<ApplicantType>('individual');
   const [submitState, setSubmitState] = useState<SubmitState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successId, setSuccessId] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -117,11 +119,41 @@ export function ApplyForm() {
       setSubmitState('error'); return;
     }
 
-    // Mock: реальная отправка заявки будет в следующем шаге
-    await new Promise((r) => setTimeout(r, 800));
-    setSubmitState('success');
-    reset();
-    setUploadedFiles([]);
+    try {
+      const payload: Record<string, unknown> = {
+        applicantType,
+        phone: data.phone,
+        amount: data.amount,
+        termDays: data.termDays,
+        fileAttachmentIds: uploadedFiles.map((f) => f.id),
+      };
+
+      if (applicantType === 'individual') {
+        payload.firstName = data.firstName;
+        payload.lastName = data.lastName;
+        if (data.email) payload.email = data.email;
+      } else {
+        payload.companyName = data.companyName;
+        payload.registrationNumber = data.registrationNumber;
+        if (data.companyEmail) payload.companyEmail = data.companyEmail;
+        if (data.companyPhone) payload.companyPhone = data.companyPhone;
+      }
+
+      const res = await api.post<{ id: string }>('/applications', payload);
+      setSuccessId(res.id);
+      setSubmitState('success');
+      reset();
+      setUploadedFiles([]);
+    } catch (err) {
+      setSubmitState('error');
+      if (err instanceof ApiError) {
+        const body = err.body as { message?: string | string[] };
+        const msg = Array.isArray(body.message) ? body.message[0] : body.message;
+        setErrorMessage(msg ?? 'Произошла ошибка при отправке заявки');
+      } else {
+        setErrorMessage(err instanceof Error ? err.message : 'Произошла ошибка');
+      }
+    }
   };
 
   if (submitState === 'success') {
@@ -130,8 +162,13 @@ export function ApplyForm() {
         <p className="text-green-800 font-medium">
           Заявка отправлена. Мы свяжемся с вами в ближайшее время.
         </p>
+        {successId && (
+          <p className="mt-2 text-sm text-green-700">
+            Номер заявки: <span className="font-mono">{successId}</span>
+          </p>
+        )}
         <button
-          onClick={() => setSubmitState('idle')}
+          onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
           className="mt-4 text-sm font-semibold text-green-700 hover:text-green-600"
         >
           Подать ещё одну заявку
