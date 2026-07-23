@@ -835,3 +835,21 @@ What I learned: pathname из usePathname() может быть null — доб�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 45
+
+Goal: Собрать раздел «Заявки» в личном кабинете — список заявок текущего пользователя с суммой, датой, статусом, состояниями loading/empty/error
+
+Prompt: 13.1 — личный кабинет: раздел «Заявки»
+
+Собери список заявок текущего пользователя (сумма, дата подачи, статус — «На рассмотрении» / «Одобрена» / «Отклонена»), состояния loading/empty/error.
+
+Result: На backend добавлен `GET /applications/me` — `JwtAuthGuard`, `applicationsService.findByUserId()` (select: id, applicantType, amount, termDays, status, firstName, lastName, companyName, createdAt, orderBy desc). На frontend созданы: `features/my-applications/applications-list.tsx` (client component, fetch `/applications/me` через `apiRequest`, таблица с 5 колонками (Заявка, Сумма, Срок, Дата, Статус), состояния loading (Spinner), error (красный блок с сообщением), empty («У вас пока нет заявок»)), `features/my-applications/index.ts` (barrel), `app/dashboard/applications/page.tsx` (обновлён — h1 + ApplicationsList). npm run build проходит успешно (17 маршрутов). Runtime-проверка: /dashboard/applications рендерит h1 «Заявки» + клиентский компонент applications-list.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: fetchApi не существует — правильное имя `apiRequest`. apiErr.body?.message не компилируется (body: unknown) — нужен каст через instanceof + проверка типа
+
+Model used: big-pickle
+
+Instrument used: OpenCode
