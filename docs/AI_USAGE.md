@@ -979,3 +979,21 @@ What I learned: Route groups `(auth)` и `(dashboard)` позволяют раз
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 53
+
+Goal: Собрать раздел «Заявки» в админ-панели — список с поиском/фильтром + карточка заявки с действиями (статус, комментарий)
+
+Prompt: 15.1 — админ-панель: раздел «Заявки»
+
+Собери список заявок (имя клиента, телефон, сумма, дата подачи, статус) с поиском/фильтром по статусу, карточку заявки (данные клиента, параметры займа, статус, действия: изменить статус, одобрить, отклонить, оставить комментарий).
+
+Result: Backend не изменён — используются существующие GET /applications (AdminJwtAuthGuard + RolesGuard, search/status params), GET /applications/:id, PATCH /applications/:id/status (status + comment), POST /applications/:id/comments. На frontend созданы: `features/admin-applications/admin-applications-list.tsx` (client component, fetch `/applications?search=&status=` с флагом `admin: true`, таблица — Клиент, Телефон, Сумма, Срок, Дата, Статус, строки кликабельные → /admin/applications/:id, input поиска + select фильтра + кнопка «Найти», loading/error/empty), `features/admin-applications/admin-application-detail.tsx` (client component, fetch `/applications/:id` с `admin: true`, карточка — тип, сумма, срок, телефон, дата, имя/email для физлица, компания/рег.номер/email для бизнеса, текущий комментарий, действия: select статуса (new→in_progress, in_progress→approved/rejected) + кнопка «Применить», textarea + кнопка «Оставить комментарий», success/error сообщения), `features/admin-applications/index.ts` (barrel), обновлены `admin/(dashboard)/applications/page.tsx` и `applications/[id]/page.tsx` (dynamic route). npm run build проходит успешно (25 маршрутов). Runtime-проверка: /admin/applications рендерит список с поиском, /admin/applications/test-id рендерит карточку.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: useSearchParams() требует Suspense boundary в Next.js 16 — убран, фильтр через client state. Флаг `admin: true` в apiRequest подставляет adminAuthToken вместо userToken
+
+Model used: big-pickle
+
+Instrument used: OpenCode
