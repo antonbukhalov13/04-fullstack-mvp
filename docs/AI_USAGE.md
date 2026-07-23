@@ -781,3 +781,21 @@ What I learned: valibot v1.x не поддерживает union schemas — е�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 42
+
+Goal: Доработать форму заявки — интеграция с backend через POST /applications, состояния idle/submitting/success/error, отображение id заявки
+
+Prompt: 11.2 — форма заявки: интеграция с backend
+
+Доработай форму: состояния idle/submitting/success/error, отправка на POST /applications (для business — вместе с id уже загруженных документов из Request 39), при успехе — id заявки и понятное сообщение, при ошибке backend — читаемое сообщение без технических деталей ответа сервера.
+
+Result: Обновлён apply-form.tsx: заменена mock-отправка на api.post('/applications', payload), добавлен импорт api и ApiError, добавлено состояние successId для отображения номера заявки, обработка ошибок ApiError (извлечение message из body, массив ошибок — берётся первая). Build проходит успешно. Runtime-проверка: /apply рендерит форму с кнопкой «Отправить заявку».
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: ApiError содержит status и body — message из backend приходит в body.message. При ошибке валидации message — массив, берём первый элемент
+
+Model used: big-pickle
+
+Instrument used: OpenCode
