@@ -889,3 +889,21 @@ What I learned: Select в Prisma должен включать userId для п�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 48
+
+Goal: Доработать карточку займа для статуса pending_signature — подписание через OTP (запрос кода, ввод, confirm-sign, обновление статуса)
+
+Prompt: 13.4 — подписание займа через OTP
+
+Доработай карточку для статуса pending_signature: кнопка запроса кода подписания, ввод кода, вызов confirm-sign, обновление статуса и подтверждение после успеха.
+
+Result: Обновлён `features/loan-detail/loan-detail-card.tsx` — добавлен signing flow: 3 состояния (`idle` → `otp_sent` → `done`). При `pending_signature` отображается блок «Подписание договора» с кнопкой «Запросить код подписания» → POST `/loans/:id/request-sign-otp` → отображение mockOtp + input для 6-значного кода → POST `/loans/:id/confirm-sign` → обновление статуса, зелёное подтверждение. Ошибки отображаются в красном блоке. Кнопки с индикацией загрузки (Spinner). npm run build проходит успешно (18 маршрутов). Runtime-проверка: /dashboard/loans/test-id рендерит loan-detail-card (секция подписания условная — видна только при pending_signature).
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Секция подписания скрыта при других статусах — видна только при pending_signature. fetchLoan вынесен в отдельную функцию для повторного использования после confirm-sign
+
+Model used: big-pickle
+
+Instrument used: OpenCode
