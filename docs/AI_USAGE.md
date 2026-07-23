@@ -925,3 +925,21 @@ What I learned: paymentRequests добавлены в findOneForUser select дл
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 50
+
+Goal: Собрать раздел «Уведомления» (список, отметка прочитанным) и привести все разделы личного кабинета к единому стандарту loading/empty/error
+
+Prompt: 13.6 — уведомления и состояния
+
+Собери раздел «Уведомления» (список, отметка прочитанным при просмотре) и приведи все разделы личного кабинета к единому стандарту loading/empty/error (переиспользуй shared/ui из Request 23).
+
+Result: На backend добавлен `PATCH /users/me/notifications/:id/read` — `JwtAuthGuard`, `notificationsService.markAsRead()` (проверка ownership, установка isRead=true). На frontend созданы: `features/my-notifications/notifications-list.tsx` (client component, fetch `/users/me/notifications`, список с иконками по типу (✓/✕/●/○), цветовые индикаторы (green=approved/signed, red=rejected/overdue, indigo=другое), unread badge (точка), optimistic mark-asRead при клике, состояния loading/error/empty), `features/my-notifications/index.ts` (barrel), `app/dashboard/notifications/page.tsx` (обновлён — h1 + NotificationsList). Все три раздела кабинета (applications, loans, notifications) следуют единому паттерну: loading → Spinner, error → красный блок, empty → текст. npm run build проходит успешно (18 маршрутов). Runtime-проверка: /dashboard/notifications рендерит h1 + notifications-list.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Optimistic UI для markAsRead — сначала обновляем статус локально, потом PATCH. При ошибке откат. Все три списка кабинета теперь следуют единому паттерну loading/error/empty
+
+Model used: big-pickle
+
+Instrument used: OpenCode
