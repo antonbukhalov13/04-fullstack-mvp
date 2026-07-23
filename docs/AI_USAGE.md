@@ -1033,3 +1033,21 @@ What I learned: Model Payment использует `date` вместо `paidAt` 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 56
+
+Goal: Собрать раздел «Платежи» в админ-панели — заявки на оплату с подтверждением/отклонением, ручная фиксация платежей, просмотр просроченных платежей
+
+Prompt: 15.4 — админ-панель: раздел «Платежи»
+
+Собери раздел с заявками на оплату (сумма, дата, статус, реквизиты/reference, связанная заявка) и действиями: проверка, подтверждение/отклонение заявки на оплату, ручная фиксация поступившего платежа, отметка просрочки.
+
+Result: Бэкенд: добавлен `GET /loans/overdue` (findAllOverdueItemsAdmin — возвращает все PaymentScheduleItem со status='overdue' с информацией о loan и user). Существующие эндпоинты: `GET /payment-requests` (фильтр по статусу), `PATCH /payment-requests/:id` (approve/reject + авто-создание Payment + пересчёт графика), `POST /loans/:id/payments` (ручная фиксация платежа + пересчёт графика + авто-закрытие при полном погашении), `PATCH /loans/:id/schedule/:itemId` (отметка статуса). Frontend: `features/admin-payments/payment-requests-list.tsx` (таблица: Клиент, Сумма, Reference, Займ, Дата, Статус, Действие; select-фильтр по статусу; кнопки «Подтвердить»/«Отклонить» для pending заявок), `features/admin-payments/manual-payment-form.tsx` (форма: ID займа + сумма, POST /loans/:id/payments), `features/admin-payments/overdue-schedule-list.tsx` (таблица: Клиент, Займ-ссылка, Сумма платежа, Дата просрочки, «Снять просрочку» → PATCH status='pending'). Страница `admin/(dashboard)/payments/page.tsx` — tabbed layout (Заявки на оплату / Ручная фиксация / Просрочки). npm run build OK (28 маршрутов). Runtime-проверка: /admin/payments рендерит страницу со всеми тремя табами.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: GET /loans/overdue добавлен в loans.controller перед GET /loans/:id — NestJS разрешает статические маршруты до параметрических, но порядок важен
+
+Model used: big-pickle
+
+Instrument used: OpenCode
