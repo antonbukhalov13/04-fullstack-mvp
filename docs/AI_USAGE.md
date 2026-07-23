@@ -943,3 +943,21 @@ What I learned: Optimistic UI для markAsRead — сначала обновл�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 51
+
+Goal: Собрать страницу входа в админ-панель — логин/пароль, POST /admin-auth/login, сохранение токена с ролью, редирект
+
+Prompt: 14.1 — вход в админ-панель
+
+Собери страницу входа (логин/пароль), вызов POST /admin-auth/login, сохранение токена с ролью, редирект в панель при успехе, понятная ошибка при неверных данных.
+
+Result: На frontend добавлен `admin` параметр в `RequestOptions` и `setAdminAuthToken/getAdminAuthToken` в api-client (отдельное хранилище от пользовательского токена). Созданы: `features/admin-login/admin-login-form.tsx` (client component, react-hook-form-style state, POST `/admin-auth/login`, сохранение accessToken + admin в localStorage + setAdminAuthToken, редирект на `/admin/applications`, error при неверных данных), `features/admin-login/index.ts` (barrel), `app/admin/login/page.tsx` (centered card, h1 «Админ-панель», подсказка «admin / admin123»). npm run build проходит успешно (19 маршрутов). Runtime-проверка: /admin/login рендерит форму входа + test credentials.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Admin token хранится отдельно от user token (setAdminAuthToken). В apiRequest добавлен флаг `admin` для использования admin-токена вместо user-токена
+
+Model used: big-pickle
+
+Instrument used: OpenCode
