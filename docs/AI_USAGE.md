@@ -799,3 +799,21 @@ What I learned: ApiError содержит status и body — message из backen
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 43
+
+Goal: Собрать UI входа пользователя — two-step OTP flow (телефон → код), сохранение токена, редирект в кабинет
+
+Prompt: 12.1 — OTP вход пользователя
+
+Собери UI входа: номер телефона → запрос кода (POST /auth/request-otp) → ввод кода → подтверждение (POST /auth/verify-otp). Сохрани токен в сессии клиента (httpOnly cookie либо безопасный клиентский стейт — выбери подход и зафиксируй в AI_USAGE.md). Редирект в личный кабинет при успехе.
+
+Result: Созданы: features/login-otp/login-form.tsx (client component, two-step: phone → code, react-hook-form + valibot, POST /auth/request-otp → отображение mockOtp, POST /auth/verify-otp → сохранение токена в localStorage + setAuthToken, router.push('/dashboard')), features/login-otp/index.ts (barrel), app/login/page.tsx (server component, metadata). Токен хранится в localStorage (token + user), setAuthToken для api-client. Build проходит успешно (13 маршрутов). Runtime-проверка: /login рендерит h1 + phone input + «Получить код».
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Mock-код отображается в UI для удобства тестирования
+
+Model used: big-pickle
+
+Instrument used: OpenCode
