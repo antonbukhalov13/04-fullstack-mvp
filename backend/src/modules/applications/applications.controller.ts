@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   UseGuards,
+  Req,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { QueryApplicationsDto } from './dto/query-applications.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { AdminJwtAuthGuard } from '../../common/guards/admin-jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 
@@ -27,6 +29,12 @@ export class ApplicationsController {
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateApplicationDto) {
     return this.applicationsService.create(dto);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async findMine(@Req() req: any) {
+    return this.applicationsService.findByUserId(req.user.id);
   }
 
   @Get()

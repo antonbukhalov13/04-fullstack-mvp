@@ -93,6 +93,24 @@ export class ApplicationsService {
     };
   }
 
+  async findByUserId(userId: string) {
+    return this.prisma.application.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        applicantType: true,
+        amount: true,
+        termDays: true,
+        status: true,
+        firstName: true,
+        lastName: true,
+        companyName: true,
+        createdAt: true,
+      },
+    });
+  }
+
   async findAll(query: QueryApplicationsDto) {
     const where: any = {};
 
