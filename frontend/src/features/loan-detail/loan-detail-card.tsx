@@ -13,6 +13,14 @@ interface ScheduleItem {
   status: string;
 }
 
+interface PaymentRequest {
+  id: string;
+  amount: number;
+  reference: string;
+  status: string;
+  createdAt: string;
+}
+
 interface LoanDetail {
   id: string;
   amount: number;
@@ -24,6 +32,7 @@ interface LoanDetail {
   totalRepay: number;
   schedule: ScheduleItem[];
   nextPayment: { amount: number; dueDate: string } | null;
+  paymentRequests: PaymentRequest[];
 }
 
 function fmt(n: number) {
@@ -56,6 +65,16 @@ export function LoanDetailCard() {
   const [otpCode, setOtpCode] = useState('');
   const [signError, setSignError] = useState<string | null>(null);
   const [signLoading, setSignLoading] = useState(false);
+
+  // Contract viewer
+  const [showContract, setShowContract] = useState(false);
+
+  // Payment request form
+  const [payAmount, setPayAmount] = useState('');
+  const [payRef, setPayRef] = useState('');
+  const [payLoading, setPayLoading] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
+  const [paySuccess, setPaySuccess] = useState(false);
 
   const fetchLoan = async () => {
     const data = await apiRequest<LoanDetail>(`/loans/${loanId}`);
@@ -135,6 +154,34 @@ export function LoanDetailCard() {
       }
     } finally {
       setSignLoading(false);
+    }
+  };
+
+  const submitPaymentRequest = async () => {
+    const amount = parseFloat(payAmount);
+    if (!amount || amount <= 0 || !payRef.trim()) return;
+    setPayLoading(true);
+    setPayError(null);
+    setPaySuccess(false);
+    try {
+      await apiRequest(`/loans/${loanId}/payment-requests`, {
+        method: 'POST',
+        body: { amount, reference: payRef.trim() },
+      });
+      setPaySuccess(true);
+      setPayAmount('');
+      setPayRef('');
+      await fetchLoan();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const body = err.body as Record<string, unknown>;
+        const msg = Array.isArray(body?.message) ? body.message[0] : typeof body?.message === 'string' ? body.message : null;
+        setPayError(msg ?? 'Не удалось создать заявку');
+      } else {
+        setPayError('Не удалось создать заявку');
+      }
+    } finally {
+      setPayLoading(false);
     }
   };
 
@@ -268,6 +315,154 @@ export function LoanDetailCard() {
           </div>
         )}
       </div>
+
+      {/* Contract viewer */}
+      {loan.status !== 'pending_signature' && (
+        <div className="rounded-lg border border-slate-200 bg-white p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Договор</h3>
+          <p className="text-sm text-slate-600 mb-3">
+            Ознакомьтесь с условиями договора займа.
+          </p>
+          <button
+            onClick={() => setShowContract(true)}
+            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            Просмотреть договор
+          </button>
+        </div>
+      )}
+
+      {/* Contract modal */}
+      {showContract && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="relative max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
+            <button
+              onClick={() => setShowContract(false)}
+              className="absolute top-3 right-3 text-slate-400 hover:text-slate-600"
+            >
+              ✕
+            </button>
+            <div className="border-b border-slate-200 pb-4 mb-4">
+              <p className="text-xs text-amber-600 font-medium mb-1">
+                ⚠ Образец документа — не является юридически обязывающим
+              </p>
+              <h2 className="text-xl font-bold text-slate-900">Договор займа</h2>
+            </div>
+            <div className="space-y-4 text-sm text-slate-700 leading-relaxed">
+              <p><strong>1. Стороны</strong></p>
+              <p>Заимодавец: LumenBridge Finance Ltd (далее — «Компания»).</p>
+              <p>Заёмщик: физическое лицо, идентифицированное по номеру телефона, указанному при подаче заявки.</p>
+
+              <p><strong>2. Предмет договора</strong></p>
+              <p>
+                Компация предоставляет Заёмщику денежные средства в размере{' '}
+                <strong>{fmt(loan.amount)}</strong> EUR сроком на <strong>{loan.termDays} календарных дней</strong>{' '}
+                с даты подписания настоящего договора.
+              </p>
+
+              <p><strong>3. Процентная ставка</strong></p>
+              <p>
+                Процентная ставка составляет <strong>{dailyRatePercent(loan.dailyRate)} в день</strong> от
+                суммы основного долга. Общая сумма к возврату:{' '}
+                <strong>{fmt(loan.totalRepay)} EUR</strong>.
+              </p>
+
+              <p><strong>4. Порядок возврата</strong></p>
+              <p>
+                Возврат осуществляется ежедневными аннуитетными платежами в соответствии
+                с графиком платежей, являющимся приложением к настоящему договору.
+                Каждый платёж включает сумму основного долга и проценты.
+              </p>
+
+              <p><strong>5. Просрочка</strong></p>
+              <p>
+                В случае просрочки платежа Компания вправе начислить штраф в размере,
+                предусмотренном текущими тарифами. Заёмщик уведомлён о последствиях
+                просрочки при подписании договора.
+              </p>
+
+              <p><strong>6. Заключительные положения</strong></p>
+              <p>
+                Настоящий договор вступает в силу с момента подписания и действует
+                до полного возврата суммы займа и процентов. Споры разрешаются
+                в соответствии с применимым законодательством.
+              </p>
+
+              <div className="mt-6 rounded bg-slate-50 p-3 text-xs text-slate-500">
+                <p>Документ сформирован автоматически. Подпись фиксируется электронным образом.</p>
+                <p className="mt-1">Заём №{loan.id.slice(0, 8)} · {fmtDate(loan.signedAt ?? loan.createdAt)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment request form */}
+      {loan.status === 'active' && (
+        <div className="rounded-lg border border-slate-200 bg-white p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Заявка на оплату</h3>
+
+          {loan.paymentRequests.length > 0 && (
+            <div className="mb-4">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">
+                Текущие заявки
+              </p>
+              <div className="space-y-2">
+                {loan.paymentRequests.map((pr) => (
+                  <div
+                    key={pr.id}
+                    className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
+                  >
+                    <span className="text-slate-700">
+                      {fmt(pr.amount)} · {pr.reference}
+                    </span>
+                    <StatusBadge status={pr.status} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Сумма, €</label>
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={payAmount}
+                onChange={(e) => setPayAmount(e.target.value)}
+                placeholder="0.00"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-slate-700 mb-1">Реквизиты / Reference</label>
+              <input
+                type="text"
+                value={payRef}
+                onChange={(e) => setPayRef(e.target.value)}
+                placeholder="Номер транзакции или комментарий"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+              />
+            </div>
+          </div>
+
+          {payError && <p className="mt-2 text-sm text-red-600">{payError}</p>}
+          {paySuccess && (
+            <p className="mt-2 text-sm text-green-600">Заявка на оплату создана.</p>
+          )}
+
+          <button
+            onClick={submitPaymentRequest}
+            disabled={!payAmount || parseFloat(payAmount) <= 0 || !payRef.trim() || payLoading}
+            className="mt-3 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          >
+            {payLoading ? <Spinner size="sm" className="mr-2" /> : null}
+            Отправить заявку
+          </button>
+        </div>
+      )}
 
       {/* График платежей */}
       <div>

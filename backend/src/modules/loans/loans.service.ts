@@ -78,6 +78,10 @@ export class LoansService {
           select: { id: true, dueDate: true, amount: true, status: true },
           orderBy: { dueDate: 'asc' },
         },
+        paymentRequests: {
+          select: { id: true, amount: true, reference: true, status: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+        },
       },
     });
 
@@ -110,6 +114,13 @@ export class LoansService {
       nextPayment: nextPending
         ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
         : null,
+      paymentRequests: loan.paymentRequests.map((pr) => ({
+        id: pr.id,
+        amount: pr.amount,
+        reference: pr.reference,
+        status: pr.status,
+        createdAt: pr.createdAt,
+      })),
     };
   }
 
