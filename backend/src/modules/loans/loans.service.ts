@@ -65,6 +65,40 @@ export class LoansService {
     });
   }
 
+  async findAllOverdueItemsAdmin() {
+    const items = await this.prisma.paymentScheduleItem.findMany({
+      where: { status: 'overdue' },
+      orderBy: { dueDate: 'asc' },
+      select: {
+        id: true,
+        dueDate: true,
+        amount: true,
+        status: true,
+        loan: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            user: {
+              select: { id: true, name: true, phone: true },
+            },
+          },
+        },
+      },
+    });
+
+    return items.map((item) => ({
+      id: item.id,
+      dueDate: item.dueDate,
+      amount: item.amount,
+      status: item.status,
+      loanId: item.loan.id,
+      loanAmount: item.loan.amount,
+      loanStatus: item.loan.status,
+      user: item.loan.user,
+    }));
+  }
+
   async findAllAdmin(query: QueryAdminLoansDto) {
     const where: any = {};
 

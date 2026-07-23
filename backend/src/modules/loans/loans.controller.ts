@@ -33,6 +33,13 @@ export class LoansController {
     private readonly paymentRequestsService: PaymentRequestsService,
   ) {}
 
+  @Get('overdue')
+  @UseGuards(AdminJwtAuthGuard, RolesGuard)
+  @Roles('admin', 'operator')
+  async findOverdueItemsAdmin() {
+    return this.loansService.findAllOverdueItemsAdmin();
+  }
+
   @Get()
   @UseGuards(AdminJwtAuthGuard, RolesGuard)
   @Roles('admin', 'operator')
