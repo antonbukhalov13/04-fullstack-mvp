@@ -871,3 +871,21 @@ What I learned: cheduleItems для nextPayment вычисляются из Paym
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 47
+
+Goal: Собрать карточку займа — сумма, ставка, срок, общая сумма к возврату, график платежей (дата, сумма, статус), следующий платёж
+
+Prompt: 13.3 — карточка займа и график платежей
+
+Собери карточку займа: сумма, ставка, срок, общая сумма к возврату, график платежей (список элементов с датой, суммой, статусом), дата следующего платежа. GET /loans/:id с проверкой владения займом.
+
+Result: На backend добавлен `GET /loans/:id` — `JwtAuthGuard`, `loansService.findOneForUser()` (check userId ownership, select loan + scheduleItems, вычисляет totalRepay, nextPayment). На frontend созданы: `features/loan-detail/loan-detail-card.tsx` (client component, fetch `/loans/:id`, карточка — 4 метрики (сумма, ставка, срок, к возврату), подписи (подписан, следующий платёж), таблица графика платежей (№, дата, сумма, статус), ссылка «← Мои займы», состояния loading/error), `features/loan-detail/index.ts` (barrel), `app/dashboard/loans/[id]/page.tsx` (dynamic route). Строки таблицы в loans-list кликабельные → переход на `/dashboard/loans/:id`. npm run build проходит успешно (18 маршрутов, [id] = dynamic). Runtime-проверка: /dashboard/loans/test-id рендерит loan-detail-card.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Select в Prisma должен включать userId для проверки ownership
+
+Model used: big-pickle
+
+Instrument used: OpenCode
