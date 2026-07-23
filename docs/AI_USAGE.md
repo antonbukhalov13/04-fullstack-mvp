@@ -1051,3 +1051,21 @@ What I learned: GET /loans/overdue добавлен в loans.controller пере
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 57
+
+Goal: Собрать раздел «Уведомления» в админ-панели — список системных уведомлений (новые заявки, просрочки, изменения статусов) с loading/empty/error
+
+Prompt: 15.5 — админ-панель: раздел «Уведомления»
+
+Собери раздел системных уведомлений (новые заявки, просрочки, изменения статусов) со списком и состояниями loading/empty.
+
+Result: Бэкенд: создан `AdminNotificationsController` (`admin/notifications`, AdminJwtAuthGuard + RolesGuard) с `GET /admin/notifications` (findAllAdmin — все уведомления с user info) и `PATCH /admin/notifications/:id/read` (markAsReadAdmin). Добавлены методы `findAllAdmin()` и `markAsReadAdmin()` в NotificationsService. Контроллер зарегистрирован в NotificationsModule. Frontend: `features/admin-notifications/admin-notifications-list.tsx` (карточки уведомлений с иконками по типу, цветовыми индикаторами, тегом типа — Заявка/Займ/Платёж/Система, именем и телефоном клиента, optimistic mark-as-read, счётчик непрочитанных, loading/error/empty). Страница `admin/(dashboard)/notifications/page.tsx` обновлена. npm run build OK (28 маршрутов). Runtime-проверка: /admin/notifications рендерит список.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Notifications были user-scoped только (GET /users/me/notifications) — для админки нужен отдельный эндпоинт без фильтрации по userId
+
+Model used: big-pickle
+
+Instrument used: OpenCode
