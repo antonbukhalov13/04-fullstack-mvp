@@ -853,3 +853,21 @@ What I learned: fetchApi не существует — правильное им
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 46
+
+Goal: Собрать раздел «Мои займы» — две таблицы: активные (сумма, дата получения, следующий платёж) и закрытые (сумма, дата получения, дата погашения)
+
+Prompt: 13.2 — личный кабинет: раздел «Мои займы»
+
+Собери раздел с двумя блоками: активные займы (сумма, дата получения, сумма платежа, дата следующего платежа) и закрытые (сумма, дата получения, дата погашения), по GET /users/me/loans (реализуй эндпоинт, если его ещё нет).
+
+Result: На backend добавлен `GET /loans/me` — `JwtAuthGuard`, `loansService.findByUserId()` (возвращает loan + nextPayment из scheduleItems, lastPaymentDate). Endpoint размещён в loans controller (а не users), т.к. модуль уже настроен с JWT auth. На frontend созданы: `features/my-loans/loans-list.tsx` (client component, fetch `/loans/me` через `apiRequest`, две секции — «Активные» (сумма, получена, следующий платёж, статус) и «Закрытые» (сумма, получена, погашён), состояния loading/error/empty), `features/my-loans/index.ts` (barrel), `app/dashboard/loans/page.tsx` (обновлён — h1 + LoansList). npm run build проходит успешно (17 маршрутов). Runtime-проверка: /dashboard/loans рендерит h1 «Мои займы» + клиентский компонент loans-list.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: cheduleItems для nextPayment вычисляются из PaymentScheduleItem (pending = следующий платёж)
+
+Model used: big-pickle
+
+Instrument used: OpenCode
