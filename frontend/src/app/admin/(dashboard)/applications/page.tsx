@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { AdminApplicationsList } from '@/features/admin-applications';
 
 export const metadata: Metadata = {
   title: 'Заявки',
@@ -7,8 +8,8 @@ export const metadata: Metadata = {
 export default function AdminApplicationsPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-4">Заявки</h1>
-      <p className="text-sm text-slate-500">Раздел в разработке</p>
+      <h1 className="text-2xl font-bold text-slate-900 mb-6">Заявки</h1>
+      <AdminApplicationsList />
     </div>
   );
 }
