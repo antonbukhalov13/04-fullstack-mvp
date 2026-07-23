@@ -31,6 +31,11 @@ export class LoansController {
     return this.loansService.findByUserId(user.id);
   }
 
+  @Get(':id')
+  async findOne(@Param('id') id: string, @CurrentUser() user: CurrentUserPayload) {
+    return this.loansService.findOneForUser(id, user.id);
+  }
+
   @Post(':id/request-sign-otp')
   @HttpCode(HttpStatus.OK)
   async requestSignOtp(

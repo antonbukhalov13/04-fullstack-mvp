@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
 
@@ -29,6 +31,7 @@ function fmtDate(iso: string | null) {
 }
 
 export function LoansList() {
+  const router = useRouter();
   const [items, setItems] = useState<LoanItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,7 +111,11 @@ export function LoansList() {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {active.map((l) => (
-                  <tr key={l.id} className="hover:bg-slate-50 transition-colors">
+                  <tr
+                    key={l.id}
+                    className="hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() => router.push(`/dashboard/loans/${l.id}`)}
+                  >
                     <td className="px-4 py-3 font-medium text-slate-900">{fmt(l.amount)}</td>
                     <td className="px-4 py-3 text-slate-700">{fmtDate(l.signedAt)}</td>
                     <td className="px-4 py-3 text-slate-700">
@@ -143,7 +150,11 @@ export function LoansList() {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {closed.map((l) => (
-                  <tr key={l.id} className="hover:bg-slate-50 transition-colors">
+                  <tr
+                    key={l.id}
+                    className="hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() => router.push(`/dashboard/loans/${l.id}`)}
+                  >
                     <td className="px-4 py-3 font-medium text-slate-900">{fmt(l.amount)}</td>
                     <td className="px-4 py-3 text-slate-700">{fmtDate(l.signedAt)}</td>
                     <td className="px-4 py-3 text-slate-700">{fmtDate(l.lastPaymentDate)}</td>

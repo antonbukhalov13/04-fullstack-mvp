@@ -62,6 +62,57 @@ export class LoansService {
     });
   }
 
+  async findOneForUser(loanId: string, userId: string) {
+    const loan = await this.prisma.loan.findUnique({
+      where: { id: loanId },
+      select: {
+        id: true,
+        userId: true,
+        amount: true,
+        termDays: true,
+        dailyRate: true,
+        status: true,
+        signedAt: true,
+        createdAt: true,
+        scheduleItems: {
+          select: { id: true, dueDate: true, amount: true, status: true },
+          orderBy: { dueDate: 'asc' },
+        },
+      },
+    });
+
+    if (!loan) {
+      throw new NotFoundException(`Loan with id ${loanId} not found`);
+    }
+
+    if (loan.userId !== userId) {
+      throw new UnauthorizedException('You can only view your own loans');
+    }
+
+    const totalRepay = loan.scheduleItems.reduce((sum, s) => sum + s.amount, 0);
+    const nextPending = loan.scheduleItems.find((s) => s.status === 'pending');
+
+    return {
+      id: loan.id,
+      amount: loan.amount,
+      termDays: loan.termDays,
+      dailyRate: loan.dailyRate,
+      status: loan.status,
+      signedAt: loan.signedAt,
+      createdAt: loan.createdAt,
+      totalRepay: Math.round(totalRepay * 100) / 100,
+      schedule: loan.scheduleItems.map((s) => ({
+        id: s.id,
+        dueDate: s.dueDate,
+        amount: s.amount,
+        status: s.status,
+      })),
+      nextPayment: nextPending
+        ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
+        : null,
+    };
+  }
+
   async requestSignOtp(loanId: string, userId: string) {
     const loan = await this.prisma.loan.findUnique({
       where: { id: loanId },
