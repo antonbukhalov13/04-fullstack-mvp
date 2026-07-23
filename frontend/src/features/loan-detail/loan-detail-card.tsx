@@ -50,12 +50,23 @@ export function LoanDetailCard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Sign flow
+  const [signState, setSignState] = useState<'idle' | 'otp_sent' | 'confirming' | 'done'>('idle');
+  const [mockOtp, setMockOtp] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState('');
+  const [signError, setSignError] = useState<string | null>(null);
+  const [signLoading, setSignLoading] = useState(false);
+
+  const fetchLoan = async () => {
+    const data = await apiRequest<LoanDetail>(`/loans/${loanId}`);
+    setLoan(data);
+  };
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const data = await apiRequest<LoanDetail>(`/loans/${loanId}`);
-        if (!cancelled) setLoan(data);
+        await fetchLoan();
       } catch (err) {
         if (!cancelled) {
           if (err instanceof ApiError) {
@@ -78,6 +89,54 @@ export function LoanDetailCard() {
       cancelled = true;
     };
   }, [loanId]);
+
+  const requestOtp = async () => {
+    setSignLoading(true);
+    setSignError(null);
+    try {
+      const res = await apiRequest<{ message: string; mockOtp: string }>(
+        `/loans/${loanId}/request-sign-otp`,
+        { method: 'POST' },
+      );
+      setMockOtp(res.mockOtp);
+      setSignState('otp_sent');
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const body = err.body as Record<string, unknown>;
+        const msg = Array.isArray(body?.message) ? body.message[0] : typeof body?.message === 'string' ? body.message : null;
+        setSignError(msg ?? 'Не удалось отправить код');
+      } else {
+        setSignError('Не удалось отправить код');
+      }
+    } finally {
+      setSignLoading(false);
+    }
+  };
+
+  const confirmSign = async () => {
+    if (otpCode.length !== 6) return;
+    setSignLoading(true);
+    setSignError(null);
+    try {
+      await apiRequest(`/loans/${loanId}/confirm-sign`, {
+        method: 'POST',
+        body: { code: otpCode },
+      });
+      setSignState('done');
+      setMockOtp(null);
+      await fetchLoan();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        const body = err.body as Record<string, unknown>;
+        const msg = Array.isArray(body?.message) ? body.message[0] : typeof body?.message === 'string' ? body.message : null;
+        setSignError(msg ?? 'Неверный код');
+      } else {
+        setSignError('Неверный код');
+      }
+    } finally {
+      setSignLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -147,6 +206,67 @@ export function LoanDetailCard() {
             </span>
           )}
         </div>
+
+        {/* Signing section */}
+        {loan.status === 'pending_signature' && signState !== 'done' && (
+          <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4">
+            <h4 className="text-sm font-semibold text-amber-800 mb-2">Подписание договора</h4>
+            <p className="text-sm text-amber-700 mb-3">
+              Для активации займа необходимо подтвердить подписание кодом из SMS.
+            </p>
+
+            {signState === 'idle' && (
+              <button
+                onClick={requestOtp}
+                disabled={signLoading}
+                className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              >
+                {signLoading ? <Spinner size="sm" className="mr-2" /> : null}
+                Запросить код подписания
+              </button>
+            )}
+
+            {signState === 'otp_sent' && (
+              <div className="space-y-3">
+                {mockOtp && (
+                  <p className="text-xs text-amber-600">
+                    Mock-код для тестирования: <span className="font-mono font-bold">{mockOtp}</span>
+                  </p>
+                )}
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Введите 6-значный код"
+                    className="w-44 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  />
+                  <button
+                    onClick={confirmSign}
+                    disabled={otpCode.length !== 6 || signLoading}
+                    className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
+                  >
+                    {signLoading ? <Spinner size="sm" className="mr-2" /> : null}
+                    Подтвердить
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {signError && (
+              <p className="mt-2 text-sm text-red-600">{signError}</p>
+            )}
+          </div>
+        )}
+
+        {signState === 'done' && (
+          <div className="mt-5 rounded-lg border border-green-200 bg-green-50 p-4">
+            <p className="text-sm text-green-700 font-medium">
+              Займ успешно подписан! Статус обновлён.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* График платежей */}
