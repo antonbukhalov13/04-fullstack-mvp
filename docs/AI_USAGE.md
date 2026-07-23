@@ -817,3 +817,21 @@ What I learned: Mock-код отображается в UI для удобств
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 44
+
+Goal: Собрать layout личного кабинета — боковое меню (Заявки, Мои займы, Уведомления), защита маршрутов от неавторизованного доступа
+
+Prompt: 12.2 — layout личного кабинета
+
+Собери layout: боковое меню (Заявки, Мои займы, Уведомления), основная рабочая область, защита маршрутов от неавторизованного доступа (редирект на вход).
+
+Result: Созданы: widgets/dashboard-sidebar/dashboard-sidebar.tsx (client component, проверка токена в localStorage через useEffect, редирект на /login если нет токена, navItems с активным состоянием по pathname), widgets/dashboard-sidebar/index.ts (barrel), app/dashboard/layout.tsx (server component, flex layout с DashboardSidebar + основная область), app/dashboard/page.tsx (redirect → /dashboard/applications), заглушки: app/dashboard/applications/page.tsx, app/dashboard/loans/page.tsx, app/dashboard/notifications/page.tsx. npm run build проходит успешно (17 маршрутов). Runtime-проверка: /dashboard/applications рендерит sidebar с 3 пунктами + h1 «Заявки».
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: pathname из usePathname() может быть null — добавил optional chaining. Sidebar — client component (useEffect + localStorage для проверки авторизации)
+
+Model used: big-pickle
+
+Instrument used: OpenCode
