@@ -7,6 +7,9 @@ import {
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ConfirmSignDto } from './dto/confirm-sign.dto';
+import { QueryAdminLoansDto } from './dto/query-admin-loans.dto';
+import { UpdateLoanStatusDto } from './dto/update-loan-status.dto';
+import { MarkScheduleItemPaidDto } from './dto/mark-schedule-item-paid.dto';
 
 const OTP_EXPIRY_MINUTES = 5;
 const OTP_LENGTH = 6;
@@ -60,6 +63,196 @@ export class LoansService {
         lastPaymentDate: lastPaid?.dueDate ?? null,
       };
     });
+  }
+
+  async findAllAdmin(query: QueryAdminLoansDto) {
+    const where: any = {};
+
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    if (query.search) {
+      where.OR = [
+        { user: { name: { contains: query.search, mode: 'insensitive' } } },
+        { user: { phone: { contains: query.search } } },
+      ];
+    }
+
+    const loans = await this.prisma.loan.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        amount: true,
+        termDays: true,
+        dailyRate: true,
+        status: true,
+        signedAt: true,
+        createdAt: true,
+        user: {
+          select: { id: true, name: true, phone: true },
+        },
+        scheduleItems: {
+          select: { dueDate: true, amount: true, status: true },
+          orderBy: { dueDate: 'asc' },
+        },
+      },
+    });
+
+    return loans.map((loan) => {
+      const totalRepay = loan.scheduleItems.reduce((sum, s) => sum + s.amount, 0);
+      const nextPending = loan.status === 'active'
+        ? loan.scheduleItems.find((s) => s.status === 'pending')
+        : null;
+
+      return {
+        id: loan.id,
+        amount: loan.amount,
+        termDays: loan.termDays,
+        status: loan.status,
+        signedAt: loan.signedAt,
+        createdAt: loan.createdAt,
+        user: loan.user,
+        totalRepay: Math.round(totalRepay * 100) / 100,
+        nextPayment: nextPending
+          ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
+          : null,
+      };
+    });
+  }
+
+  async findOneAdmin(loanId: string) {
+    const loan = await this.prisma.loan.findUnique({
+      where: { id: loanId },
+      select: {
+        id: true,
+        amount: true,
+        termDays: true,
+        dailyRate: true,
+        status: true,
+        signedAt: true,
+        signedIp: true,
+        signedUserAgent: true,
+        createdAt: true,
+        user: {
+          select: { id: true, name: true, phone: true },
+        },
+        scheduleItems: {
+          select: { id: true, dueDate: true, amount: true, status: true },
+          orderBy: { dueDate: 'asc' },
+        },
+        paymentRequests: {
+          select: { id: true, amount: true, reference: true, status: true, createdAt: true },
+          orderBy: { createdAt: 'desc' },
+        },
+        payments: {
+          select: { id: true, amount: true, date: true },
+          orderBy: { date: 'desc' },
+        },
+      },
+    });
+
+    if (!loan) {
+      throw new NotFoundException(`Loan with id ${loanId} not found`);
+    }
+
+    const totalRepay = loan.scheduleItems.reduce((sum, s) => sum + s.amount, 0);
+    const totalPaid = loan.payments.reduce((sum, p) => sum + p.amount, 0);
+    const nextPending = loan.scheduleItems.find((s) => s.status === 'pending');
+
+    return {
+      id: loan.id,
+      amount: loan.amount,
+      termDays: loan.termDays,
+      dailyRate: loan.dailyRate,
+      status: loan.status,
+      signedAt: loan.signedAt,
+      signedIp: loan.signedIp,
+      signedUserAgent: loan.signedUserAgent,
+      createdAt: loan.createdAt,
+      user: loan.user,
+      totalRepay: Math.round(totalRepay * 100) / 100,
+      totalPaid: Math.round(totalPaid * 100) / 100,
+      remaining: Math.round((totalRepay - totalPaid) * 100) / 100,
+      schedule: loan.scheduleItems.map((s) => ({
+        id: s.id,
+        dueDate: s.dueDate,
+        amount: s.amount,
+        status: s.status,
+      })),
+      nextPayment: nextPending
+        ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
+        : null,
+      paymentRequests: loan.paymentRequests.map((pr) => ({
+        id: pr.id,
+        amount: pr.amount,
+        reference: pr.reference,
+        status: pr.status,
+        createdAt: pr.createdAt,
+      })),
+      payments: loan.payments.map((p) => ({
+        id: p.id,
+        amount: p.amount,
+        date: p.date,
+      })),
+    };
+  }
+
+  async updateStatusAdmin(loanId: string, dto: UpdateLoanStatusDto) {
+    const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
+    if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
+
+    const updated = await this.prisma.loan.update({
+      where: { id: loanId },
+      data: { status: dto.status },
+    });
+
+    this.eventEmitter.emit('loan.status.changed', {
+      loanId: updated.id,
+      userId: updated.userId,
+      status: updated.status,
+    });
+
+    return { id: updated.id, status: updated.status };
+  }
+
+  async markScheduleItemPaidAdmin(loanId: string, itemId: string, dto: MarkScheduleItemPaidDto) {
+    const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
+    if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
+
+    const item = await this.prisma.paymentScheduleItem.findFirst({
+      where: { id: itemId, loanId },
+    });
+    if (!item) throw new NotFoundException(`Schedule item with id ${itemId} not found`);
+
+    const updated = await this.prisma.paymentScheduleItem.update({
+      where: { id: itemId },
+      data: { status: dto.status },
+    });
+
+    return { id: updated.id, status: updated.status };
+  }
+
+  async closeLoanAdmin(loanId: string) {
+    const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
+    if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
+
+    if (loan.status === 'closed') {
+      throw new BadRequestException('Loan is already closed');
+    }
+
+    const updated = await this.prisma.loan.update({
+      where: { id: loanId },
+      data: { status: 'closed' },
+    });
+
+    this.eventEmitter.emit('loan.closed', {
+      loanId: updated.id,
+      userId: updated.userId,
+    });
+
+    return { id: updated.id, status: updated.status };
   }
 
   async findOneForUser(loanId: string, userId: string) {
