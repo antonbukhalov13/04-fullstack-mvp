@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
   Param,
@@ -24,6 +25,11 @@ export class LoansController {
     private readonly loansService: LoansService,
     private readonly paymentRequestsService: PaymentRequestsService,
   ) {}
+
+  @Get('me')
+  async findMine(@CurrentUser() user: CurrentUserPayload) {
+    return this.loansService.findByUserId(user.id);
+  }
 
   @Post(':id/request-sign-otp')
   @HttpCode(HttpStatus.OK)

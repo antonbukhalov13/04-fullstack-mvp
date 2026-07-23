@@ -19,6 +19,49 @@ export class LoansService {
     private eventEmitter: EventEmitter2,
   ) {}
 
+  async findByUserId(userId: string) {
+    const loans = await this.prisma.loan.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        amount: true,
+        termDays: true,
+        dailyRate: true,
+        status: true,
+        signedAt: true,
+        createdAt: true,
+        scheduleItems: {
+          select: { dueDate: true, amount: true, status: true },
+          orderBy: { dueDate: 'asc' },
+        },
+      },
+    });
+
+    return loans.map((loan) => {
+      const nextPending = loan.status === 'active'
+        ? loan.scheduleItems.find((s) => s.status === 'pending')
+        : null;
+      const lastPaid = loan.status === 'active'
+        ? [...loan.scheduleItems].reverse().find((s) => s.status === 'paid')
+        : null;
+      const closedDate = loan.status === 'closed' ? loan.signedAt : null;
+
+      return {
+        id: loan.id,
+        amount: loan.amount,
+        termDays: loan.termDays,
+        status: loan.status,
+        signedAt: loan.signedAt,
+        createdAt: loan.createdAt,
+        nextPayment: nextPending
+          ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
+          : null,
+        lastPaymentDate: lastPaid?.dueDate ?? null,
+      };
+    });
+  }
+
   async requestSignOtp(loanId: string, userId: string) {
     const loan = await this.prisma.loan.findUnique({
       where: { id: loanId },
