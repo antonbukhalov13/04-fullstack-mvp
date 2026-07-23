@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { AdminNotificationsList } from '@/features/admin-notifications';
 
 export const metadata: Metadata = {
   title: 'Уведомления',
@@ -7,8 +8,8 @@ export const metadata: Metadata = {
 export default function AdminNotificationsPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-4">Уведомления</h1>
-      <p className="text-sm text-slate-500">Раздел в разработке</p>
+      <h1 className="text-2xl font-bold text-slate-900 mb-6">Уведомления</h1>
+      <AdminNotificationsList />
     </div>
   );
 }

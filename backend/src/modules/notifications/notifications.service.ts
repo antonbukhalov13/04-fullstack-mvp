@@ -33,6 +33,34 @@ export class NotificationsService {
     return { success: true };
   }
 
+  async findAllAdmin() {
+    return this.prisma.notification.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        type: true,
+        message: true,
+        isRead: true,
+        createdAt: true,
+        user: {
+          select: { id: true, name: true, phone: true },
+        },
+      },
+    });
+  }
+
+  async markAsReadAdmin(id: string) {
+    const notification = await this.prisma.notification.findUnique({ where: { id } });
+    if (!notification) {
+      return { success: false };
+    }
+    await this.prisma.notification.update({
+      where: { id },
+      data: { isRead: true },
+    });
+    return { success: true };
+  }
+
   @OnEvent('application.status.changed')
   async onApplicationStatusChanged(payload: {
     applicationId: string;
