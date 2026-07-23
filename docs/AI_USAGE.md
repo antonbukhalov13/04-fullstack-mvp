@@ -1015,3 +1015,21 @@ What I learned: findOne в clients.service включает applications, loans 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 55
+
+Goal: Собрать раздел «Займы» в админ-панели — список с фильтром + карточка займа с действиями (смена статуса, отметка платежа, закрытие)
+
+Prompt: 15.3 — админ-панель: раздел «Займы»
+
+Собери список займов (активные/закрытые, клиент, сумма, срок, статус, дата выдачи), карточку займа (параметры, график платежей, текущий статус, история платежей, действия: изменить статус, отметить платёж, закрыть займ).
+
+Result: Добавлены бэкенд-эндпоинты для админки: `GET /loans` (AdminJwtAuthGuard + RolesGuard, поиск по имени/телефону клиента, фильтр по статусу), `GET /loans/:id` (полная информация: user, scheduleItems, paymentRequests, payments с amount/date, totalPaid, remaining), `PATCH /loans/:id/status` (смена статуса с emit loan.status.changed), `PATCH /loans/:id/schedule/:itemId` (отметка статуса графика payments/overdue/pending), `POST /loans/:id/close` (закрытие займа с emit loan.closed). DTO: `QueryAdminLoansDto`, `UpdateLoanStatusDto`, `MarkScheduleItemPaidDto`. Убран class-level `@UseGuards(JwtAuthGuard)` с LoansController —.guard теперь на каждом эндпоинте отдельно. На frontend: `features/admin-loans/admin-loans-list.tsx` (таблица: Клиент с телефоном, Сумма, Срок, Статус, Дата; поиск + select-фильтр, строки кликабельные, loading/error/empty), `features/admin-loans/admin-loans-detail.tsx` (параметры займа: клиент, сумма, срок, ставка, к возврату, оплачено, остаток, дата выдачи, IP/User-Agent подписания; таблица графика платежей с кнопкой «Отметить оплату»; таблица заявок на оплату; история платежей; действия: смена статуса + закрытие займа). Страницы: `admin/(dashboard)/loans/page.tsx`, `loans/[id]/page.tsx`. npm run build OK (28 маршрутов). Runtime-проверка: /admin/loans рендерит список, /admin/loans/test-id рендерит карточку.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Model Payment использует `date` вместо `paidAt` и не имеет поля `reference` — Prisma v7 select возвращает только правильные поля, невалидный select ломает type inference для всей переменной
+
+Model used: big-pickle
+
+Instrument used: OpenCode
