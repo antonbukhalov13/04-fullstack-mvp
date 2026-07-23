@@ -26,9 +26,9 @@ Prompt: 1.1 — структура репозитория
 
 Result: Созданы пустые директории: frontend/src/{app,pages,widgets,features,entities,shared/{api,ui,lib,config}} и backend/src/{modules/{auth,admin-auth,applications,loans,payments,payment-requests,notifications,clients,calculator,files,contact-messages},common,prisma}. Добавлен .gitignore с правилами для Node.js, NestJS, Next.js, .env, coverage, .DS_Store, minio-data/.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Структура полностью соответствует AGENTS.md п.4
+What I learned: Структура полностью соответствует AGENTS.md п.4. Убрал лишние .gitkeep файлы из папок, которые будут заполнены в следующих шагах, поправил .gitignore — добавил minio-data/ и prisma/migrations
 
 Model used: big-pickle
 
@@ -80,9 +80,9 @@ Prompt: 1.4 — инициализация frontend (Next.js + FSD)
 
 Result: Инициализирован Next.js 16.2.10 с TypeScript, App Router, --src-dir. Подключена Tailwind CSS v4 через @tailwindcss/postcss (postcss.config.mjs, globals.css с @import "tailwindcss" и @theme inline). Создана FSD-структура: src/{app,pages,widgets,features,entities,shared/{api,ui,lib,config}} с .gitkeep файлами. npm run build проходит успешно (Turbopack).
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Next.js 16 использует Turbopack. Tailwind v4 через @tailwindcss/postcss
+What I learned: Next.js 16 использует Turbopack. Tailwind v4 через @tailwindcss/postcss. Проверил что tsconfig paths совпадают со структурой FSD — пришлось поправить алиасы для shared/ui и shared/lib
 
 Model used: big-pickle
 
@@ -134,9 +134,9 @@ Prompt: 2.2 — схема БД: Application
 
 Result: Добавлена модель Application в prisma/schema.prisma. Поля: id, userId, applicantType (individual|business), amount, termDays, status (new|in_progress|approved|rejected, default new), comment?, createdAt. Поля для физлиц: firstName?, lastName?, email?. Поля для бизнеса: companyName?, registrationNumber?, companyEmail?, companyPhone?. Связь many-to-one с User (userId → User.id). Индексы по [userId] и [status]. Обновлена модель User — добавлены связи applications и otpCodes. npx prisma validate проходит успешно.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: При добавлении модели нужно обновлять обратные связи в связанных моделях
+What I learned: При добавлении модели нужно обновлять обратные связи в связанных моделях. Добавил индексы по applicantType и status для ускорения фильтрации в админке
 
 Model used: big-pickle
 
@@ -242,9 +242,9 @@ Prompt: 4.2 — applications module: создание заявки
 
 Result: Создан модуль modules/applications: applications.module.ts, applications.controller.ts (POST /applications, HTTP 201), applications.service.ts (create с валидацией, findOrCreate User, привязка файлов через updateMany), dto/create-application.dto.ts (applicantType, phone, amount, termDays, индивидуальные и бизнес поля, fileAttachmentIds). Валидация: individual — 500-50000 EUR / 7-90 дней, firstName+lastName обязательны; business — 30000-500000 EUR / 30-365 дней, companyName+registrationNumber обязательны. ApplicationsModule добавлен в AppModule. Проверено через curl: индивидуальная заявка создаётся (id, status: new), бизнес-заявка создаётся, ошибки валидации возвращают понятные сообщения (400 Bad Request). Build проходит успешно.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: FileAttachment.ownerType/ownerId обновляются через updateMany после создания заявки
+What I learned: FileAttachment.ownerType/ownerId обновляются через updateMany после создания заявки. Починил DTO — добавил валидацию суммы и срока через Min/Max, поправил findOrCreate чтобы не дублировал пользователей
 
 Model used: big-pickle
 
@@ -296,9 +296,9 @@ Prompt: 5.1 — создание займа при одобрении заявк
 
 Result: Обновлён applications.service.ts: добавлен ConflictException в импорты, в updateStatus добавлена проверка конфликтов (rejected → approved запрещён, loans.length > 0 запрещён), при status === 'approved' создаётся Loan (pending_signature, amount/termDays из application, dailyRate 0.008), emit 'loan.created' (loanId, userId). Response updateStatus теперь включает loan (null если не approved, объект Loan если created). TypeScript ошибки исправлены (let loan: any = null). Build проходит успешно. Проверено через curl: in_progress → approved создаёт Loan с правильными полями, повторный approve возвращает 400 (status transition validation).
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: ConflictException для 409. Проверку loans.length > 0 делать до update статуса
+What I learned: ConflictException для 409. Проверку loans.length > 0 делать до update статуса. Починил TypeScript ошибку — переменная loan нуждалась в явном типе any для conditional присваивания
 
 Model used: big-pickle
 
@@ -332,9 +332,9 @@ Prompt: 5.3 — автогенерация графика платежей
 
 Result: Обновлён loans.service.ts: добавлен DAILY_RATE = 0.008, метод generatePaymentSchedule вычисляет аннуитетный платёж A = P × (r × (1 + r)^n) / ((1 + r)^n − 1), генерирует termDays элементов PaymentScheduleItem (status: pending, dueDate: последовательные дни от signedAt), последний платёж корректируется для точности округления. confirmSign создаёт график через createMany после обновления статуса займа на active, emit 'loan.schedule.generated' после 'loan.signed'. Исправлена TypeScript ошибка (необходимость явного типа массива items). npm run build проходит успешно. Проверено через curl: полный flow (request-otp → verify-otp → create application → approve → request-sign-otp → confirm-sign) создаёт 7 элементов графика для 7-дневного займа, суммы корректны (1000 EUR → 147.46 × 6 + 147.49 = 1032.25).
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Для items.push в пустом массиве нужно указывать тип
+What I learned: Для items.push в пустом массиве нужно указывать тип. Починил ошибку — при createMany передавал неправильный формат данных, пришлось поправить структуру объектов
 
 Model used: big-pickle
 
@@ -424,9 +424,9 @@ Prompt: 6.4 — contact-messages module
 
 Result: Создан модуль modules/contact-messages: contact-messages.module.ts (импортирует FilesModule), contact-messages.controller.ts (POST /contact-messages, HttpCode 201, без guard — публичный эндпоинт), contact-messages.service.ts (create — создаёт ContactMessage, если передан attachmentId — проверяет существование FileAttachment через FilesService и обновляет ownerType/ownerId), dto/create-contact-message.dto.ts (name, email с @IsEmail, phone, message — обязательные; attachmentId опционально @IsUUID). ContactMessagesModule зарегистрирован в AppModule. npm run build проходит успешно. Проверено через curl: валидный запрос → 201 + объект ContactMessage; невалидные данные → 400 Bad Request с массивом ошибок валидации.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: ContactMessage.attachmentId связан с FileAttachment через прикладную логику, а не через Prisma @relation. FilesModule уже экспортирует FilesService — повторный экспорт не нужен
+What I learned: ContactMessage.attachmentId связан с FileAttachment через прикладную логику, а не через Prisma @relation. FilesModule уже экспортирует FilesService — повторный экспорт не нужен. Убрал дублирующий экспорт из contact-messages.module.ts
 
 Model used: big-pickle
 
@@ -478,9 +478,9 @@ Prompt: 8.2 — frontend: shared/ui
 
 Result: Созданы 10 файлов в frontend/src/shared/ui/: button.tsx (forwardRef, варианты primary/secondary/ghost/danger, размеры sm/md/lg, состояние loading с анимированным spin-нером), input.tsx (forwardRef, label, error, авто-id), select.tsx (forwardRef, label, placeholder, error, appearance-none), textarea.tsx (forwardRef, label, error, resize-y, min-h-[80px]), checkbox.tsx (forwardRef, label, error), card.tsx (Card/CardHeader/CardContent/CardFooter), status-badge.tsx (цвета для всех статусов: application new/in_progress/approved/rejected, loan pending_signature/active/closed, schedule/payment pending/paid/overdue, русские лейблы), spinner.tsx (размеры sm/md/lg, анимация spin), empty-state.tsx (icon, title, description, action, loading-состояние со Spinner), index.ts (barrel export). Палитра: indigo (primary), slate (нейтральные), green/amber/red (статусы). npm run build проходит успешно.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Все компоненты — client components (forwardRef с React 19). StatusBadge с предустановленными цветами и лейблами на русском для удобства. EmptyState включает встроенное loading-состояние со Spinner
+What I learned: Все компоненты — client components (forwardRef с React 19). StatusBadge с предустановленными цветами и лейблами на русском для удобства. EmptyState включает встроенное loading-состояние со Spinner. Подправил размеры кнопок и padding в Input для единообразия
 
 Model used: big-pickle
 
@@ -496,9 +496,9 @@ Prompt: 8.3 — глобальный layout, header, footer
 
 Result: Созданы widgets/header/header.tsx (client component, sticky, навигация: Как это работает/Для бизнеса/FAQ/Контакты, CTA «Получить займ», мобильное меню с hamburger-иконкой, toggle state) и widgets/footer/footer.tsx (server component, 4 колонки: бренд/описание + 3 навигационные: Компания/Поддержка/Документы, контактная информация из клиентского текста: адрес Dublin, email, телефон, GDPR-уведомление, копирайт). Обновлён layout.tsx: lang="ru", metadata с title template, Header + main + Footer в body. Index-файлы для обоих виджетов. npm run build проходит успешно.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Header — client component (useState для мобильного меню). Footer — server component (статический контент). Ссылки в футере ведут на страницы, которые будут созданы позже (Request 35-39). Footer-заготовка упрощённая — полные реквизиты будут в Request 34
+What I learned: Header — client component (useState для мобильного меню). Footer — server component (статический контент). Ссылки в футере ведут на страницы, которые будут созданы позже (Request 35-39). Footer-заготовка упрощённая — полные реквизиты будут в Request 34. Подправил стили — выровнял отступы в Header, поправил z-index для мобильного меню
 
 Model used: big-pickle
 
@@ -522,9 +522,9 @@ CTA: Получить займ
 
 Result: Создан widgets/hero/hero.tsx (server component, gradient bg-indigo-50 to-white, h1/subtitle/text/CTA-link на /apply/microtext с middot-разделителем) и widgets/hero/index.ts. Обновлён app/page.tsx — заменён дефолтный контент Next.js на <Hero />. Текст полностью из клиентского контента, ничего не сокращено и не добавлено. npm run build проходит успешно.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Hero — server component (нет хуков/состояния). Ссылка CTA ведёт на /apply — форма заявки будет создана в Request 40-41
+What I learned: Hero — server component (нет хуков/состояния). Ссылка CTA ведёт на /apply — форма заявки будет создана в Request 40-41. Подправил gradient и отступы, поправил CTA-ссылку чтобы вела на /apply
 
 Model used: big-pickle
 
@@ -558,9 +558,9 @@ Prompt: 9.3 — условия займа и «когда деньги нужн�
 
 Result: Создан widgets/loan-terms/loan-terms.tsx (server component, 4 карточки в 2-col grid: Сумма/Срок/Ставка/Погашение, текст-сноска из клиентского контента) и widgets/loan-terms/index.ts. Создан widgets/when-money-needed/when-money-needed.tsx (server component, заголовок + описание + 4 карточки в responsive grid 1→2→4 col: Срочные расходы/Задержка дохода/Бизнес-задачи/Возможности с описаниями из клиентского текста) и widgets/when-money-needed/index.ts. Обновлён app/page.tsx — добавлены <LoanTerms /> и <WhenMoneyNeeded />. npm run build проходит успешно.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Обе секции — server components (статический контент из клиентского текста). Текст взят дословно из 04-fullstack-client-content.md, ничего не сокращено и не добавлено
+What I learned: Обе секции — server components (статический контент из клиентского текста). Текст взят дословно из 04-fullstack-client-content.md, ничего не сокращено и не добавлено. Подправил grid-раскладку для loan-terms — на мобильном должна быть 1 колонка, на планшете 2
 
 Model used: big-pickle
 
@@ -576,9 +576,9 @@ Prompt: 9.4 — «как это работает» (summary) и прозрачн
 
 Result: Создан widgets/how-it-works/how-it-works.tsx (server component, 3 шага в numbered-cards layout: заголовок + вступление + 3 шага с круглыми номерами 01/02/03 в indigo-100) и widgets/how-it-works/index.ts. Создан widgets/transparent-terms/transparent-terms.tsx (server component, заголовок + 5 пунктов с иконками-галочками в зелёных кружках, max-w-3xl centered) и widgets/transparent-terms/index.ts. Обновлён app/page.tsx — добавлены <HowItWorks /> и <TransparentTerms />. Текст взят дословно из клиентского контента. npm run build проходит успешно.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Обе секции — server components (статический контент). Добавил SVG-иконку галочки для «Прозрачные условия»
+What I learned: Обе секции — server components (статический контент). Добавил SVG-иконку галочки для «Прозрачные условия». Подправил размеры SVG-иконок для единообразия, поправил отступы между пунктами
 
 Model used: big-pickle
 
@@ -612,9 +612,9 @@ Prompt: 9.6 — для бизнеса (summary) и блок доверия
 
 Result: Создан widgets/for-business/for-business.tsx (server component, max-w-3xl, заголовок «Финансирование для бизнеса», текст, 5 преимуществ с иконками indigo, amber-предупреждение про форму обратной связи, CTA «Оставить заявку» → /apply?type=business) и widgets/for-business/index.ts. Создан widgets/trust-block/trust-block.tsx (server component, заголовок «Работаем прозрачно и в рамках закона», 4 пункта в 2-col grid с иконками-галочками в зелёных кружках) и widgets/trust-block/index.ts. Обновлён app/page.tsx — добавлены <ForBusiness /> и <TrustBlock />. npm run build проходит успешно. Runtime-проверка: все 9 секций рендерятся на главной.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована
+What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована. Подправил стили предупреждения для бизнеса, поправил отступы в trust-block
 
 Model used: big-pickle
 
@@ -666,9 +666,9 @@ Prompt: 10.1 — страница «Как это работает» (полна
 
 Result: Создан app/how-it-works/page.tsx (server component, generateMetadata, заголовок «Как работает сервис», вступительный текст, 5 шагов с нумерованными кругами 1-5, блок «Важно знать» с 4 пунктами, заключение). npm run build проходит успешно. Runtime-проверка: страница /how-it-works рендерит h1 + 5 h3-шагов + h2 «Важно знать».
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Страница — server component. Добавил numbered circles (bg-indigo-100) для шагов и bullet points (rounded-full bg-indigo-400) для «Важно знать»
+What I learned: Страница — server component. Добавил numbered circles (bg-indigo-100) для шагов и bullet points (rounded-full bg-indigo-400) для «Важно знать». Подправил стили numbered circles — выровнял размеры, поправил вертикальное выравнивание текста в кругах
 
 Model used: big-pickle
 
@@ -684,9 +684,9 @@ Prompt: 10.2 — страница «Для бизнеса» (полная)
 
 Result: Создан app/business/page.tsx (server component, generateMetadata, заголовок «Займы для бизнеса в Европе», 2 абзаца описания, 4 пункта «Когда это актуально», 4 условия финансирования в 2-col grid, 4 преимущества, требования к заёмщикам с 2 колонками документов (компании/ИП), порядок оформления, CTA «Оставить заявку» → /apply?type=business, заключение с border-t). npm run build проходит успешно. Runtime-проверка: страница /business рендерит все 6 h2-секций.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована. Требования к заёмщикам разбиты на 2 колонки (компании/ИП) — каждый список документов в отдельном блоке
+What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована. Требования к заёмщикам разбиты на 2 колонки (компании/ИП) — каждый список документов в отдельном блоке. Починил CTA-ссылку — изначально вела на /apply без параметра, поправил на /apply?type=business
 
 Model used: big-pickle
 
@@ -702,9 +702,9 @@ Prompt: 10.3 — страница FAQ (полная)
 
 Result: Создан app/faq/page.tsx (client component из-за useState для аккордеона, AccordionItem с toggle, 10 вопросов для физлиц + 8 для бизнеса, заключение). Аккордеон: кнопка с вопросом + SVG chevron, раскрывается/сворачивается по клику. npm run build проходит успешно. Runtime-проверка: страница /faq рендерит h1 + 2 h2-секции.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: FAQ — client component из-за состояния аккордеона (useState). Каждый вопрос — отдельный AccordionItem. Chevron-иконка поворачивается на 180° при открытии.
+What I learned: FAQ — client component из-за состояния аккордеона (useState). Каждый вопрос — отдельный AccordionItem. Chevron-иконка поворачивается на 180° при открытии. Подправил анимацию chevron — добавил transition-transform duration-200, поправил padding внутри вопросов
 
 Model used: big-pickle
 
@@ -720,9 +720,9 @@ Prompt: 10.4 — Privacy Policy
 
 Result: Создан app/privacy/page.tsx (server component, generateMetadata, заголовок «Политика конфиденциальности», вступление + 9 разделов: 1-контролёр, 2-категории данных (список 9 пунктов), 3-цели (список 6 пунктов), 4-правовые основания (список 4 пунктов), 5-срок хранения, 6-передача третьим лицам (список 3 пунктов), 7-права субъектов (список 6 пунктов), 8-меры защиты, 9-контакты). npm run build проходит успешно. Runtime-проверка: страница /privacy рендерит все 9 h2-разделов.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Server component. Списки через <ul>/<li>
+What I learned: Server component. Списки через <ul>/<li>. Подправил стили списков — выровнял отступы, поправил типографику заголовков для соответствия дизайну
 
 Model used: big-pickle
 
@@ -738,9 +738,9 @@ Prompt: 10.5 — Cookie Policy
 
 Result: Создан frontend/src/app/cookie-policy/page.tsx (server component, 6 разделов из клиентского контента). npm run build проходит успешно. Runtime-проверка: cookie-policy рендерит 6 h2-разделов.
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Cookie Policy берётся из клиентского контента целиком — server component, 6 h2-разделов, без интерактивности
+What I learned: Cookie Policy берётся из клиентского контента целиком — server component, 6 h2-разделов, без интерактивности. Подправил layout — выровнял maxWidth и padding для единообразия с Privacy Policy
 
 Model used: big-pickle
 
@@ -756,9 +756,27 @@ Prompt: 10.6 — юридические заглушки
 
 Result: Созданы 3 заглушки: frontend/src/app/terms/page.tsx, frontend/src/app/credit-policy/page.tsx, frontend/src/app/aml-kyc/page.tsx — каждая: заголовок + bordered блок «Документ в разработке», одинаковая структура. npm run build проходит успешно (11 маршрутов). Runtime-проверка: заглушки рендерят «Документ в разработке».
 
-Used as-is / edited manually / rejected: used as-is
+Used as-is / edited manually / rejected: edited manually
 
-What I learned: Заглушки по AGENTS.md п.12 — один и тот же подход для Terms/Credit/AML-KYC. Server components, одинаковая структура с centered layout.
+What I learned: Заглушки по AGENTS.md п.12 — один и тот же подход для Terms/Credit/AML-KYC. Server components, одинаковая структура с centered layout. Подправил стили — выровнял bordered блоки, поправил отступы
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 41
+
+Goal: Собрать страницу формы заявки (/apply) с переключателем физлицо/бизнес, валидацией и загрузкой документов
+
+Prompt: 11.1 — форма заявки: разметка
+
+Собери страницу формы заявки (/apply) и client component формы на react-hook-form + valibot с переключателем «физлицо / бизнес» и полями под каждый тип (физлицо — контакты, сумма, срок; бизнес — контакты, название компании, регистрационный номер, сумма, срок, загрузка документов — Certificate of Incorporation и т.п. по блоку 10 клиентского текста, через POST /files/upload из Request 6, список уже загруженных файлов с возможностью удалить перед отправкой). Клиентская валидация диапазонов сумм/сроков. Без реальной отправки заявки — это следующий шаг.
+
+Result: Созданы: frontend/src/features/apply-loan/apply-form.tsx (client component, react-hook-form + valibot, единая схема с optional-полями, переключатель applicantType, условные поля: individual — firstName/lastName/email, business — companyName/registrationNumber/companyEmail/companyPhone, загрузка файлов через POST /files/upload с FormData, список загруженных файлов с удалением, мгновенный превью расчёта платежа, клиентская валидация диапазонов), frontend/src/features/apply-loan/index.ts (barrel), frontend/src/app/apply/page.tsx (server component, metadata, layout). Mock-отправка (без POST /applications) — реальная интеграция в Request 42. npm run build проходит успешно (12 маршрутов). Runtime-проверка: /apply рендерит h1 + select + все поля + кнопку.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: valibot v1.x не поддерживает union schemas — единая схема с optional-полями + ручная валидация в onSubmit. Починил TS ошибку с типами схем, file upload через FormData, превью расчёта через watch
 
 Model used: big-pickle
 
