@@ -961,3 +961,21 @@ What I learned: Admin token хранится отдельно от user token (s
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 52
+
+Goal: Собрать layout админ-панели — боковое меню (Заявки, Клиенты, Займы, Платежи, Уведомления), защита маршрутов, роль-based видимость
+
+Prompt: 14.2 — layout админ-панели
+
+Собери layout: боковое меню (Заявки, Клиенты, Займы, Платежи, Уведомления), основная рабочая область, панель детальной информации. Пункты, недоступные роли operator, скрывай или блокируй по роли из токена.
+
+Result: Созданы: `widgets/admin-sidebar/admin-sidebar.tsx` (client component, проверка admin_token в localStorage, редирект на /admin/login если нет токена, navItems с фильтрацией по роли из admin_user localStorage, блок «Вы вошли как» + кнопка «Выйти»), `widgets/admin-sidebar/index.ts` (barrel), `app/admin/(dashboard)/layout.tsx` (flex layout с AdminSidebar + основная область), `app/admin/page.tsx` (redirect → /admin/applications), заглушки: `app/admin/(dashboard)/applications/page.tsx`, `clients/`, `loans/`, `payments/`, `notifications/`. Страница логина (`app/admin/(auth)/login/page.tsx`) вынесена в route group `(auth)` без sidebar-layout. npm run build проходит успешно (24 маршрута). Runtime-проверка: /admin/login — без sidebar, /admin/applications — с sidebar (5 пунктов меню).
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Route groups `(auth)` и `(dashboard)` позволяют разделить layout для логина (без sidebar) и панели (с sidebar). Нет родительского `/admin/layout.tsx` — sidebar только в `(dashboard)/layout.tsx`
+
+Model used: big-pickle
+
+Instrument used: OpenCode
