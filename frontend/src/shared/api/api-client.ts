@@ -10,6 +10,7 @@ export class ApiError extends Error {
 }
 
 let authToken: string | null = null;
+let adminAuthToken: string | null = null;
 
 export function setAuthToken(token: string | null) {
   authToken = token;
@@ -19,11 +20,20 @@ export function getAuthToken(): string | null {
   return authToken;
 }
 
+export function setAdminAuthToken(token: string | null) {
+  adminAuthToken = token;
+}
+
+export function getAdminAuthToken(): string | null {
+  return adminAuthToken;
+}
+
 interface RequestOptions extends Omit<RequestInit, 'method' | 'body'> {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   body?: unknown;
   params?: Record<string, string | number | boolean | undefined | null>;
   token?: string | null;
+  admin?: boolean;
 }
 
 function buildUrl(path: string, params?: Record<string, string | number | boolean | undefined | null>): string {
@@ -41,10 +51,10 @@ function buildUrl(path: string, params?: Record<string, string | number | boolea
   return url.toString();
 }
 
-function buildHeaders(token?: string | null): Record<string, string> {
+function buildHeaders(token?: string | null, admin?: boolean): Record<string, string> {
   const headers: Record<string, string> = {};
 
-  const effectiveToken = token ?? authToken;
+  const effectiveToken = token ?? (admin ? adminAuthToken : authToken);
   if (effectiveToken) {
     headers['Authorization'] = `Bearer ${effectiveToken}`;
   }
@@ -53,11 +63,11 @@ function buildHeaders(token?: string | null): Record<string, string> {
 }
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, params, token, headers: extraHeaders, ...rest } = options;
+  const { method = 'GET', body, params, token, admin, headers: extraHeaders, ...rest } = options;
 
   const url = buildUrl(path, params);
   const headers: Record<string, string> = {
-    ...buildHeaders(token),
+    ...buildHeaders(token, admin),
     ...(extraHeaders as Record<string, string>),
   };
 
