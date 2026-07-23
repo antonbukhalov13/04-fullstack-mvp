@@ -21,6 +21,18 @@ export class NotificationsService {
     });
   }
 
+  async markAsRead(id: string, userId: string) {
+    const notification = await this.prisma.notification.findUnique({ where: { id } });
+    if (!notification || notification.userId !== userId) {
+      return { success: false };
+    }
+    await this.prisma.notification.update({
+      where: { id },
+      data: { isRead: true },
+    });
+    return { success: true };
+  }
+
   @OnEvent('application.status.changed')
   async onApplicationStatusChanged(payload: {
     applicationId: string;
