@@ -907,3 +907,21 @@ What I learned: Секция подписания скрыта при други
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 49
+
+Goal: Добавить в карточку займа mock-договор (просмотр) и форму «Создать заявку на оплату» с отображением текущего статуса
+
+Prompt: 13.5 — mock-договор и заявка на оплату
+
+Добавь в карточку займа «Просмотр договора» (статичный mock-текст/PDF-заглушка, явно помечено как образец документа) и форму «Создать заявку на оплату» (сумма, реквизиты/reference) с отображением текущего статуса.
+
+Result: На backend обновлён `loansService.findOneForUser()` — добавлен `paymentRequests` в select/return. На frontend обновлён `features/loan-detail/loan-detail-card.tsx`: (1) Mock-договор — кнопка «Просмотреть договор» → модальное окно с mock-текстом договора (стороны, предмет, ставка, порядок возврата, просрочка, заключительные положения), помечено как «⚠ Образец документа — не является юридически обязывающим», видно при статусах != pending_signature; (2) Форма заявки на оплату — видна при status=active, поля: сумма + реквизиты/reference, POST `/loans/:id/payment-requests`, отображение существующих заявок (сумма, reference, статус через StatusBadge), success/error сообщения. npm run build проходит успешно (18 маршрутов). Runtime-проверка: /dashboard/loans/test-id рендерит loan-detail-card.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: paymentRequests добавлены в findOneForUser select для отображения статуса заявок на оплату. Модальное окно договора — клиентский стейт (useState), не отдельный route
+
+Model used: big-pickle
+
+Instrument used: OpenCode
