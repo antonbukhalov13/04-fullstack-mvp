@@ -1,19 +1,19 @@
 export function HowItWorks() {
   const steps = [
     {
-      number: '01',
+      number: '1',
       title: 'Регистрация',
       description:
         'Введите номер телефона и подтвердите его с помощью SMS-кода.',
     },
     {
-      number: '02',
+      number: '2',
       title: 'Заявка',
       description:
         'Выберите сумму и срок займа и отправьте заявку на рассмотрение.',
     },
     {
-      number: '03',
+      number: '3',
       title: 'Получение средств',
       description:
         'После одобрения деньги поступают на ваш банковский счёт.',
