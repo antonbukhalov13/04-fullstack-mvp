@@ -1295,3 +1295,19 @@ What I learned: Контактные ссылки в footer и contact-details �
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 72
+
+Goal: Переместить секцию «Безопасность клиентов» на правильную позицию согласно клиентскому контенту
+
+Prompt: Проверить порядок секций в page.tsx с клиентским контентом. ClientSafety должна быть после FAQ (секция 12), а не после AboutCompany (секция 7).
+
+Result: Frontend: app/page.tsx — `<ClientSafety />` перемещён с позиции между AboutCompany и CreditHistory на позицию между FaqPreview и ContactSection. Порядок секций теперь соответствует клиентскому контенту (7→8→9→10→11→12→13→14). npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Порядок секций в page.tsx не соответствовал нумерации в клиентском контенте — ClientSafety (section 12) была ошибочно размещена после AboutCompany (section 7).
+
+Model used: big-pickle
+
+Instrument used: OpenCode
