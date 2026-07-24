@@ -1103,3 +1103,19 @@ What I learned: «Безопасность клиентов» (section 12) бы�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 60
+
+Goal: Переделать секцию «Основные условия» — заменить карточки на вертикальный timeline
+
+Prompt: Переделать карточки в секции «Основные условия» — убрать сетку, сделать вертикальный timeline: карточки чередуются лево/право от центральной линии с горизонтальными соединителями. Текст карточек не менять.
+
+Result: Frontend: widgets/loan-terms/loan-terms.tsx — переписана: вместо grid из 2 колонок с карточками теперь вертикальный timeline — центральная линия (bg-indigo-200), точки на линии (bg-indigo-600 с ring), карточки чередуются лево/право (calc(50%-1.5rem)) с горизонтальными коннекторами (w-6 h-px bg-indigo-200) через flex + flex-1 spacer. Текст сохранён дословно: Сумма, Срок, Ставка, Погашение. npm run build OK.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Вертикальный timeline с alternating left/right через flex + absolute positioned line — проверенный паттерн для таких секций
+
+Model used: big-pickle
+
+Instrument used: OpenCode
