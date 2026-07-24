@@ -1311,3 +1311,19 @@ What I learned: Порядок секций в page.tsx не соответст�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 73
+
+Goal: Оформить секцию «Безопасность клиентов» — карточки с иконками в столбик на всю ширину
+
+Prompt: Секция Безопасность клиентов — три карточки с иконками, друг под другом, на всю ширину контейнера. Иконки в indigo кружках, текст сохранить точно таким же.
+
+Result: Frontend: widgets/client-safety/client-safety.tsx — переписан: три карточки (`border border-slate-200 bg-white rounded-xl p-6`) в столбик (`space-y-4`). Каждая карточка — `flex items-start gap-4`: иконка в `bg-indigo-100 text-indigo-600` кружке `h-10 w-10` слева, текст `text-base text-slate-600 leading-relaxed` справа. Иконки: shield-check (защита данных), x-circle (без предоплат), link (официальный сайт). Фон секции `bg-slate-50`. Текстverbatim без изменений. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Карточки с иконками в столбик (`flex items-start gap-4` на каждую + `space-y-4` между ними) — хороший способ визуализировать текстовые пункты без изменения содержимого.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
