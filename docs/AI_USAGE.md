@@ -1087,3 +1087,19 @@ What I learned: iOS Safari auto-zoom при фокусе на input — текс
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 59
+
+Goal: Переделать секцию «О компании» — убрать CTA-кнопку, сделать крупнее и заметнее, добавить недостающую секцию «Безопасность клиентов» из клиентского контента
+
+Prompt: В секции О компании — убрать кнопку, т к ее нет в клиентском контенте, и сделать секцию заметнее и крупнее. Нет секции «Безопасность клиентов» — добавить по клиентскому контенту (section 12).
+
+Result: Frontend: widgets/about-company/about-company.tsx — переписана: убрана CTA-кнопка, секция крупнее (py-20/28, text-3xl/4xl заголовок, text-lg/xl текст, max-w-4xl, bg-slate-50), добавлен id="about" для якоря из футера. Создан widgets/client-safety/client-safety.tsx + index.ts — секция «Безопасность клиентов» (текст из section 12 клиентского контента). Обновлён app/page.tsx — <ClientSafety /> между <AboutCompany /> и <CreditHistory />. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: «Безопасность клиентов» (section 12) была пропущена при сборке лендинга
+
+Model used: big-pickle
+
+Instrument used: OpenCode
