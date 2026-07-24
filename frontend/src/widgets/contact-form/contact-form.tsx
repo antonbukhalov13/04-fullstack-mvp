@@ -7,7 +7,6 @@ import { valibotResolver } from '@hookform/resolvers/valibot';
 import { api } from '@/shared/api';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
-import { Checkbox } from '@/shared/ui/checkbox';
 import { Button } from '@/shared/ui/button';
 import type { ContactMessage } from '@/shared/api/types';
 
@@ -16,7 +15,6 @@ const schema = object({
   email: pipe(string(), minLength(1, 'Обязательное поле'), email('Некорректный email')),
   phone: pipe(string(), minLength(1, 'Обязательное поле')),
   message: pipe(string(), minLength(1, 'Обязательное поле')),
-  consent: pipe(string(), minLength(1, 'Необходимо дать согласие')),
 });
 
 type FormValues = InferOutput<typeof schema>;
@@ -27,24 +25,24 @@ export function ContactForm() {
   const [submitState, setSubmitState] = useState<SubmitState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState('');
 
   const {
     register,
     handleSubmit,
     reset,
-    setError,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: valibotResolver(schema),
-    defaultValues: { consent: '' },
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    if (!data.consent) {
-      setError('consent', { message: 'Необходимо дать согласие' });
+    if (!consent) {
+      setConsentError('Необходимо дать согласие');
       return;
     }
-
+    setConsentError('');
     setSubmitState('submitting');
     setErrorMessage('');
 
@@ -74,10 +72,20 @@ export function ContactForm() {
       setSubmitState('success');
       reset();
       setFile(null);
+      setConsent(false);
     } catch (err) {
       setSubmitState('error');
       setErrorMessage(err instanceof Error ? err.message : 'Произошла ошибка');
     }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    if (!consent) {
+      setConsentError('Необходимо дать согласие');
+    } else {
+      setConsentError('');
+    }
+    handleSubmit(onSubmit)(e);
   };
 
   if (submitState === 'success') {
@@ -97,7 +105,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleFormSubmit} className="space-y-4">
       <Input label="Имя" {...register('name')} error={errors.name?.message} />
       <Input
         label="Email"
@@ -142,12 +150,21 @@ export function ContactForm() {
         )}
       </div>
 
-      <Checkbox
-        label="Я согласен на обработку персональных данных"
-        value="consent"
-        {...register('consent')}
-        error={errors.consent?.message}
-      />
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => {
+              setConsent(e.target.checked);
+              if (e.target.checked) setConsentError('');
+            }}
+            className="h-4 w-4 rounded border-slate-300 accent-indigo-600 text-indigo-600 focus:ring-indigo-600 cursor-pointer"
+          />
+          <span className="text-sm text-slate-700">Я согласен на обработку персональных данных</span>
+        </div>
+        {consentError && <p className="text-xs text-red-600">{consentError}</p>}
+      </div>
 
       {submitState === 'error' && (
         <p className="text-sm text-red-600">{errorMessage}</p>
