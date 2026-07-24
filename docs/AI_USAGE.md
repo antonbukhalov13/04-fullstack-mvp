@@ -1263,3 +1263,19 @@ What I learned: Next.js App Router поддерживает SVG-фавикон �
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 70
+
+Goal: Touch targets ≥ 44px, чекбокс/file upload — cursor и клик только на элементах, горизонтальная раскладка file upload
+
+Prompt: Чекбокс и file upload в Обратной связи — pointer cursor и клик только на самом checkbox/input, не на контейнере. Все touch targets на сайте ≥ 44px. Кнопка "Выбрать файл" должна быть слева, а текст "Прикрепление файла" справа. То же в apply-form. Клик только на кнопке и на чекбоксе, не на surrounding area.
+
+Result: Frontend: shared/ui/checkbox.tsx — `<label htmlFor>` заменён на `<div>`, клик только на `<input type="checkbox">` с `cursor-pointer`, текст — standalone `<span>`. shared/ui/button.tsx — sm/md/lg все `min-h-[44px]`. shared/ui/input.tsx, select.tsx — `min-h-[44px]`. widgets/header — hamburger `p-3 min-h-[44px] min-w-[44px]`, mobile nav-ссылки `py-3 min-h-[44px]`. features/loan-detail/loan-detail-card — кнопка ✕ `p-2 min-h-[44px] min-w-[44px] rounded-lg`. contact-form.tsx — file input скрыт через `sr-only`, кнопка "Выбрать файл" слева и текст "Прикрепление файла" справа обёрнуты в `flex items-center gap-2` для горизонтального выравнивания. consent: валидация вынесена из схемы в `onSubmit` — `setError('consent', { message: 'Необходимо дать согласие' })` при пустом чекбоксе. apply-form.tsx — та же логика: кнопка и текст "Документы (Certificate of Incorporation и т.п.)" в `flex items-center gap-2`. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Скрытый input + styled label через htmlFor — надёжный паттерн для кастомного file upload. Замена `<label>` на `<div>` без htmlFor — простой способ ограничить кликабельность чекбокса только квадратом input. `<span className="ml-2">` вместо label — горизонтальная раскладка "кнопка-текст" без вложенности. `min-h-[44px]` на button/input/select — минимальный WCAG touch target. valibotResolver + react-hook-form: checkbox unchecked = пустая строка, но ошибку показывает на английском — решается `setError()` в onSubmit с русским сообщением.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
