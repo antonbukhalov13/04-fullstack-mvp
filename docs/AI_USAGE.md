@@ -1247,3 +1247,19 @@ What I learned: -
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 69
+
+Goal: Favicon — создать и подключить
+
+Prompt: Добавить favicon для сайта.
+
+Result: Frontend: создан public/favicon.svg — SVG с закруглённым прямоугольником indigo-600 (#4f46e5) и белой буквой "L". app/layout.tsx — добавлен `icons: { icon: '/favicon.svg' }` в metadata. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Next.js App Router поддерживает SVG-фавикон через `metadata.icons.icon` без отдельного HTML-тега
+
+Model used: big-pickle
+
+Instrument used: OpenCode
