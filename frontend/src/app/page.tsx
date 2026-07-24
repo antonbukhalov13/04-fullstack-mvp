@@ -5,6 +5,7 @@ import { WhenMoneyNeeded } from '@/widgets/when-money-needed';
 import { HowItWorks } from '@/widgets/how-it-works';
 import { TransparentTerms } from '@/widgets/transparent-terms';
 import { AboutCompany } from '@/widgets/about-company';
+import { ClientSafety } from '@/widgets/client-safety';
 import { CreditHistory } from '@/widgets/credit-history';
 import { ForBusiness } from '@/widgets/for-business';
 import { TrustBlock } from '@/widgets/trust-block';
@@ -22,6 +23,7 @@ export default function Home() {
       <HowItWorks />
       <TransparentTerms />
       <AboutCompany />
+      <ClientSafety />
       <CreditHistory />
       <ForBusiness />
       <TrustBlock />
