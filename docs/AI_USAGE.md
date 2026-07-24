@@ -1215,3 +1215,19 @@ What I learned: В contact-details ссылки уже совпадали с и�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 67
+
+Goal: Как это работает — убрать ведущие нули в номерах шагов
+
+Prompt: Номера шагов 01, 02, 03 — убрать ведущие нули.
+
+Result: Frontend: widgets/how-it-works/how-it-works.tsx — `'01'` → `'1'`, `'02'` → `'2'`, `'03'` → `'3'`. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: -
+
+Model used: big-pickle
+
+Instrument used: OpenCode
