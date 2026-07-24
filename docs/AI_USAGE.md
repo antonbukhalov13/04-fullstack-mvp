@@ -1151,3 +1151,19 @@ What I learned: /about не существовала — замена на `/#ab
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 63
+
+Goal: Убрать кнопку «Получить займ» из калькулятора, проверить что фон футера совпадает с хедером
+
+Prompt: Убрать кнопку из калькулятора (не предусмотрена клиентским контентом). Кнопка не ведёт никуда в рамках виджета — калькулятор должен только считать. Футер должен быть того же фона что и хедер.
+
+Result: Frontend: widgets/calculator/calculator.tsx — удалена кнопка «Получить займ», импорт Button убран. Футер (widgets/footer/footer.tsx) уже имел `bg-slate-50`, совпадающий с хедером — изменений не потребовалось. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Футер уже имел bg-slate-50 — проверка перед лишними правками экономит время
+
+Model used: big-pickle
+
+Instrument used: OpenCode
