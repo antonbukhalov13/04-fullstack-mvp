@@ -12,8 +12,9 @@ const columns = [
   {
     title: 'Поддержка',
     links: [
-      { href: '/contacts', label: 'Обратная связь' },
       { href: '/faq', label: 'Часто задаваемые вопросы' },
+      { href: '/#contact', label: 'Обратная связь' },
+      { href: '/#contact-details', label: 'Контакты' },
     ],
   },
   {

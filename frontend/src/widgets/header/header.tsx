@@ -6,8 +6,7 @@ import Link from 'next/link';
 const navItems = [
   { href: '/how-it-works', label: 'Как это работает' },
   { href: '/business', label: 'Для бизнеса' },
-  { href: '/faq', label: 'FAQ' },
-  { href: '/contacts', label: 'Обратная связь' },
+  { href: '/faq', label: 'Часто задаваемые вопросы' },
 ];
 
 export function Header() {
