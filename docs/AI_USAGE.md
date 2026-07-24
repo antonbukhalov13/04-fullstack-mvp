@@ -1231,3 +1231,19 @@ What I learned: -
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 68
+
+Goal: Hero — шире CTA кнопка
+
+Prompt: Сделать CTA кнопку в Hero шире.
+
+Result: Frontend: widgets/hero/hero.tsx — `px-6` → `px-10`. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: -
+
+Model used: big-pickle
+
+Instrument used: OpenCode
