@@ -1314,15 +1314,15 @@ Instrument used: OpenCode
 
 ## Request 73
 
-Goal: Оформить секцию «Безопасность клиентов» — карточки с иконками в столбик на всю ширину
+Goal: Удалить страницу /contacts, переместить ссылки на якори, обновить хедер и футер
 
-Prompt: Секция Безопасность клиентов — три карточки с иконками, друг под другом, на всю ширину контейнера. Иконки в indigo кружках, текст сохранить точно таким же.
+Prompt: Удалить страницу /contacts. В хедере убрать ссылку Обратная связь, переименовать FAQ → Часто задаваемые вопросы. В футере Обратная связь → якорь /#contact, добавить Контакты → якорь /#contact-details. Порядок: FAQ → Обратная связь → Контакты.
 
-Result: Frontend: widgets/client-safety/client-safety.tsx — переписан: три карточки (`border border-slate-200 bg-white rounded-xl p-6`) в столбик (`space-y-4`). Каждая карточка — `flex items-start gap-4`: иконка в `bg-indigo-100 text-indigo-600` кружке `h-10 w-10` слева, текст `text-base text-slate-600 leading-relaxed` справа. Иконки: shield-check (защита данных), x-circle (без предоплат), link (официальный сайт). Фон секции `bg-slate-50`. Текстverbatim без изменений. npm run build OK (27 маршрутов).
+Result: Frontend: удалён app/contacts/page.tsx. contact-section.tsx — добавлен `id="contact"`. contact-details.tsx — добавлен `id="contact-details"`. header.tsx — убрана ссылка "Обратная связь", "FAQ" → "Часто задаваемые вопросы". footer.tsx — столбец "Поддержка": FAQ (/faq) → Обратная связь (/#contact) → Контакты (/#contact-details). npm run build OK (26 маршрутов, /contacts удалена).
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Карточки с иконками в столбик (`flex items-start gap-4` на каждую + `space-y-4` между ними) — хороший способ визуализировать текстовые пункты без изменения содержимого.
+What I learned: Ссылки в футере теперь ведут на якори главной страницы вместо отдельного роута. Порядок в "Поддержка": FAQ → Обратная связь → Контакты.
 
 Model used: big-pickle
 
