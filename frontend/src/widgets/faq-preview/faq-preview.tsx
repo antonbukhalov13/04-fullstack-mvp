@@ -43,7 +43,7 @@ export function FaqPreview() {
         <div className="mt-8 text-center">
           <Link
             href="/faq"
-            className="text-sm font-semibold text-indigo-600 hover:text-indigo-500 inline-flex items-center min-h-[44px]"
+            className="text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition-colors inline-flex items-center min-h-[44px]"
           >
             Смотреть все вопросы →
           </Link>
