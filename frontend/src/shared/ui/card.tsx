@@ -25,7 +25,7 @@ interface CardHeaderProps {
 
 export function CardHeader({ children, className = '' }: CardHeaderProps) {
   return (
-    <div className={['px-6 py-4 border-b border-slate-200', className].join(' ')}>
+    <div className={['px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-200', className].join(' ')}>
       {children}
     </div>
   );
@@ -38,7 +38,7 @@ interface CardContentProps {
 
 export function CardContent({ children, className = '' }: CardContentProps) {
   return (
-    <div className={['px-6 py-4', className].join(' ')}>
+    <div className={['px-4 py-3 sm:px-6 sm:py-4', className].join(' ')}>
       {children}
     </div>
   );
@@ -51,7 +51,7 @@ interface CardFooterProps {
 
 export function CardFooter({ children, className = '' }: CardFooterProps) {
   return (
-    <div className={['px-6 py-4 border-t border-slate-200', className].join(' ')}>
+    <div className={['px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-200', className].join(' ')}>
       {children}
     </div>
   );

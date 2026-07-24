@@ -69,7 +69,7 @@ export function Calculator() {
           onSubmit={handleSubmit(onSubmit)}
           className="mx-auto mt-10 max-w-lg space-y-6"
         >
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Сумма (EUR)"
               type="number"

@@ -169,7 +169,7 @@ export function ApplyForm() {
         )}
         <button
           onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
-          className="mt-4 text-sm font-semibold text-green-700 hover:text-green-600"
+          className="mt-4 text-sm font-semibold text-green-700 hover:text-green-600 inline-flex items-center min-h-[44px]"
         >
           Подать ещё одну заявку
         </button>
@@ -247,7 +247,7 @@ export function ApplyForm() {
             </>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Сумма (EUR)"
               type="number"
@@ -295,7 +295,7 @@ export function ApplyForm() {
                       <button
                         type="button"
                         onClick={() => removeFile(f.id)}
-                        className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0"
+                        className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px]"
                       >
                         Удалить
                       </button>

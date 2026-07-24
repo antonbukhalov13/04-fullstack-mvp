@@ -174,7 +174,7 @@ export function AdminApplicationDetail() {
           <StatusBadge status={app.status} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
           <div>
             <p className="text-slate-500 mb-1">Тип</p>
             <p className="font-medium text-slate-900">{isIndividual ? 'Физлицо' : 'Бизнес'}</p>
@@ -251,7 +251,7 @@ export function AdminApplicationDetail() {
           {app.status !== 'approved' && app.status !== 'rejected' && (
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Изменить статус</label>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}

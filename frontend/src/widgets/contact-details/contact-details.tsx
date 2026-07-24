@@ -37,9 +37,9 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <p className="mt-3 text-sm text-slate-500">
+              <a href="https://maps.google.com/?q=18+Lower+Baggot+Street+Dublin+2+Ireland" target="_blank" rel="noopener noreferrer" className="mt-3 text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
                 18 Lower Baggot Street, Dublin 2, Ireland
-              </p>
+              </a>
             </div>
             <div>
               <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
@@ -57,9 +57,9 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <p className="mt-3 text-sm text-slate-500">
+              <a href="mailto:support@lumenbridge.example" className="mt-3 text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
                 support@lumenbridge.example
-              </p>
+              </a>
             </div>
             <div>
               <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
@@ -77,7 +77,9 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <p className="mt-3 text-sm text-slate-500">+353 1 531 8420</p>
+              <a href="tel:+35315318420" className="mt-3 text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
+                +353 1 531 8420
+              </a>
             </div>
           </div>
         </div>

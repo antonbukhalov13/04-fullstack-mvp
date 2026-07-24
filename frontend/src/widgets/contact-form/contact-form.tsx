@@ -81,7 +81,7 @@ export function ContactForm() {
         </p>
         <button
           onClick={() => setSubmitState('idle')}
-          className="mt-4 text-sm font-semibold text-green-700 hover:text-green-600"
+          className="mt-4 text-sm font-semibold text-green-700 hover:text-green-600 inline-flex items-center min-h-[44px]"
         >
           Отправить ещё
         </button>

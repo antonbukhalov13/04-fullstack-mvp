@@ -198,7 +198,7 @@ export function AdminLoanDetail() {
           <StatusBadge status={loan.status} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
           <div>
             <p className="text-slate-500 mb-1">Клиент</p>
             <p className="font-medium text-slate-900">{loan.user.name ?? '—'}</p>
@@ -237,7 +237,7 @@ export function AdminLoanDetail() {
         </div>
 
         {loan.signedIp && (
-          <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-slate-500 mb-1">IP подписания</p>
               <p className="font-mono text-slate-700">{loan.signedIp}</p>
@@ -358,7 +358,7 @@ export function AdminLoanDetail() {
           {/* Смена статуса */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Изменить статус</label>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <select
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value)}

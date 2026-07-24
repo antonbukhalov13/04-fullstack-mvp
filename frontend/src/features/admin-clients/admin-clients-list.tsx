@@ -71,7 +71,7 @@ export function AdminClientsList() {
 
   return (
     <div>
-      <div className="flex gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
           type="text"
           value={search}
@@ -91,7 +91,7 @@ export function AdminClientsList() {
       {items.length === 0 ? (
         <div className="py-20 text-center text-sm text-slate-500">Клиентов не найдено.</div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-slate-200">
+        <div className="overflow-x-auto rounded-lg border border-slate-200">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               <tr>

@@ -33,7 +33,7 @@ export function Footer() {
   return (
     <footer className="border-t border-slate-200 bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 sm:gap-x-8">
           <div>
             <Link href="/" className="text-lg font-bold text-indigo-600">
               LumenBridge
@@ -48,7 +48,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-slate-500 hover:text-slate-700 transition-colors"
+                      className="text-sm text-slate-500 hover:text-slate-700 transition-colors inline-flex items-center min-h-[36px]"
                     >
                       {link.label}
                     </Link>

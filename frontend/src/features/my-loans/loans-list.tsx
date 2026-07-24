@@ -99,7 +99,7 @@ export function LoansList() {
         {active.length === 0 ? (
           <p className="text-sm text-slate-500">Нет активных займов.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 <tr>
@@ -139,7 +139,7 @@ export function LoansList() {
         {closed.length === 0 ? (
           <p className="text-sm text-slate-500">Нет закрытых займов.</p>
         ) : (
-          <div className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 <tr>

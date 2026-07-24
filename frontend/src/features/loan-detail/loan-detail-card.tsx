@@ -69,6 +69,13 @@ export function LoanDetailCard() {
   // Contract viewer
   const [showContract, setShowContract] = useState(false);
 
+  useEffect(() => {
+    if (showContract) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [showContract]);
+
   // Payment request form
   const [payAmount, setPayAmount] = useState('');
   const [payRef, setPayRef] = useState('');
@@ -221,7 +228,7 @@ export function LoanDetailCard() {
           <StatusBadge status={loan.status} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
           <div>
             <p className="text-slate-500 mb-1">Сумма</p>
             <p className="font-semibold text-slate-900 text-lg">{fmt(loan.amount)}</p>
@@ -240,7 +247,7 @@ export function LoanDetailCard() {
           </div>
         </div>
 
-        <div className="mt-4 flex gap-6 text-sm text-slate-600">
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:gap-6 text-sm text-slate-600">
           {loan.signedAt && (
             <span>Подписан: {fmtDate(loan.signedAt)}</span>
           )}
@@ -280,14 +287,14 @@ export function LoanDetailCard() {
                     Mock-код для тестирования: <span className="font-mono font-bold">{mockOtp}</span>
                   </p>
                 )}
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <input
                     type="text"
                     maxLength={6}
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                     placeholder="Введите 6-значный код"
-                    className="w-44 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="w-full sm:w-44 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   />
                   <button
                     onClick={confirmSign}
@@ -334,8 +341,8 @@ export function LoanDetailCard() {
 
       {/* Contract modal */}
       {showContract && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="relative max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowContract(false)}>
+          <div className="relative max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-4 sm:p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setShowContract(false)}
               className="absolute top-3 right-3 text-slate-400 hover:text-slate-600"
@@ -467,7 +474,7 @@ export function LoanDetailCard() {
       {/* График платежей */}
       <div>
         <h3 className="text-lg font-semibold text-slate-900 mb-3">График платежей</h3>
-        <div className="overflow-hidden rounded-lg border border-slate-200">
+        <div className="overflow-x-auto rounded-lg border border-slate-200">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               <tr>

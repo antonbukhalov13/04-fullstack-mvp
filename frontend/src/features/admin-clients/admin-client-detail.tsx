@@ -98,7 +98,7 @@ export function AdminClientDetail() {
       {/* Контакты */}
       <div className="rounded-lg border border-slate-200 bg-white p-6">
         <h2 className="text-xl font-bold text-slate-900 mb-4">Клиент</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
           <div>
             <p className="text-slate-500 mb-1">Имя</p>
             <p className="font-medium text-slate-900">{client.name ?? '—'}</p>
@@ -130,7 +130,7 @@ export function AdminClientDetail() {
       {client.applications.length > 0 && (
         <div className="rounded-lg border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-3">Заявки</h3>
-          <div className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 <tr>
@@ -165,8 +165,8 @@ export function AdminClientDetail() {
             {activeLoans.map((l) => {
               const nextPending = l.scheduleItems.find((s) => s.status === 'pending');
               return (
-                <div key={l.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3 text-sm">
-                  <div className="flex gap-6">
+                <div key={l.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-lg bg-slate-50 px-4 py-3 text-sm">
+                  <div className="flex flex-wrap gap-2 sm:gap-6">
                     <span className="font-medium text-slate-900">{fmt(l.amount)}</span>
                     <span className="text-slate-600">{l.termDays} дн.</span>
                     {nextPending && (
@@ -189,7 +189,7 @@ export function AdminClientDetail() {
           <h3 className="text-lg font-semibold text-slate-900 mb-3">Закрытые займы</h3>
           <div className="space-y-2">
             {closedLoans.map((l) => (
-              <div key={l.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-2 text-sm">
+              <div key={l.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-lg bg-slate-50 px-4 py-2 text-sm">
                 <span className="text-slate-700">{fmt(l.amount)} · {l.termDays} дн.</span>
                 <StatusBadge status={l.status} />
               </div>
@@ -202,7 +202,7 @@ export function AdminClientDetail() {
       {client.paymentRequests.length > 0 && (
         <div className="rounded-lg border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-semibold text-slate-900 mb-3">Заявки на оплату</h3>
-          <div className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                 <tr>

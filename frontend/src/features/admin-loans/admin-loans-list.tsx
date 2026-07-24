@@ -132,7 +132,7 @@ export function AdminLoansList() {
           Займов не найдено.
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-slate-200">
+        <div className="overflow-x-auto rounded-lg border border-slate-200">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               <tr>

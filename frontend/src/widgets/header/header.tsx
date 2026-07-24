@@ -27,14 +27,14 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                className="text-sm text-slate-600 hover:text-slate-900 transition-colors py-2.5"
               >
                 {item.label}
               </Link>
             ))}
             <Link
               href="/apply"
-              className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
             >
               Получить займ
             </Link>
@@ -42,7 +42,7 @@ export function Header() {
 
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+            className="md:hidden inline-flex items-center justify-center rounded-lg p-2.5 text-slate-600 hover:bg-slate-100"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Меню"
           >
@@ -60,13 +60,13 @@ export function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white">
+        <div className="md:hidden border-t border-slate-200 bg-white animate-in slide-in-from-top-2 duration-200">
           <div className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="block rounded-lg px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
+                className="block rounded-lg px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50"
                 onClick={() => setMobileOpen(false)}
               >
                 {item.label}
@@ -74,7 +74,7 @@ export function Header() {
             ))}
             <Link
               href="/apply"
-              className="block rounded-lg bg-indigo-600 px-3 py-2 text-center text-sm font-medium text-white hover:bg-indigo-700"
+              className="block rounded-lg bg-indigo-600 px-3 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 min-h-[44px]"
               onClick={() => setMobileOpen(false)}
             >
               Получить займ
