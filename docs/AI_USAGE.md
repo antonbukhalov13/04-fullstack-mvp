@@ -1119,3 +1119,19 @@ What I learned: Вертикальный timeline с alternating left/right че
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 61
+
+Goal: Переделать хедер — только ссылки на отдельные страницы, «Finance» чуть ниже логотипа, логотип скроллит наверх, лёгкий серый фон
+
+Prompt: Убрать якорные ссылки, оставить только ссылки на страницы. Сделать фон хедера чуть серым. Опустить «Finance» чуть ниже относительно логотипа. Логотип при клике скроллит наверх.
+
+Result: Frontend: widgets/header/header.tsx — navItems: Как это работает, Для бизнеса, FAQ, Контакты (все → страницы); handleAnchorClick и usePathname убраны; «Finance» — items-baseline + pb-0.5 (визуально ниже логотипа); logo Link onClick → scrollTo({ top: 0, behavior: 'smooth' }); bg → `bg-slate-50`. npm run build OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: items-baseline + pb на дочернем элементе — простой способ визуально опустить текст относительно логотипа без position/margin
+
+Model used: big-pickle
+
+Instrument used: OpenCode
