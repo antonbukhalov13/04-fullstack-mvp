@@ -16,8 +16,8 @@ export function ContactDetails() {
           </p>
 
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            <div>
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
                 <svg
                   className="h-5 w-5"
                   fill="none"
@@ -37,12 +37,12 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <a href="https://maps.google.com/?q=18+Lower+Baggot+Street+Dublin+2+Ireland" target="_blank" rel="noopener noreferrer" className="mt-3 text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
+              <a href="https://maps.google.com/?q=18+Lower+Baggot+Street+Dublin+2+Ireland" target="_blank" rel="noopener noreferrer" className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
                 18 Lower Baggot Street, Dublin 2, Ireland
               </a>
             </div>
-            <div>
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
                 <svg
                   className="h-5 w-5"
                   fill="none"
@@ -57,12 +57,12 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <a href="mailto:support@lumenbridge.example" className="mt-3 text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
+              <a href="mailto:support@lumenbridge.example" className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
                 support@lumenbridge.example
               </a>
             </div>
-            <div>
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
                 <svg
                   className="h-5 w-5"
                   fill="none"
@@ -77,7 +77,7 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <a href="tel:+35315318420" className="mt-3 text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
+              <a href="tel:+35315318420" className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
                 +353 1 531 8420
               </a>
             </div>
