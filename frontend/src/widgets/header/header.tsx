@@ -7,7 +7,7 @@ const navItems = [
   { href: '/how-it-works', label: 'Как это работает' },
   { href: '/business', label: 'Для бизнеса' },
   { href: '/faq', label: 'FAQ' },
-  { href: '/contacts', label: 'Контакты' },
+  { href: '/contacts', label: 'Обратная связь' },
 ];
 
 export function Header() {

@@ -4,7 +4,7 @@ const columns = [
   {
     title: 'Компания',
     links: [
-      { href: '/about', label: 'О компании' },
+      { href: '/#about', label: 'О компании' },
       { href: '/how-it-works', label: 'Как это работает' },
       { href: '/business', label: 'Для бизнеса' },
     ],
@@ -12,9 +12,8 @@ const columns = [
   {
     title: 'Поддержка',
     links: [
-      { href: '/faq', label: 'Часто задаваемые вопросы' },
       { href: '/contacts', label: 'Обратная связь' },
-      { href: '/contacts', label: 'Контакты' },
+      { href: '/faq', label: 'Часто задаваемые вопросы' },
     ],
   },
   {
@@ -59,7 +58,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 border-t border-slate-200 pt-8">
+        <div className="mt-10 border-t border-slate-300 pt-8">
           <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-sm text-slate-500">
             <div className="flex items-center gap-2">
               <svg className="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
