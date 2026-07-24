@@ -1135,3 +1135,19 @@ What I learned: items-baseline + pb на дочернем элементе — �
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 62
+
+Goal: Исправить футер и хедер — ссылка «О компании» на якорь главной, создать /contacts, «Контакты» → «Обратная связь», заметнее разделитель
+
+Prompt: Ссылка «О компании» в футере ведёт на несуществующий /about — исправить на `/#about`. Ссылка «Контакты» ведёт на несуществующую страницу — создать /contacts. В хедере и футере заменить «Контакты» на «Обратная связь» для единообразия. Убрать дубли. Разделитель перед контактами заметнее.
+
+Result: Frontend: widgets/footer/footer.tsx — «О компании» → `/#about`; «Обратная связь» → /contacts, «Контакты» убрана; border-t → border-slate-300. widgets/header/header.tsx — «Контакты» → «Обратная связь» → /contacts. Создан app/contacts/page.tsx — ContactSection (форма) + ContactDetails (контакты). npm run build OK (27 маршрутов, /contacts ○).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: /about не существовала — замена на `/#about` решает без создания страницы. «Контакты» в хедере/футере → «Обратная связь» для единообразия
+
+Model used: big-pickle
+
+Instrument used: OpenCode
