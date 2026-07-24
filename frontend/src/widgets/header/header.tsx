@@ -42,7 +42,7 @@ export function Header() {
 
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center rounded-lg p-2.5 text-slate-600 hover:bg-slate-100"
+            className="md:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 min-h-[44px] min-w-[44px]"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Меню"
           >
@@ -66,7 +66,7 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="block rounded-lg px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-100"
+                className="block rounded-lg px-3 py-3 text-sm text-slate-600 hover:bg-slate-100 min-h-[44px]"
                 onClick={() => setMobileOpen(false)}
               >
                 {item.label}

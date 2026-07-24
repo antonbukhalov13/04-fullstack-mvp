@@ -345,7 +345,7 @@ export function LoanDetailCard() {
           <div className="relative max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-4 sm:p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setShowContract(false)}
-              className="absolute top-3 right-3 text-slate-400 hover:text-slate-600"
+              className="absolute top-3 right-3 p-2 min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
             >
               ✕
             </button>

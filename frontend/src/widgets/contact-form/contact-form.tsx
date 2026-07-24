@@ -32,6 +32,7 @@ export function ContactForm() {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: valibotResolver(schema),
@@ -39,6 +40,11 @@ export function ContactForm() {
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    if (!data.consent) {
+      setError('consent', { message: 'Необходимо дать согласие' });
+      return;
+    }
+
     setSubmitState('submitting');
     setErrorMessage('');
 
@@ -113,14 +119,27 @@ export function ContactForm() {
       />
 
       <div>
-        <label className="text-sm font-medium text-slate-700">
-          Прикрепление файла
-        </label>
         <input
           type="file"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="mt-1 block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+          className="sr-only"
+          id="contact-file"
         />
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="contact-file"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors cursor-pointer min-h-[44px]"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+            </svg>
+            Выбрать файл
+          </label>
+          <span className="text-sm text-slate-700">Прикрепление файла</span>
+        </div>
+        {file && (
+          <p className="mt-1 text-xs text-slate-500">{file.name}</p>
+        )}
       </div>
 
       <Checkbox
