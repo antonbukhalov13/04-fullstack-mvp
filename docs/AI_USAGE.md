@@ -1069,3 +1069,21 @@ What I learned: Notifications были user-scoped только (GET /users/me/n
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 58
+
+Goal: Исправить responsive на мобильных и планшетах — iOS auto-zoom, таблицы, сайдбары, модалка, touch targets, гриды
+
+Prompt: 16 — адаптивность
+
+Доработай стили публичных страниц, форм, личного кабинета и админ-панели для мобильных экранов (от ~320px) и планшетов: боковые меню кабинета/админки — в компактное/выдвижное меню на узких экранах, таблицы/списки займов и заявок — переход к карточному виду при необходимости, формы — удобны с телефона. Работай через Tailwind-брейкпоинты, не переписывай существующую вёрстку с нуля.
+
+Result: Frontend: (1) shared/ui/input.tsx, select.tsx, textarea.tsx — text-base + py-2.5 (iOS fix); button.tsx — sizes sm/md/lg увеличены; card.tsx — padding responsive px-4/py-3 sm:px-6/sm:py-4; (2) widgets/dashboard-sidebar/dashboard-sidebar.tsx, widgets/admin-sidebar/admin-sidebar.tsx — mobile hamburger FAB z-50 lg:hidden, overlay, translate-x, автозакрытие; layouts → p-4 lg:p-6; (3) 9 файлов features/ — overflow-hidden → overflow-x-auto; (4) apply-form.tsx, calculator.tsx — grid-cols-1 sm:grid-cols-2; admin detail pages — grids responsive sm/lg, flex-col sm:flex-row; loan-detail-card.tsx — flex-wrap, OTP input w-full sm:w-44; admin-clients-list.tsx — search flex-col sm:flex-row; admin-client-detail.tsx — loan rows responsive; (5) header.tsx — hamburger p-2.5, nav py-2.5, CTA min-h-44px, animate-in; footer.tsx — gap responsive, links min-h-36px; hero.tsx — py-10 sm:py-16 lg:py-24; contact-details.tsx — tel:/mailto: + indigo; (6) faq-preview.tsx, contact-form.tsx, apply-form.tsx — touch targets min-h-44px; (7) loan-detail-card.tsx — modal backdrop close, body overflow lock, responsive p-4 sm:p-6. npm run build OK (26 маршрутов). Runtime: /, /dashboard/applications, /admin/applications — 200 OK
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: iOS Safari auto-zoom при фокусе на input — текст должен быть ≥16px (text-base), иначе зум неизбежен
+
+Model used: big-pickle
+
+Instrument used: OpenCode
