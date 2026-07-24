@@ -1170,15 +1170,31 @@ Instrument used: OpenCode
 
 ## Request 64
 
-Goal: Глобальные стили — фон сайта, кнопки фиолетовые, transitions, быстрый focus инпутов, рамки секций
+Goal: Глобальные стили — фон сайта, кнопки фиолетовые, transitions, плавный focus инпутов
 
-Prompt: Кнопки на сайте должны быть фиолетовые (цвет логотипа). Плавные transitions на ссылках и кнопках. Быстрый focus на инпутах. Рамка инпутов = цвет логотипа. Фон сайта — не белый (менее белый). Секции с видимыми рамками (не full-width).
+Prompt: Кнопки на сайте должны быть фиолетовые (цвет логотипа). Плавные transitions на ссылках и кнопках. Плавный focus на инпутах. Рамка инпутов = цвет логотипа. Фон сайта — не белый (менее белый).
 
 Result: Frontend: globals.css — body `--background: #f8fafc` (bg-slate-50), убран dark mode media query. shared/ui/input.tsx, textarea.tsx, select.tsx — `transition duration-300` для плавного focus и нажатия. widgets/credit-history — `hover:bg-indigo-500` → `hover:bg-indigo-700` + `transition-colors`. widgets/for-business — аналогично. widgets/faq-preview — добавлен `transition-colors` на ссылку. Hero: `to-white` → `to-slate-50` для плавного перехода в фон.body. npm run build OK (27 маршрутов).
 
 Used as-is / edited manually / rejected: used as-is
 
 What I learned: `transition duration-300` вместо `transition-colors` — анимирует все свойства (ring, border, box-shadow), focus и click становятся плавными
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 65
+
+Goal: Формы — contact form consent на русском
+
+Prompt: Исправить ошибку consent в форме обратной связи на русский.
+
+Result: Frontend: widgets/contact-form/contact-form.tsx — `defaultValues: { consent: '' }` чтобы при неотмеченном чекбоксе значение было '' вместо undefined, `minLength(1)` показывает 'Необходимо дать согласие' вместо 'Invalid type'. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `defaultValues` в react-hook-form решает проблему undefined для чекбоксов
 
 Model used: big-pickle
 
