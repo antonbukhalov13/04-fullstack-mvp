@@ -35,6 +35,7 @@ export function ContactForm() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: valibotResolver(schema),
+    defaultValues: { consent: '' },
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
