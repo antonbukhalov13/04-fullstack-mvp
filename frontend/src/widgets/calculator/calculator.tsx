@@ -5,7 +5,6 @@ import { object, pipe, number, minValue, maxValue, type InferOutput } from 'vali
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import { calculateAnnuity, INDIVIDUAL_LIMITS } from '@/shared/lib/calculator';
 import { Input } from '@/shared/ui/input';
-import { Button } from '@/shared/ui/button';
 
 const schema = object({
   amount: pipe(
@@ -52,7 +51,7 @@ export function Calculator() {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section id="calculator" className="py-16 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
@@ -112,12 +111,6 @@ export function Calculator() {
               </p>
             </div>
           )}
-
-          <div className="text-center">
-            <Button type="submit" size="lg">
-              Получить займ
-            </Button>
-          </div>
 
           <p className="text-xs text-slate-400 text-center">
             Расчёт носит ознакомительный характер. Итоговые условия зависят от
