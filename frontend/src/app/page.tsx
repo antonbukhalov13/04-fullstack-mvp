@@ -23,11 +23,11 @@ export default function Home() {
       <HowItWorks />
       <TransparentTerms />
       <AboutCompany />
-      <ClientSafety />
       <CreditHistory />
       <ForBusiness />
       <TrustBlock />
       <FaqPreview />
+      <ClientSafety />
       <ContactSection />
       <ContactDetails />
     </>
