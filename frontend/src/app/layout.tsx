@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   },
   description:
     'Простые и прозрачные займы для частных лиц и бизнеса в Европе — быстрое решение и безопасное оформление.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
