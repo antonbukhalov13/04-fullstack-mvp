@@ -1199,3 +1199,19 @@ What I learned: `defaultValues` в react-hook-form решает проблему
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 66
+
+Goal: Контакты — цвет ссылок = цвет иконок
+
+Prompt: Ссылки контактов в футере должны быть того же цвета что и иконки.
+
+Result: Frontend: widgets/footer/footer.tsx — иконки контактов `text-slate-400` → `text-slate-500`, ссылки добавлен `text-slate-500` (до этого был только `hover:text-slate-700` без base color). Теперь иконки и ссылки = `text-slate-500`, hover = `text-slate-700`. npm run build OK (27 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: В contact-details ссылки уже совпадали с иконками (indigo). Несовпадение было только в футере — icons slate-400 vs links без explicit base color.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
