@@ -1391,3 +1391,19 @@ What I learned: `border-l-4 border-indigo-600 pl-6 sm:pl-8` — акцентна
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 78
+
+Goal: Добавить рамки для двух пунктов в секции "Улучшение кредитной истории"
+
+Prompt: В секции Улучшение кредитной истории нужно добавить рамки для двух пунктов
+
+Result: Frontend: widgets/credit-history/credit-history.tsx — `<ul>/<li>` заменены на `<div>` с `space-y-3`. Каждый пункт — `rounded-lg border border-slate-200 bg-white px-5 py-3` с иконкой и текстом. npm run build OK (26 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `rounded-lg border border-slate-200 bg-white` — лёгкая карточка для пунктов списка, сочетается с `bg-slate-50` фона секции.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
