@@ -1628,3 +1628,30 @@ What I learned: ownerId=0 при загрузке файлов — не баг, 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 89
+
+Goal: Добавить пагинацию таблиц в админке, индикатор загрузки при повторном запросе, dev-пометку на mock OTP, форматирование User-Agent, убрать лишний scrollTo
+
+Prompt: Группа 8: Minor UX
+
+таблицы в админке без пагинации (фронтенд), нет индикатора загрузки при повторном запросе, Mock-OTP без dev-пометки, signedIp/signedUserAgent сырые технические поля без форматирования, автоскролл на логотипе.
+
+Result:
+
+- scrollTo: проверено — уже убран из header в Request 86. Единственный scrollTo в apply-form.tsx (scrollTo top on mount) — корректен.
+- Mock-OTP: label изменён с «Mock-код:» на «Тестовый код (dev):» в login-form.tsx.
+- Pagination: создан shared `<Pagination>` компонент (назад/далее, X–Y из Z, page counter). Добавлен в 4 админских списка: applications, clients, loans, payment-requests. Каждый список хранит `offset`/`total` state, передаёт `limit`/`offset` в query params, обрабатывает paginated ответ `{ data, total }`.
+- Loading overlay: создан shared `<LoadingOverlay>` компонент (тонкий indigo бар при refetch с данными). Обёрнуты 3 основных списка: applications, clients, loans.
+- Тёмная тема: пропущена — не требуется AGENTS.md, требует redesign всех компонентов.
+- AuditLog UI: пропущена — требует создания нового page + route, выходит за рамки minor UX.
+- User-Agent: добавлен `parseUserAgent()` — парсит UA строку в browser (Chrome/Firefox/Edge/Safari) + OS (Windows/macOS/Linux/Android/iOS). Отображается как «Chrome · Windows» вместо сырого UA.
+npm run build OK (26 routes).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Backend уже возвращает `{ data, total, limit, offset }` — фронтмент должен обрабатывать этот формат вместо прямого массива. LoadingOverlay — минимальный индикатор (animate-pulse bar), не перекрывает контент. parseUserAgent — простой regex-based парсер для отображения, не для аналитики.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
