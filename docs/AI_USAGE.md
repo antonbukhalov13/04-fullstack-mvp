@@ -1655,3 +1655,26 @@ What I learned: Backend уже возвращает `{ data, total, limit, offse
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 90
+
+Goal: Добавить GIN-индексы на Application для поиска и обернуть approve→create loan в $transaction
+
+Prompt: Исправление по результатам code review — два замечания:
+
+1. GIN-индексы добавлены только на User.name/User.phone, но поиск в ApplicationsService.findAll фильтрует по Application.firstName/lastName/companyName — эти поля не индексированы.
+2. ApplicationsService.updateStatus (approve → create loan) — application.update и loan.create двумя раздельными вызовами без $transaction. При сбое заявка останется approved без займа.
+
+Result:
+
+- Миграция `20260727110000_add_application_search_indexes`: GIN-индексы на Application.firstName, Application.lastName, Application.companyName через pg_trgm_ops. Применяется через `prisma migrate deploy`.
+- ApplicationsService.updateStatus: обёрнут в `this.prisma.$transaction(async (tx) => {...})` — `tx.application.update` + `tx.loan.create` атомарно. Emits (`application.status.changed`, `loan.created`) вынесены за пределы транзакции (как в других местах — listener в notifications обёрнут в try/catch).
+npm run build OK (frontend + backend tsc --noEmit).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Prisma не поддерживает GIN-индексы — только через raw SQL миграции. Emits eventEmitter лучше выносить за транзакцию — если listener упадёт, это не откатит бизнес-данные. $transaction в Prisma v7 работает через driver adapter (@prisma/adapter-pg).
+
+Model used: big-pickle
+
+Instrument used: OpenCode
