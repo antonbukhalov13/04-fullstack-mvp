@@ -21,7 +21,7 @@ export function Header() {
             <span className="hidden sm:inline text-sm font-semibold text-slate-600 pb-0.5">Finance</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-6">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -39,9 +39,16 @@ export function Header() {
             </Link>
           </nav>
 
+          <Link
+            href="/apply"
+            className="hidden md:inline-flex lg:hidden items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
+          >
+            Получить займ
+          </Link>
+
           <button
             type="button"
-            className="md:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 min-h-[44px] min-w-[44px]"
+            className="lg:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 min-h-[44px] min-w-[44px]"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Меню"
           >
@@ -59,7 +66,7 @@ export function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden border-t border-slate-200 bg-white animate-in slide-in-from-top-2 duration-200">
           <div className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <Link
