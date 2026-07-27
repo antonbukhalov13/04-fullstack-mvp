@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 interface Application {
   id: string;
@@ -126,12 +127,13 @@ export function AdminApplicationsList() {
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
-        <button
+        <Button
+          variant="primary"
+          size="md"
           onClick={handleSearch}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
         >
           Найти
-        </button>
+        </Button>
       </div>
 
       {items.length === 0 ? (

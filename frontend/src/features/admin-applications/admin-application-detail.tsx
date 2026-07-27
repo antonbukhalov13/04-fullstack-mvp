@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 interface ApplicationDetail {
   id: string;
@@ -87,6 +88,7 @@ export function AdminApplicationDetail() {
 
   const updateStatus = async () => {
     if (!newStatus) return;
+    if (newStatus === 'rejected' && !window.confirm('Отклонить заявку? Это действие необратимо.')) return;
     setActionLoading(true);
     setActionError(null);
     setActionSuccess(null);
@@ -266,14 +268,14 @@ export function AdminApplicationDetail() {
                     </>
                   )}
                 </select>
-                <button
+                <Button
+                  variant="primary"
                   onClick={updateStatus}
                   disabled={!newStatus || actionLoading}
-                  className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                  loading={actionLoading}
                 >
-                  {actionLoading ? <Spinner size="sm" className="mr-2" /> : null}
                   Применить
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -288,14 +290,15 @@ export function AdminApplicationDetail() {
               placeholder="Добавить комментарий к заявке..."
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-none"
             />
-            <button
+            <Button
+              variant="secondary"
               onClick={addComment}
               disabled={!comment.trim() || actionLoading}
-              className="mt-2 inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+              loading={actionLoading}
+              className="mt-2"
             >
-              {actionLoading ? <Spinner size="sm" className="mr-2" /> : null}
               Оставить комментарий
-            </button>
+            </Button>
           </div>
 
           {actionError && <p className="text-sm text-red-600">{actionError}</p>}

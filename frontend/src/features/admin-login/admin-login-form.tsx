@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError, setAdminAuthToken } from '@/shared/api';
 import { Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 interface AdminLoginResponse {
   accessToken: string;
@@ -83,14 +84,15 @@ export function AdminLoginForm() {
         <p className="text-sm text-red-600">{error}</p>
       )}
 
-      <button
+      <Button
         type="submit"
+        variant="primary"
+        loading={loading}
         disabled={!login.trim() || !password.trim() || loading}
-        className="w-full inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+        className="w-full"
       >
-        {loading ? <Spinner size="sm" className="mr-2" /> : null}
         Войти
-      </button>
+      </Button>
     </form>
   );
 }

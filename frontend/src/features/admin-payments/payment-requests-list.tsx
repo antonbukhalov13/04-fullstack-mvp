@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 interface PaymentRequest {
   id: string;
@@ -74,6 +75,7 @@ export function PaymentRequestsList() {
   };
 
   const decide = async (id: string, status: 'approved' | 'rejected') => {
+    if (status === 'rejected' && !window.confirm('Отклонить заявку на оплату?')) return;
     setActionId(id);
     setActionError(null);
     setActionSuccess(null);
@@ -168,21 +170,23 @@ export function PaymentRequestsList() {
                   <td className="px-4 py-3">
                     {pr.status === 'pending' && (
                       <div className="flex items-center gap-2">
-                        <button
+                        <Button
+                          variant="primary"
+                          size="sm"
                           onClick={() => decide(pr.id, 'approved')}
                           disabled={actionId === pr.id}
-                          className="text-xs font-medium text-green-600 hover:text-green-800 disabled:opacity-50 transition-colors"
+                          loading={actionId === pr.id}
                         >
-                          {actionId === pr.id ? <Spinner size="sm" /> : 'Подтвердить'}
-                        </button>
-                        <span className="text-slate-300">|</span>
-                        <button
+                          Подтвердить
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
                           onClick={() => decide(pr.id, 'rejected')}
                           disabled={actionId === pr.id}
-                          className="text-xs font-medium text-red-600 hover:text-red-800 disabled:opacity-50 transition-colors"
                         >
                           Отклонить
-                        </button>
+                        </Button>
                       </div>
                     )}
                   </td>

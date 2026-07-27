@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 interface LoanDetail {
   id: string;
@@ -88,6 +89,7 @@ export function AdminLoanDetail() {
 
   const updateStatus = async () => {
     if (!newStatus) return;
+    if (!window.confirm(`Изменить статус займа на «${statusLabels[newStatus] ?? newStatus}»?`)) return;
     setActionLoading(true);
     setActionError(null);
     setActionSuccess(null);
@@ -139,6 +141,7 @@ export function AdminLoanDetail() {
   };
 
   const closeLoan = async () => {
+    if (!window.confirm('Закрыть займ? Это действие необратимо.')) return;
     setActionLoading(true);
     setActionError(null);
     setActionSuccess(null);
@@ -179,9 +182,15 @@ export function AdminLoanDetail() {
 
   if (!loan) return null;
 
-  const availableStatuses = Object.entries(statusLabels)
-    .filter(([value]) => value !== loan.status)
-    .map(([value, label]) => ({ value, label }));
+  const allowedTransitions: Record<string, string[]> = {
+    pending_signature: ['active'],
+    active: ['closed'],
+    overdue: ['closed'],
+    default: ['active', 'closed'],
+  };
+
+  const availableStatuses = (allowedTransitions[loan.status] ?? [])
+    .map((value) => ({ value, label: statusLabels[value] ?? value }));
 
   return (
     <div className="space-y-6">
@@ -279,13 +288,14 @@ export function AdminLoanDetail() {
                     </td>
                     <td className="px-4 py-2">
                       {item.status !== 'paid' && loan.status === 'active' && (
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => markPaid(item.id)}
                           disabled={actionLoading}
-                          className="text-xs font-medium text-green-600 hover:text-green-800 disabled:opacity-50 transition-colors"
                         >
                           Отметить оплату
-                        </button>
+                        </Button>
                       )}
                     </td>
                   </tr>
@@ -369,28 +379,28 @@ export function AdminLoanDetail() {
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
               </select>
-              <button
+              <Button
+                variant="primary"
                 onClick={updateStatus}
                 disabled={!newStatus || actionLoading}
-                className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+                loading={actionLoading}
               >
-                {actionLoading ? <Spinner size="sm" className="mr-2" /> : null}
                 Применить
-              </button>
+              </Button>
             </div>
           </div>
 
           {/* Закрыть займ */}
           {loan.status !== 'closed' && (
             <div>
-              <button
+              <Button
+                variant="danger"
                 onClick={closeLoan}
                 disabled={actionLoading}
-                className="inline-flex items-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors"
+                loading={actionLoading}
               >
-                {actionLoading ? <Spinner size="sm" className="mr-2" /> : null}
                 Закрыть займ
-              </button>
+              </Button>
             </div>
           )}
 

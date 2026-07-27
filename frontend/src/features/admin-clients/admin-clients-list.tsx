@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
 import { Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 interface ClientSummary {
   id: string;
@@ -80,12 +81,13 @@ export function AdminClientsList() {
           placeholder="Поиск по имени или телефону..."
           className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
         />
-        <button
+        <Button
+          variant="primary"
+          size="md"
           onClick={handleSearch}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
         >
           Найти
-        </button>
+        </Button>
       </div>
 
       {items.length === 0 ? (

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { apiRequest, ApiError } from '@/shared/api';
 import { Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 export function ManualPaymentForm({ onRecorded }: { onRecorded?: () => void }) {
   const [loanId, setLoanId] = useState('');
@@ -70,14 +71,14 @@ export function ManualPaymentForm({ onRecorded }: { onRecorded?: () => void }) {
           />
         </div>
         <div className="flex items-end">
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            loading={loading}
             disabled={loading}
-            className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
           >
-            {loading ? <Spinner size="sm" className="mr-2" /> : null}
             Зафиксировать
-          </button>
+          </Button>
         </div>
       </div>
 

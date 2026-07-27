@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
 import { Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 interface OverdueItem {
   id: string;
@@ -126,13 +127,15 @@ export function OverdueScheduleList() {
                   <td className="px-4 py-3 text-red-700 font-medium">{fmt(item.amount)}</td>
                   <td className="px-4 py-3 text-slate-500">{fmtDate(item.dueDate)}</td>
                   <td className="px-4 py-3">
-                    <button
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       onClick={() => markPending(item.loanId, item.id)}
                       disabled={actionId === item.id}
-                      className="text-xs font-medium text-slate-600 hover:text-slate-800 disabled:opacity-50 transition-colors"
+                      loading={actionId === item.id}
                     >
-                      {actionId === item.id ? <Spinner size="sm" /> : 'Снять просрочку'}
-                    </button>
+                      Снять просрочку
+                    </Button>
                   </td>
                 </tr>
               ))}
