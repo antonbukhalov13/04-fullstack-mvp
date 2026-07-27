@@ -1423,3 +1423,19 @@ What I learned: `border-t-2` (2px) vs `border-t` (1px) — разница в т�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 80
+
+Goal: Вывести кнопку "Получить займ" из нава для экранов 768–1024px
+
+Prompt: Кнопка скрыта на md вместе с навом. Вывести кнопку из нава, чтобы она была видна в диапазоне 768–1024px.
+
+Result: Frontend: widgets/header/header.tsx — добавлена отдельная кнопка `<Link>` между `</nav>` и гамбургером с `hidden md:inline-flex lg:hidden`. На lg+ кнопка внутри nav, на md — отдельная кнопка + гамбургер, на mobile — только гамбургер. npm run build OK (26 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Дублирование CTA-кнопки с разными breakpoint-классами (`hidden md:inline-flex lg:hidden` снаружи + внутри nav) — стандартный паттерн для responsive хедера.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
