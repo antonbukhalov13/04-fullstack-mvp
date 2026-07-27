@@ -1525,9 +1525,9 @@ Result:
 - clients.service.ts: добавлен Math.round(... * 100) / 100 на totalLoansAmount (был missing rounding).
 - npm run build OK (backend + frontend).
 
-What I learned: Prisma enum не принимает string-литералы в update-операциях — нужен каст через as any или импорт enum-типа. Ручная миграция через ALTER TABLE+UPDATE+RENAME — единственный способ конвертировать String→enum при наличии данных.
-
 Used as-is / edited manually / rejected: edited manually
+
+What I learned: Prisma enum не принимает string-литералы в update-операциях — нужен каст через as any или импорт enum-типа. Ручная миграция через ALTER TABLE+UPDATE+RENAME — единственный способ конвертировать String→enum при наличии данных.
 
 Model used: big-pickle
 
@@ -1549,9 +1549,9 @@ Result:
 - Составные индексы: включено расширение `pg_trgm`, добавлены GIN-индексы на User.name и User.phone для ILIKE-поиска (%term%).
 npm run build OK (backend + frontend).
 
-What I learned: @nestjs/throttler v3 использует `ThrottlerModule.forRoot([{ name, ttl, limit }])` вместо объекта. Prisma не поддерживает GIN-индексы — создаются через raw SQL миграцию. Пагинация через take/skip + count() — стандартный паттерн.
-
 Used as-is / edited manually / rejected: edited manually
+
+What I learned: @nestjs/throttler v3 использует `ThrottlerModule.forRoot([{ name, ttl, limit }])` вместо объекта. Prisma не поддерживает GIN-индексы — создаются через raw SQL миграцию. Пагинация через take/skip + count() — стандартный паттерн.
 
 Model used: big-pickle
 
@@ -1573,9 +1573,33 @@ Result:
 - DashboardSidebar: добавлен badge с количеством непрочитанных уведомлений (GET `/users/me/notifications`, подсчёт `!isRead`). Красный badge (≥100 → "99+") рядом с текстом «Уведомления».
 npm run build OK (26 routes).
 
+Used as-is / edited manually / rejected: edited manually
+
 What I learned: Header был без auth links — элементарный пропуск. Badge показывается только при unreadCount > 0. Logout через setAuthToken('') + localStorage.removeItem.
 
-Used as-is / edited manually / rejected: edited manually
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 87
+
+Goal: Добавить confirm() перед необратимыми действиями, ограничения на переходы статусов займа, использовать variant="danger" и shared Button в admin
+
+Prompt: Группа 6: Frontend safety
+
+нет ни одного confirm() перед необратимыми действиями, смена статуса займа — select без ограничений на переходы, variant="danger" определён но нигде не используется, дизайн-система используется не везде (handmade кнопки в admin).
+
+Result:
+
+- #18 confirm(): добавлен `window.confirm()` в admin-application-detail (reject), admin-loans-detail (updateStatus, closeLoan), payment-requests-list (reject). Сообщения: «Изменить статус займа на...?», «Закрыть займ? Это действие необратимо.», «Отклонить заявку на оплату?»
+- #19 Status restrictions: в admin-loans-detail добавлен `allowedTransitions` объект — pending_signature→active, active→closed, overdue→closed, default→active/closed. Select показывает только допустимые переходы.
+- #23 variant="danger": admin-loans-detail «Закрыть займ» → `<Button variant="danger">`, payment-requests-list «Отклонить» → `<Button variant="danger">`
+- #24 shared Button: все raw `<button>` в admin заменены на `<Button>` из `@/shared/ui/button` — admin-applications-list (Найти), admin-application-detail (Применить, Оставить комментарий), admin-login-form (Войти), admin-clients-list (Найти), admin-loans-list (Найти), admin-loans-detail (Отметить оплату, Применить), manual-payment-form (Зафиксировать), overdue-schedule-list (Снять просрочку), payment-requests-list (Подтвердить, Отклонить). 10 файлов, 15 кнопок.
+npm run build OK (26 routes).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Строка "| " между approve/reject в payment-requests-list была handmade разделителем — заменена на gap-2 между двумя Button. Confirm перед reject (danger action) — стандартный паттерн, approve обычно без confirm.
 
 Model used: big-pickle
 
