@@ -1480,3 +1480,28 @@ What I learned: Файловый эндпоинт нельзя защитить 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 83
+
+Goal: Исправить транзакционность и платёжную логику — частичные платежи, max проверки, защита от гонок
+
+Prompt: Группа 2: Транзакции и платёжная логика
+
+нет ни одной транзакции в write-операциях, частичные платежи теряются (recalculateSchedule не учитывает paidAmount), recordDirectPayment без проверки максимума, markScheduleItemPaidAdmin в обход логики платежей, гонка при confirmSign (check+write не атомарны).
+
+Result:
+
+- Schema: добавлен `paidAmount Float @default(0)` в PaymentScheduleItem, миграция применена.
+- payments.service.ts — `recalculateSchedule` теперь учитывает `paidAmount`: partial payment накапливается, item помечается `paid` только когда `paidAmount >= amount`. `recordDirectPayment` — добавлена проверка `dto.amount > remaining` (остаток = sum(item.amount - item.paidAmount) для pending элементов), 400 при превышении. `decidePaymentRequest` — approve обёрнут в `$transaction` (create Payment + update PaymentRequest), reject — без транзакции. Новый метод `markScheduleItemPaidAdmin(loanId, itemId, amount, adminId)` — создаёт Payment и делегирует в `recalculateSchedule` вместо прямого обновления статуса.
+- loans.service.ts — `confirmSign` обёрнут в `$transaction` (find loan, validate status, find+mark OTP, update loan, create schedule items — всё атомарно, защита от гонки). `updateStatusAdmin` обёрнут в `$transaction`. `markScheduleItemPaidAdmin` — при `status=paid` вычисляет остаток элемента, создаёт Payment через `paymentsService.markScheduleItemPaidAdmin`, при `status=overdue/pending` — прямое обновление.
+- loans.module.ts — добавлен `PaymentsModule` в imports.
+- loans.controller.ts — `markScheduleItemPaidAdmin` теперь принимает `@Req() req` и передаёт `adminId` из `req.user.id`.
+npm run build OK (backend + frontend).
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Prisma v7 `$transaction` принимает async callback — всё внутри callback выполняется в одной транзакции. `paidAmount` на PaymentScheduleItem позволяет корректно обрабатывать partial payments без потери данных. `recalculateSchedule` — единая точка распределения платежей по графику, все методы создают Payment перед вызовом.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
