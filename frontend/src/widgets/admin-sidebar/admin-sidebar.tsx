@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { getAdminAuthToken } from '@/shared/api';
+import { getAdminAuthToken, setAdminAuthToken } from '@/shared/api';
 
 interface AdminUser {
   id: string;
@@ -32,6 +32,7 @@ export function AdminSidebar() {
       router.replace('/admin/login');
       return;
     }
+    setAdminAuthToken(token);
     const raw = localStorage.getItem('admin_user');
     if (raw) {
       try {

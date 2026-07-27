@@ -17,6 +17,8 @@ const ALLOWED_MIME_TYPES = [
   'image/png',
 ];
 
+const ALLOWED_OWNER_TYPES = ['application', 'contact_message'];
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 @Injectable()
@@ -59,6 +61,12 @@ export class FilesService {
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
       throw new BadRequestException(
         `Invalid file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`,
+      );
+    }
+
+    if (ownerType && !ALLOWED_OWNER_TYPES.includes(ownerType)) {
+      throw new BadRequestException(
+        `Invalid ownerType. Allowed: ${ALLOWED_OWNER_TYPES.join(', ')}`,
       );
     }
 

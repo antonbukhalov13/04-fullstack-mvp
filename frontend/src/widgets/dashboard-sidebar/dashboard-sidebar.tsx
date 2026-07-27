@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { getAuthToken } from '@/shared/api';
+import { getAuthToken, setAuthToken } from '@/shared/api';
 
 const navItems = [
   { href: '/dashboard/applications', label: 'Заявки' },
@@ -23,6 +23,7 @@ export function DashboardSidebar() {
       router.replace('/login');
       return;
     }
+    setAuthToken(token);
     setAuthorized(true);
   }, [router]);
 

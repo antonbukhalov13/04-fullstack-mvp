@@ -54,6 +54,7 @@ export class LoansController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async findOne(@Param('id') id: string, @CurrentUser() user: CurrentUserPayload) {
     return this.loansService.findOneForUser(id, user.id);
   }
