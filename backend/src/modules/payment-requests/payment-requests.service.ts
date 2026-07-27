@@ -51,33 +51,40 @@ export class PaymentRequestsService {
     return paymentRequest;
   }
 
-  async findAll(query: QueryPaymentRequestsDto) {
+  async findAll(query: QueryPaymentRequestsDto, take: number, skip: number) {
     const where: any = {};
 
     if (query.status) {
       where.status = query.status;
     }
 
-    return this.prisma.paymentRequest.findMany({
-      where,
-      include: {
-        loan: {
-          select: {
-            id: true,
-            amount: true,
-            status: true,
+    const [items, total] = await Promise.all([
+      this.prisma.paymentRequest.findMany({
+        where,
+        include: {
+          loan: {
+            select: {
+              id: true,
+              amount: true,
+              status: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              phone: true,
+              name: true,
+            },
           },
         },
-        user: {
-          select: {
-            id: true,
-            phone: true,
-            name: true,
-          },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+        take,
+        skip,
+      }),
+      this.prisma.paymentRequest.count({ where }),
+    ]);
+
+    return { data: items, total, limit: take, offset: skip };
   }
 
   async findUserPaymentRequests(userId: string) {

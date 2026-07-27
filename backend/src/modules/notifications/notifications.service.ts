@@ -14,11 +14,18 @@ export class NotificationsService {
     });
   }
 
-  async findByUser(userId: string) {
-    return this.prisma.notification.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findByUser(userId: string, take: number, skip: number) {
+    const where = { userId };
+    const [items, total] = await Promise.all([
+      this.prisma.notification.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take,
+        skip,
+      }),
+      this.prisma.notification.count({ where }),
+    ]);
+    return { data: items, total, limit: take, offset: skip };
   }
 
   async markAsRead(id: string, userId: string) {
@@ -33,20 +40,28 @@ export class NotificationsService {
     return { success: true };
   }
 
-  async findAllAdmin() {
-    return this.prisma.notification.findMany({
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        type: true,
-        message: true,
-        isRead: true,
-        createdAt: true,
-        user: {
-          select: { id: true, name: true, phone: true },
+  async findAllAdmin(take: number, skip: number) {
+    const where = {};
+    const [items, total] = await Promise.all([
+      this.prisma.notification.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take,
+        skip,
+        select: {
+          id: true,
+          type: true,
+          message: true,
+          isRead: true,
+          createdAt: true,
+          user: {
+            select: { id: true, name: true, phone: true },
+          },
         },
-      },
-    });
+      }),
+      this.prisma.notification.count({ where }),
+    ]);
+    return { data: items, total, limit: take, offset: skip };
   }
 
   async markAsReadAdmin(id: string) {

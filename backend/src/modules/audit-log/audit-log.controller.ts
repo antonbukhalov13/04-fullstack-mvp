@@ -14,8 +14,12 @@ export class AuditLogController {
   async findAll(
     @Query('entityType') entityType?: string,
     @Query('entityId') entityId?: string,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
   ) {
-    return this.auditLogService.findAll(entityType, entityId);
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.auditLogService.findAll(entityType, entityId, take, skip);
   }
 
   @Get(':entityType/:entityId')

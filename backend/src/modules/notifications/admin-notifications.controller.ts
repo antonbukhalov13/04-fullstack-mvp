@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Patch, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { AdminJwtAuthGuard } from '../../common/guards/admin-jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -11,8 +11,13 @@ export class AdminNotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Get()
-  async findAllAdmin() {
-    return this.notificationsService.findAllAdmin();
+  async findAllAdmin(
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.notificationsService.findAllAdmin(take, skip);
   }
 
   @Patch(':id/read')

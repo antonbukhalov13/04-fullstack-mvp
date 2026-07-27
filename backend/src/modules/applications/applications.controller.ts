@@ -33,15 +33,27 @@ export class ApplicationsController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async findMine(@Req() req: any) {
-    return this.applicationsService.findByUserId(req.user.id);
+  async findMine(
+    @Req() req: any,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.applicationsService.findByUserId(req.user.id, take, skip);
   }
 
   @Get()
   @UseGuards(AdminJwtAuthGuard, RolesGuard)
   @Roles('admin', 'operator')
-  async findAll(@Query() query: QueryApplicationsDto) {
-    return this.applicationsService.findAll(query);
+  async findAll(
+    @Query() query: QueryApplicationsDto,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.applicationsService.findAll(query, take, skip);
   }
 
   @Get(':id')

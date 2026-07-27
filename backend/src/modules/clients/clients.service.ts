@@ -35,7 +35,7 @@ export class ClientsService {
     return overdueItems.length;
   }
 
-  async findAll(search?: string) {
+  async findAll(search?: string, take?: number, skip?: number) {
     await this.checkOverduePayments();
 
     const where = search
@@ -47,34 +47,47 @@ export class ClientsService {
         }
       : {};
 
-    const users = await this.prisma.user.findMany({
-      where,
-      include: {
-        applications: { orderBy: { createdAt: 'desc' } },
-        loans: {
-          include: {
-            scheduleItems: true,
-            payments: true,
+    const effectiveTake = take ?? 20;
+    const effectiveSkip = skip ?? 0;
+
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        include: {
+          applications: { orderBy: { createdAt: 'desc' } },
+          loans: {
+            include: {
+              scheduleItems: true,
+              payments: true,
+            },
+          },
+          paymentRequests: {
+            include: { loan: true },
+            orderBy: { createdAt: 'desc' },
           },
         },
-        paymentRequests: {
-          include: { loan: true },
-          orderBy: { createdAt: 'desc' },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+        take: effectiveTake,
+        skip: effectiveSkip,
+      }),
+      this.prisma.user.count({ where }),
+    ]);
 
-    return users.map((user) => ({
-      id: user.id,
-      phone: user.phone,
-      name: user.name,
-      createdAt: user.createdAt,
-      applicationsCount: user.applications.length,
-      activeLoansCount: user.loans.filter((l) => l.status === 'active').length,
-      closedLoansCount: user.loans.filter((l) => l.status === 'closed').length,
-      totalLoansAmount: Math.round(user.loans.reduce((sum, l) => sum + l.amount, 0) * 100) / 100,
-    }));
+    return {
+      data: users.map((user) => ({
+        id: user.id,
+        phone: user.phone,
+        name: user.name,
+        createdAt: user.createdAt,
+        applicationsCount: user.applications.length,
+        activeLoansCount: user.loans.filter((l) => l.status === 'active').length,
+        closedLoansCount: user.loans.filter((l) => l.status === 'closed').length,
+        totalLoansAmount: Math.round(user.loans.reduce((sum, l) => sum + l.amount, 0) * 100) / 100,
+      })),
+      total,
+      limit: effectiveTake,
+      offset: effectiveSkip,
+    };
   }
 
   async findOne(id: string) {

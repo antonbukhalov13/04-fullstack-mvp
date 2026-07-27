@@ -26,84 +26,105 @@ export class LoansService {
     private paymentsService: PaymentsService,
   ) {}
 
-  async findByUserId(userId: string) {
-    const loans = await this.prisma.loan.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        amount: true,
-        termDays: true,
-        dailyRate: true,
-        status: true,
-        signedAt: true,
-        createdAt: true,
-        scheduleItems: {
-          select: { dueDate: true, amount: true, status: true },
-          orderBy: { dueDate: 'asc' },
+  async findByUserId(userId: string, take: number, skip: number) {
+    const where = { userId };
+    const [loans, total] = await Promise.all([
+      this.prisma.loan.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take,
+        skip,
+        select: {
+          id: true,
+          amount: true,
+          termDays: true,
+          dailyRate: true,
+          status: true,
+          signedAt: true,
+          createdAt: true,
+          scheduleItems: {
+            select: { dueDate: true, amount: true, status: true },
+            orderBy: { dueDate: 'asc' },
+          },
         },
-      },
-    });
+      }),
+      this.prisma.loan.count({ where }),
+    ]);
 
-    return loans.map((loan) => {
-      const nextPending = loan.status === 'active'
-        ? loan.scheduleItems.find((s) => s.status === 'pending')
-        : null;
-      const lastPaid = loan.status === 'active'
-        ? [...loan.scheduleItems].reverse().find((s) => s.status === 'paid')
-        : null;
-      const closedDate = loan.status === 'closed' ? loan.signedAt : null;
+    return {
+      data: loans.map((loan) => {
+        const nextPending = loan.status === 'active'
+          ? loan.scheduleItems.find((s) => s.status === 'pending')
+          : null;
+        const lastPaid = loan.status === 'active'
+          ? [...loan.scheduleItems].reverse().find((s) => s.status === 'paid')
+          : null;
 
-      return {
-        id: loan.id,
-        amount: loan.amount,
-        termDays: loan.termDays,
-        status: loan.status,
-        signedAt: loan.signedAt,
-        createdAt: loan.createdAt,
-        nextPayment: nextPending
-          ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
-          : null,
-        lastPaymentDate: lastPaid?.dueDate ?? null,
-      };
-    });
+        return {
+          id: loan.id,
+          amount: loan.amount,
+          termDays: loan.termDays,
+          status: loan.status,
+          signedAt: loan.signedAt,
+          createdAt: loan.createdAt,
+          nextPayment: nextPending
+            ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
+            : null,
+          lastPaymentDate: lastPaid?.dueDate ?? null,
+        };
+      }),
+      total,
+      limit: take,
+      offset: skip,
+    };
   }
 
-  async findAllOverdueItemsAdmin() {
-    const items = await this.prisma.paymentScheduleItem.findMany({
-      where: { status: 'overdue' },
-      orderBy: { dueDate: 'asc' },
-      select: {
-        id: true,
-        dueDate: true,
-        amount: true,
-        status: true,
-        loan: {
-          select: {
-            id: true,
-            amount: true,
-            status: true,
-            user: {
-              select: { id: true, name: true, phone: true },
+  async findAllOverdueItemsAdmin(take: number, skip: number) {
+    const where = { status: 'overdue' as const };
+    const [items, total] = await Promise.all([
+      this.prisma.paymentScheduleItem.findMany({
+        where,
+        orderBy: { dueDate: 'asc' },
+        take,
+        skip,
+        select: {
+          id: true,
+          dueDate: true,
+          amount: true,
+          status: true,
+          loan: {
+            select: {
+              id: true,
+              amount: true,
+              status: true,
+              user: {
+                select: { id: true, name: true, phone: true },
+              },
             },
           },
         },
-      },
-    });
+      }),
+      this.prisma.paymentScheduleItem.count({ where }),
+    ]);
 
-    return items.map((item) => ({
-      id: item.id,
-      dueDate: item.dueDate,
-      amount: item.amount,
-      status: item.status,
-      loanId: item.loan.id,
-      loanAmount: item.loan.amount,
-      loanStatus: item.loan.status,
-      user: item.loan.user,
-    }));
+    return {
+      data: items.map((item) => ({
+        id: item.id,
+        dueDate: item.dueDate,
+        amount: item.amount,
+        status: item.status,
+        loanId: item.loan.id,
+        loanAmount: item.loan.amount,
+        loanStatus: item.loan.status,
+        user: item.loan.user,
+      })),
+      total,
+      limit: take,
+      offset: skip,
+    };
   }
 
-  async findAllAdmin(query: QueryAdminLoansDto) {
+  async findAllAdmin(query: QueryAdminLoansDto, take: number, skip: number) {
     const where: any = {};
 
     if (query.status) {
@@ -117,47 +138,57 @@ export class LoansService {
       ];
     }
 
-    const loans = await this.prisma.loan.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        amount: true,
-        termDays: true,
-        dailyRate: true,
-        status: true,
-        signedAt: true,
-        createdAt: true,
-        user: {
-          select: { id: true, name: true, phone: true },
+    const [loans, total] = await Promise.all([
+      this.prisma.loan.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take,
+        skip,
+        select: {
+          id: true,
+          amount: true,
+          termDays: true,
+          dailyRate: true,
+          status: true,
+          signedAt: true,
+          createdAt: true,
+          user: {
+            select: { id: true, name: true, phone: true },
+          },
+          scheduleItems: {
+            select: { dueDate: true, amount: true, status: true },
+            orderBy: { dueDate: 'asc' },
+          },
         },
-        scheduleItems: {
-          select: { dueDate: true, amount: true, status: true },
-          orderBy: { dueDate: 'asc' },
-        },
-      },
-    });
+      }),
+      this.prisma.loan.count({ where }),
+    ]);
 
-    return loans.map((loan) => {
-      const totalRepay = loan.scheduleItems.reduce((sum, s) => sum + s.amount, 0);
-      const nextPending = loan.status === 'active'
-        ? loan.scheduleItems.find((s) => s.status === 'pending')
-        : null;
+    return {
+      data: loans.map((loan) => {
+        const totalRepay = loan.scheduleItems.reduce((sum, s) => sum + s.amount, 0);
+        const nextPending = loan.status === 'active'
+          ? loan.scheduleItems.find((s) => s.status === 'pending')
+          : null;
 
-      return {
-        id: loan.id,
-        amount: loan.amount,
-        termDays: loan.termDays,
-        status: loan.status,
-        signedAt: loan.signedAt,
-        createdAt: loan.createdAt,
-        user: loan.user,
-        totalRepay: Math.round(totalRepay * 100) / 100,
-        nextPayment: nextPending
-          ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
-          : null,
-      };
-    });
+        return {
+          id: loan.id,
+          amount: loan.amount,
+          termDays: loan.termDays,
+          status: loan.status,
+          signedAt: loan.signedAt,
+          createdAt: loan.createdAt,
+          user: loan.user,
+          totalRepay: Math.round(totalRepay * 100) / 100,
+          nextPayment: nextPending
+            ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
+            : null,
+        };
+      }),
+      total,
+      limit: take,
+      offset: skip,
+    };
   }
 
   async findOneAdmin(loanId: string) {
@@ -241,6 +272,8 @@ export class LoansService {
     const updated = await this.prisma.$transaction(async (tx) => {
       const loan = await tx.loan.findUnique({ where: { id: loanId } });
       if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
+
+      this.validateLoanStatusTransition(loan.status, dto.status);
 
       return tx.loan.update({
         where: { id: loanId },
@@ -565,5 +598,22 @@ export class LoansService {
     }
 
     return items;
+  }
+
+  private validateLoanStatusTransition(currentStatus: string, newStatus: string) {
+    const validTransitions: Record<string, string[]> = {
+      pending_signature: ['active'],
+      active: ['closed'],
+      closed: [],
+      overdue: ['closed'],
+      default: ['active', 'closed'],
+    };
+
+    const allowed = validTransitions[currentStatus] ?? [];
+    if (!allowed.includes(newStatus)) {
+      throw new BadRequestException(
+        `Cannot transition loan from "${currentStatus}" to "${newStatus}". Allowed: ${allowed.join(', ') || 'none'}`,
+      );
+    }
   }
 }

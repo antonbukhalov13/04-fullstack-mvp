@@ -93,25 +93,32 @@ export class ApplicationsService {
     };
   }
 
-  async findByUserId(userId: string) {
-    return this.prisma.application.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        applicantType: true,
-        amount: true,
-        termDays: true,
-        status: true,
-        firstName: true,
-        lastName: true,
-        companyName: true,
-        createdAt: true,
-      },
-    });
+  async findByUserId(userId: string, take: number, skip: number) {
+    const where = { userId };
+    const [items, total] = await Promise.all([
+      this.prisma.application.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take,
+        skip,
+        select: {
+          id: true,
+          applicantType: true,
+          amount: true,
+          termDays: true,
+          status: true,
+          firstName: true,
+          lastName: true,
+          companyName: true,
+          createdAt: true,
+        },
+      }),
+      this.prisma.application.count({ where }),
+    ]);
+    return { data: items, total, limit: take, offset: skip };
   }
 
-  async findAll(query: QueryApplicationsDto) {
+  async findAll(query: QueryApplicationsDto, take: number, skip: number) {
     const where: any = {};
 
     if (query.status) {
@@ -139,22 +146,27 @@ export class ApplicationsService {
       ];
     }
 
-    const applications = await this.prisma.application.findMany({
-      where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            phone: true,
+    const [items, total] = await Promise.all([
+      this.prisma.application.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              phone: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take,
+        skip,
+      }),
+      this.prisma.application.count({ where }),
+    ]);
 
-    return applications;
+    return { data: items, total, limit: take, offset: skip };
   }
 
   async findOne(id: string) {

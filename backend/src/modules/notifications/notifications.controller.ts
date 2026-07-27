@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Query, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -10,8 +10,14 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Get()
-  async findAll(@CurrentUser() user: CurrentUserPayload) {
-    return this.notificationsService.findByUser(user.id);
+  async findAll(
+    @CurrentUser() user: CurrentUserPayload,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.notificationsService.findByUser(user.id, take, skip);
   }
 
   @Patch(':id/read')

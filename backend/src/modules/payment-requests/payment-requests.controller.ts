@@ -20,8 +20,14 @@ export class PaymentRequestsController {
   @Get()
   @UseGuards(AdminJwtAuthGuard, RolesGuard)
   @Roles('admin', 'operator')
-  async findAll(@Query() query: QueryPaymentRequestsDto) {
-    return this.paymentRequestsService.findAll(query);
+  async findAll(
+    @Query() query: QueryPaymentRequestsDto,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.paymentRequestsService.findAll(query, take, skip);
   }
 
   @Get('users/me')

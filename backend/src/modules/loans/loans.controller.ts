@@ -36,21 +36,38 @@ export class LoansController {
   @Get('overdue')
   @UseGuards(AdminJwtAuthGuard, RolesGuard)
   @Roles('admin', 'operator')
-  async findOverdueItemsAdmin() {
-    return this.loansService.findAllOverdueItemsAdmin();
+  async findOverdueItemsAdmin(
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.loansService.findAllOverdueItemsAdmin(take, skip);
   }
 
   @Get()
   @UseGuards(AdminJwtAuthGuard, RolesGuard)
   @Roles('admin', 'operator')
-  async findAllAdmin(@Query() query: QueryAdminLoansDto) {
-    return this.loansService.findAllAdmin(query);
+  async findAllAdmin(
+    @Query() query: QueryAdminLoansDto,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.loansService.findAllAdmin(query, take, skip);
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async findMine(@CurrentUser() user: CurrentUserPayload) {
-    return this.loansService.findByUserId(user.id);
+  async findMine(
+    @CurrentUser() user: CurrentUserPayload,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ) {
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = Number(offset) || 0;
+    return this.loansService.findByUserId(user.id, take, skip);
   }
 
   @Get(':id')
