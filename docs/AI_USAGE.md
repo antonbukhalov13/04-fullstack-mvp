@@ -1327,3 +1327,19 @@ What I learned: Ссылки в футере теперь ведут на яко
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 74
+
+Goal: Добавить плавный скролл и отступ сверху при переходе по якорным ссылкам
+
+Prompt: При переходе по якорным ссылкам должен быть плавный переход, также сверху должно быть пространство, чтобы заголовок не был в самом верху.
+
+Result: Frontend: globals.css — добавлен `html { scroll-behavior: smooth; }`. contact-section.tsx — `scroll-mt-24` на `<section id="contact">` (96px сверху). contact-details.tsx — `scroll-mt-24` на `<section id="contact-details">`. npm run build OK (26 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `scroll-mt-24` (6rem/96px) — стандартный отступ для фиксированного хедера высотой ~64px. `scroll-behavior: smooth` на html даёт плавный переход при клике на якорную ссылку.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
