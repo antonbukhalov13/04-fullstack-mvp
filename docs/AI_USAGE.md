@@ -1532,3 +1532,27 @@ Used as-is / edited manually / rejected: edited manually
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 85
+
+Goal: Добавить rate limiting, пагинацию, валидацию переходов Loan.status, составные индексы для поиска
+
+Prompt: Группа 4: Backend API
+
+нет rate limiting нигде, нет пагинации ни в одном списочном эндпоинте, Loan.status нет валидации переходов, нет составных индексов под ILIKE-поиск.
+
+Result:
+
+- Rate limiting: установлен `@nestjs/throttler`, ThrottlerModule.forRoot в AppModule (60 req/60s по умолчанию), ThrottlerGuard как глобальный APP_GUARD. Auth controller: request-otp — 5 req/60s, verify-otp — 10 req/60s. Admin-auth controller: login — 10 req/60s.
+- Пагинация: добавлены `limit`/`offset` query параметры во все списочные эндпоинты (applications, loans, clients, payment-requests, notifications, audit-logs). Limit по умолчанию 20, максимум 100. Все сервисы возвращают `{ data, total, limit, offset }`. Обновлены 7 контроллеров + 6 сервисов.
+- Валидация переходов Loan.status: добавлен `validateLoanStatusTransition()` — pending_signature→active, active→closed, overdue→closed, default→active/closed, closed→none. BadRequestException при невалидном переходе.
+- Составные индексы: включено расширение `pg_trgm`, добавлены GIN-индексы на User.name и User.phone для ILIKE-поиска (%term%).
+npm run build OK (backend + frontend).
+
+What I learned: @nestjs/throttler v3 использует `ThrottlerModule.forRoot([{ name, ttl, limit }])` вместо объекта. Prisma не поддерживает GIN-индексы — создаются через raw SQL миграцию. Пагинация через take/skip + count() — стандартный паттерн.
+
+Used as-is / edited manually / rejected: edited manually
+
+Model used: big-pickle
+
+Instrument used: OpenCode
