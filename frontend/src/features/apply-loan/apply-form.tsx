@@ -13,6 +13,7 @@ import {
   type InferOutput,
 } from 'valibot';
 import { valibotResolver } from '@hookform/resolvers/valibot';
+import Link from 'next/link';
 import { api, ApiError } from '@/shared/api';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -174,12 +175,20 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
             Номер заявки: <span className="font-mono">{successId}</span>
           </p>
         )}
-        <button
-          onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
-          className="mt-4 text-sm font-semibold text-green-700 hover:text-green-600 inline-flex items-center min-h-[44px]"
-        >
-          Подать ещё одну заявку
-        </button>
+        <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
+            className="text-sm font-semibold text-green-700 hover:text-green-600 inline-flex items-center min-h-[44px]"
+          >
+            Подать ещё одну заявку
+          </button>
+          <Link
+            href="/dashboard/applications"
+            className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
+          >
+            В личный кабинет
+          </Link>
+        </div>
       </div>
     );
   }

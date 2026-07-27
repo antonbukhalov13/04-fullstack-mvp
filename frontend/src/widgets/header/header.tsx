@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getAuthToken } from '@/shared/api';
 
 const navItems = [
   { href: '/how-it-works', label: 'Как это работает' },
@@ -11,12 +12,17 @@ const navItems = [
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!(getAuthToken() ?? localStorage.getItem('token')));
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-slate-50 border-b border-slate-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-baseline gap-1.5" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <Link href="/" className="flex items-baseline gap-1.5">
             <span className="text-xl font-bold text-indigo-600">LumenBridge</span>
             <span className="text-sm font-semibold text-slate-600 pb-0.5">Finance</span>
           </Link>
@@ -31,6 +37,21 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard/applications"
+                className="text-sm text-slate-600 hover:text-slate-900 transition-colors py-2.5"
+              >
+                Кабинет
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors min-h-[44px]"
+              >
+                Войти
+              </Link>
+            )}
             <Link
               href="/apply"
               className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
@@ -71,6 +92,23 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard/applications"
+                className="block rounded-lg px-3 py-3 text-sm text-slate-600 hover:bg-slate-100 min-h-[44px]"
+                onClick={() => setMobileOpen(false)}
+              >
+                Кабинет
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="block rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 min-h-[44px]"
+                onClick={() => setMobileOpen(false)}
+              >
+                Войти
+              </Link>
+            )}
             <Link
               href="/apply"
               className="block rounded-lg bg-indigo-600 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 min-h-[44px]"
