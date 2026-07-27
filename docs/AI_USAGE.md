@@ -1556,3 +1556,27 @@ Used as-is / edited manually / rejected: edited manually
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 86
+
+Goal: Добавить ссылку на вход в шапке, CTA «В личный кабинет» после успешной заявки, кнопку «Выйти» и счётчик уведомлений в sidebar
+
+Prompt: Группа 5: Frontend critical
+
+нет ссылки на вход в шапке, нет CTA «в личный кабинет» после успешной заявки, нет кнопки «Выйти» у клиента в sidebar, нет счётчика непрочитанных уведомлений в sidebar.
+
+Result:
+
+- Header: добавлена ссылка «Войти» / «Кабинет» (зависит от наличия токена) в нав и мобильное меню. `useEffect` проверяет `getAuthToken()` / `localStorage.getItem('token')` для определения авторизации.
+- ApplyForm success: добавлена кнопка «В личный кабинет» (`Link` → `/dashboard/applications`) рядом с «Подать ещё одну заявку». Добавлен импорт `Link`.
+- DashboardSidebar: добавлена кнопка «Выйти» внизу sidebar с иконкой logout. `handleLogout` очищает токен и редиректит на `/login`. Sidebar перестроен с `flex flex-col` для фиксирования кнопки внизу.
+- DashboardSidebar: добавлен badge с количеством непрочитанных уведомлений (GET `/users/me/notifications`, подсчёт `!isRead`). Красный badge (≥100 → "99+") рядом с текстом «Уведомления».
+npm run build OK (26 routes).
+
+What I learned: Header был без auth links — элементарный пропуск. Badge показывается только при unreadCount > 0. Logout через setAuthToken('') + localStorage.removeItem.
+
+Used as-is / edited manually / rejected: edited manually
+
+Model used: big-pickle
+
+Instrument used: OpenCode
