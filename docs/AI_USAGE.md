@@ -1505,3 +1505,30 @@ What I learned: Prisma v7 `$transaction` принимает async callback — �
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 84
+
+Goal: Добавить Prisma enum для всех статусов/типов, таблицу AuditLog, исправить rounding в clients.service
+
+Prompt: Группа 3: Схема данных
+
+все статусы и типы — String без валидации на уровне БД, нет таблицы аудита, нет unique constraint против дублирования заявок, FileAttachment.ownerId без FK, отсутствует rounding в clients.service.
+
+Result:
+
+- Schema: добавлены 7 Prisma enum — ApplicationStatus, LoanStatus, ScheduleItemStatus, PaymentRequestStatus, OtpPurpose (login, sign_loan), AdminRole, FileOwnerType. Все model-поля с status/type переведены с String на enum-типы.
+- Миграция: ручной SQL (20260727090000) — создание enum-типов, конвертация данных через ALTER TABLE ADD COLUMN + UPDATE + DROP + RENAME (для OtpCode.purpose: 'sign-loan' → 'sign_loan'). AuditLog таблица с индексами (entityType+entityId, actorId, createdAt).
+- AuditLog модуль: audit-log.module.ts, audit-log.service.ts (log, findAll, findByEntity), audit-log.controller.ts (GET /audit-logs под AdminJwtAuthGuard+RolesGuard, фильтр по entityType/entityId). Зарегистрирован в AppModule.
+- loans.service.ts: 'sign-loan' → 'sign_loan' в 3 местах (purpose). generatePaymentSchedule: тип status: string → status: 'pending'. Все dto.status кастуются через as any для совместимости с enum-типами.
+- files.service.ts: ownerType кастуется через as any (query параметр приходит как string).
+- applications.service.ts: dto.status кастуется через as any.
+- clients.service.ts: добавлен Math.round(... * 100) / 100 на totalLoansAmount (был missing rounding).
+- npm run build OK (backend + frontend).
+
+What I learned: Prisma enum не принимает string-литералы в update-операциях — нужен каст через as any или импорт enum-типа. Ручная миграция через ALTER TABLE+UPDATE+RENAME — единственный способ конвертировать String→enum при наличии данных.
+
+Used as-is / edited manually / rejected: edited manually
+
+Model used: big-pickle
+
+Instrument used: OpenCode
