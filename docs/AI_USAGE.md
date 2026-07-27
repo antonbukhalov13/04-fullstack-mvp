@@ -1407,3 +1407,19 @@ What I learned: `rounded-lg border border-slate-200 bg-white` — лёгкая �
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 79
+
+Goal: Изменить толщину и видимость линий перед и внутри футера
+
+Prompt: Сделать линию перед футером толще и заметнее, а линию в самом футере менее заметной и тоньше.
+
+Result: Frontend: widgets/footer/footer.tsx — линия перед футером: `border-t border-slate-200` → `border-t-2 border-slate-300` (2px, заметнее). Линия внутри футера: `border-t border-slate-300` → `border-t border-slate-200` (1px, менее заметная). npm run build OK (26 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `border-t-2` (2px) vs `border-t` (1px) — разница в толщине. `border-slate-300` vs `border-slate-200` — разница в контрасте на `bg-slate-50`.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
