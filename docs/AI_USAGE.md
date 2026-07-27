@@ -1426,15 +1426,31 @@ Instrument used: OpenCode
 
 ## Request 80
 
-Goal: Вывести кнопку "Получить займ" из нава для экранов 768–1024px
+Goal: Убрать кнопку из хедера на md, показывать 3 nav-ссылки (с коротким "FAQ") на 768px+
 
-Prompt: Кнопка скрыта на md вместе с навом. Вывести кнопку из нава, чтобы она была видна в диапазоне 768–1024px.
+Prompt: Убрать кнопку в хедере при ширине 768-1024, переименовать "Часто задаваемые вопросы" в "FAQ", показывать все 3 ссылки на 768+.
 
-Result: Frontend: widgets/header/header.tsx — добавлена отдельная кнопка `<Link>` между `</nav>` и гамбургером с `hidden md:inline-flex lg:hidden`. На lg+ кнопка внутри nav, на md — отдельная кнопка + гамбургер, на mobile — только гамбургер. npm run build OK (26 маршрутов).
+Result: Frontend: widgets/header/header.tsx — навигация: `hidden lg:flex` → `hidden md:flex`. Убрана отдельная md-кнопка (бывшая `hidden md:inline-flex lg:hidden`). Гамбургер: `lg:hidden` → `md:hidden`. Мобильное меню: `lg:hidden` → `md:hidden`. Label: "Часто задаваемые вопросы" → "FAQ". npm run build OK (26 маршрутов).
 
 Used as-is / edited manually / rejected: used as-is
 
-What I learned: Дублирование CTA-кнопки с разными breakpoint-классами (`hidden md:inline-flex lg:hidden` снаружи + внутри nav) — стандартный паттерн для responsive хедера.
+What I learned: Сокращение "Часто задаваемые вопросы" → "FAQ" в хедере позволило вернуть `md:flex` для нава без проблем с переносом. Футер остаётся с полным названием.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 81
+
+Goal: Показывать "Finance" в хедере на всех экранах
+
+Prompt: Почему при экране 639px исчезает "Finance"? Сделать чтобы было всегда видно.
+
+Result: Frontend: widgets/header/header.tsx — `<span className="hidden sm:inline ...">Finance</span>` → `<span className="...">Finance</span>` (убран `hidden sm:inline`). Теперь "LumenBridge Finance" видно на всех размерах экрана. npm run build OK (26 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `hidden sm:inline` скрывал "Finance" на < 640px. Убрано — теперь бренд всегда полный.
 
 Model used: big-pickle
 
