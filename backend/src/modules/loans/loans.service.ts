@@ -244,7 +244,7 @@ export class LoansService {
 
       return tx.loan.update({
         where: { id: loanId },
-        data: { status: dto.status },
+        data: { status: dto.status as any },
       });
     });
 
@@ -279,7 +279,7 @@ export class LoansService {
 
     const updated = await this.prisma.paymentScheduleItem.update({
       where: { id: itemId },
-      data: { status: dto.status },
+      data: { status: dto.status as any },
     });
 
     return { id: updated.id, status: updated.status };
@@ -399,7 +399,7 @@ export class LoansService {
     await this.prisma.otpCode.updateMany({
       where: {
         userId,
-        purpose: 'sign-loan',
+        purpose: 'sign_loan',
         usedAt: null,
       },
       data: {
@@ -422,7 +422,7 @@ export class LoansService {
         userId,
         phone: user.phone,
         code,
-        purpose: 'sign-loan',
+        purpose: 'sign_loan',
         expiresAt,
       },
     });
@@ -464,7 +464,7 @@ export class LoansService {
         where: {
           userId,
           code: dto.code,
-          purpose: 'sign-loan',
+          purpose: 'sign_loan',
           usedAt: null,
           expiresAt: { gt: signedAt },
         },
@@ -542,7 +542,7 @@ export class LoansService {
       loanId: string;
       dueDate: Date;
       amount: number;
-      status: string;
+      status: 'pending';
     }> = [];
     const startDate = new Date(signedAt);
 

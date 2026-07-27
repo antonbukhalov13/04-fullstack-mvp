@@ -15,6 +15,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ContactMessagesModule } from './modules/contact-messages/contact-messages.module';
 import { ClientsModule } from './modules/clients/clients.module';
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ClientsModule } from './modules/clients/clients.module';
     NotificationsModule,
     ContactMessagesModule,
     ClientsModule,
+    AuditLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -6,6 +6,49 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ApplicationStatus {
+  new
+  in_progress
+  approved
+  rejected
+}
+
+enum LoanStatus {
+  pending_signature
+  active
+  closed
+  overdue
+  default
+}
+
+enum ScheduleItemStatus {
+  pending
+  paid
+  overdue
+}
+
+enum PaymentRequestStatus {
+  pending
+  approved
+  rejected
+}
+
+enum OtpPurpose {
+  login
+  sign_loan
+}
+
+enum AdminRole {
+  admin
+  operator
+}
+
+enum FileOwnerType {
+  application
+  contact_message
+  upload
+}
+
 model User {
   id              String           @id @default(uuid())
   phone           String           @unique
@@ -19,14 +62,14 @@ model User {
 }
 
 model OtpCode {
-  id        String    @id @default(uuid())
+  id        String     @id @default(uuid())
   phone     String
   userId    String?
   code      String
-  purpose   String    // 'login' | 'sign-loan'
+  purpose   OtpPurpose
   expiresAt DateTime
   usedAt    DateTime?
-  createdAt DateTime  @default(now())
+  createdAt DateTime   @default(now())
 
   user User? @relation(fields: [userId], references: [id])
 
@@ -38,20 +81,20 @@ model AdminUser {
   id              String    @id @default(uuid())
   login           String    @unique
   passwordHash    String
-  role            String    // 'admin' | 'operator'
+  role            AdminRole
   createdAt       DateTime  @default(now())
   recordedPayments Payment[] @relation("RecordedBy")
 }
 
 model Application {
-  id            String   @id @default(uuid())
+  id            String          @id @default(uuid())
   userId        String
-  applicantType String   // 'individual' | 'business'
+  applicantType String          // 'individual' | 'business'
 
   // Common fields
   amount   Float
   termDays Int
-  status   String   @default("new") // 'new' | 'in_progress' | 'approved' | 'rejected'
+  status   ApplicationStatus   @default(new)
   comment  String?
   createdAt DateTime @default(now())
 
@@ -74,17 +117,17 @@ model Application {
 }
 
 model Loan {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   applicationId   String
   userId          String
   amount          Float
   dailyRate       Float
   termDays        Int
-  status          String   @default("pending_signature") // 'pending_signature' | 'active' | 'closed'
+  status          LoanStatus @default(pending_signature)
   signedAt        DateTime?
   signedIp        String?
   signedUserAgent String?
-  createdAt       DateTime @default(now())
+  createdAt       DateTime  @default(now())
 
   application Application    @relation(fields: [applicationId], references: [id])
   user        User           @relation(fields: [userId], references: [id])
@@ -98,12 +141,12 @@ model Loan {
 }
 
 model PaymentScheduleItem {
-  id        String   @id @default(uuid())
-  loanId    String
-  dueDate   DateTime
-  amount    Float
-  paidAmount Float  @default(0)
-  status    String   @default("pending") // 'pending' | 'paid' | 'overdue'
+  id         String             @id @default(uuid())
+  loanId     String
+  dueDate    DateTime
+  amount     Float
+  paidAmount Float              @default(0)
+  status     ScheduleItemStatus @default(pending)
 
   loan Loan @relation(fields: [loanId], references: [id])
 
@@ -112,12 +155,12 @@ model PaymentScheduleItem {
 }
 
 model PaymentRequest {
-  id      String   @id @default(uuid())
-  loanId  String
-  userId  String
-  amount  Float
+  id       String              @id @default(uuid())
+  loanId   String
+  userId   String
+  amount   Float
   reference String
-  status  String   @default("pending") // 'pending' | 'approved' | 'rejected'
+  status   PaymentRequestStatus @default(pending)
   createdAt DateTime @default(now())
 
   loan   Loan @relation(fields: [loanId], references: [id])
@@ -159,14 +202,14 @@ model Notification {
 }
 
 model FileAttachment {
-  id           String   @id @default(uuid())
-  ownerType    String   // 'application' | 'contact_message' | 'upload'
+  id           String        @id @default(uuid())
+  ownerType    FileOwnerType
   ownerId      String?
   s3Key        String
   originalName String
   mimeType     String
   size         Int
-  createdAt    DateTime @default(now())
+  createdAt    DateTime      @default(now())
 
   @@index([ownerType, ownerId])
 }
@@ -181,4 +224,20 @@ model ContactMessage {
   createdAt    DateTime @default(now())
 
   @@index([attachmentId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String
+  entityId   String
+  action     String
+  before     Json?
+  after      Json?
+  actorId    String
+  actorType  String   // 'admin' | 'user' | 'system'
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([createdAt])
 }

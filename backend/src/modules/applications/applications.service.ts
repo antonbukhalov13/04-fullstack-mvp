@@ -205,7 +205,7 @@ export class ApplicationsService {
     const updatedApplication = await this.prisma.application.update({
       where: { id },
       data: {
-        status: dto.status,
+        status: dto.status as any,
         comment: dto.comment || application.comment,
       },
     });

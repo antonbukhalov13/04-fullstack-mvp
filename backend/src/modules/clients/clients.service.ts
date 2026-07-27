@@ -73,7 +73,7 @@ export class ClientsService {
       applicationsCount: user.applications.length,
       activeLoansCount: user.loans.filter((l) => l.status === 'active').length,
       closedLoansCount: user.loans.filter((l) => l.status === 'closed').length,
-      totalLoansAmount: user.loans.reduce((sum, l) => sum + l.amount, 0),
+      totalLoansAmount: Math.round(user.loans.reduce((sum, l) => sum + l.amount, 0) * 100) / 100,
     }));
   }
 

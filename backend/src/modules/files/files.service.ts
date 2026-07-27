@@ -83,7 +83,7 @@ export class FilesService {
 
     const fileRecord = await this.prisma.fileAttachment.create({
       data: {
-        ownerType: ownerType || 'upload',
+        ownerType: (ownerType || 'upload') as any,
         ownerId: ownerId || null,
         s3Key: fileKey,
         originalName: file.originalname,
@@ -126,7 +126,7 @@ export class FilesService {
     return this.prisma.fileAttachment.update({
       where: { id },
       data: {
-        ownerType,
+        ownerType: ownerType as any,
         ownerId,
       },
     });
