@@ -1375,3 +1375,19 @@ What I learned: Эталон public кнопок: `px-6 py-3 text-sm font-semibo
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 77
+
+Goal: Переписать секцию "О компании" — карточка с акцентной полосой
+
+Prompt: Нужен вариант, где карточка с border-l-4 border-indigo-600 на белом фоне.
+
+Result: Frontend: widgets/about-company/about-company.tsx — переписан. `bg-white`, `max-w-3xl` по центру, `border-l-4 border-indigo-600 pl-6 sm:pl-8`. Заголовок + 3 абзаца без иконок, текстverbatim. `id="about"` сохранён для якоря из футера. npm run build OK (26 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `border-l-4 border-indigo-600 pl-6 sm:pl-8` — акцентная полоса слева, минималистичный способ выделить блок текста. Полностью в тон сайта (bg-white, как HowItWorks/ForBusiness).
+
+Model used: big-pickle
+
+Instrument used: OpenCode
