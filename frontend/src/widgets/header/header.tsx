@@ -33,7 +33,7 @@ export function Header() {
             ))}
             <Link
               href="/apply"
-              className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
+              className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
             >
               Получить займ
             </Link>
@@ -73,7 +73,7 @@ export function Header() {
             ))}
             <Link
               href="/apply"
-              className="block rounded-lg bg-indigo-600 px-3 py-2.5 text-center text-sm font-medium text-white hover:bg-indigo-700 min-h-[44px]"
+              className="block rounded-lg bg-indigo-600 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 min-h-[44px]"
               onClick={() => setMobileOpen(false)}
             >
               Получить займ
