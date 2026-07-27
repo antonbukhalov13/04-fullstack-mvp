@@ -214,15 +214,34 @@ export class ApplicationsService {
       }
     }
 
-    const updatedApplication = await this.prisma.application.update({
-      where: { id },
-      data: {
-        status: dto.status as any,
-        comment: dto.comment || application.comment,
-      },
+    const result = await this.prisma.$transaction(async (tx) => {
+      const updatedApplication = await tx.application.update({
+        where: { id },
+        data: {
+          status: dto.status as any,
+          comment: dto.comment || application.comment,
+        },
+      });
+
+      // Create loan when approved
+      let loan: any = null;
+      if (dto.status === 'approved') {
+        loan = await tx.loan.create({
+          data: {
+            applicationId: application.id,
+            userId: application.userId,
+            amount: application.amount,
+            dailyRate: 0.008,
+            termDays: application.termDays,
+            status: 'pending_signature',
+          },
+        });
+      }
+
+      return { updatedApplication, loan };
     });
 
-    // Emit application.status.changed event
+    // Emit application.status.changed event (outside transaction)
     this.eventEmitter.emit('application.status.changed', {
       applicationId: application.id,
       userId: application.userId,
@@ -230,32 +249,19 @@ export class ApplicationsService {
       newStatus: dto.status,
     });
 
-    // Create loan when approved
-    let loan: any = null;
-    if (dto.status === 'approved') {
-      loan = await this.prisma.loan.create({
-        data: {
-          applicationId: application.id,
-          userId: application.userId,
-          amount: application.amount,
-          dailyRate: 0.008,
-          termDays: application.termDays,
-          status: 'pending_signature',
-        },
-      });
-
-      // Emit loan.created event
+    // Emit loan.created event (outside transaction)
+    if (result.loan) {
       this.eventEmitter.emit('loan.created', {
-        loanId: loan.id,
+        loanId: result.loan.id,
         userId: application.userId,
       });
     }
 
     return {
-      id: updatedApplication.id,
-      status: updatedApplication.status,
-      comment: updatedApplication.comment,
-      loan,
+      id: result.updatedApplication.id,
+      status: result.updatedApplication.status,
+      comment: result.updatedApplication.comment,
+      loan: result.loan,
     };
   }
 
