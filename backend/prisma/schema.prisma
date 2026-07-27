@@ -98,11 +98,12 @@ model Loan {
 }
 
 model PaymentScheduleItem {
-  id      String   @id @default(uuid())
-  loanId  String
-  dueDate DateTime
-  amount  Float
-  status  String   @default("pending") // 'pending' | 'paid' | 'overdue'
+  id        String   @id @default(uuid())
+  loanId    String
+  dueDate   DateTime
+  amount    Float
+  paidAmount Float  @default(0)
+  status    String   @default("pending") // 'pending' | 'paid' | 'overdue'
 
   loan Loan @relation(fields: [loanId], references: [id])
 

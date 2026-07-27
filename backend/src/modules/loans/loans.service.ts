@@ -10,6 +10,9 @@ import { ConfirmSignDto } from './dto/confirm-sign.dto';
 import { QueryAdminLoansDto } from './dto/query-admin-loans.dto';
 import { UpdateLoanStatusDto } from './dto/update-loan-status.dto';
 import { MarkScheduleItemPaidDto } from './dto/mark-schedule-item-paid.dto';
+import { PaymentsService } from '../payments/payments.service';
+
+const INACTIVE_STATUSES = ['pending_signature', 'closed'] as const;
 
 const OTP_EXPIRY_MINUTES = 5;
 const OTP_LENGTH = 6;
@@ -20,6 +23,7 @@ export class LoansService {
   constructor(
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
+    private paymentsService: PaymentsService,
   ) {}
 
   async findByUserId(userId: string) {
@@ -234,12 +238,14 @@ export class LoansService {
   }
 
   async updateStatusAdmin(loanId: string, dto: UpdateLoanStatusDto) {
-    const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
-    if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const loan = await tx.loan.findUnique({ where: { id: loanId } });
+      if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
 
-    const updated = await this.prisma.loan.update({
-      where: { id: loanId },
-      data: { status: dto.status },
+      return tx.loan.update({
+        where: { id: loanId },
+        data: { status: dto.status },
+      });
     });
 
     this.eventEmitter.emit('loan.status.changed', {
@@ -251,14 +257,25 @@ export class LoansService {
     return { id: updated.id, status: updated.status };
   }
 
-  async markScheduleItemPaidAdmin(loanId: string, itemId: string, dto: MarkScheduleItemPaidDto) {
-    const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
-    if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
+  async markScheduleItemPaidAdmin(loanId: string, itemId: string, dto: MarkScheduleItemPaidDto, adminId: string) {
+    if (dto.status === 'paid') {
+      const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
+      if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
+      if (loan.status !== 'active') throw new BadRequestException('Loan must be active');
 
-    const item = await this.prisma.paymentScheduleItem.findFirst({
-      where: { id: itemId, loanId },
-    });
-    if (!item) throw new NotFoundException(`Schedule item with id ${itemId} not found`);
+      const item = await this.prisma.paymentScheduleItem.findFirst({
+        where: { id: itemId, loanId },
+      });
+      if (!item) throw new NotFoundException(`Schedule item with id ${itemId} not found`);
+
+      const remaining = Math.round((item.amount - item.paidAmount) * 100) / 100;
+      if (remaining <= 0) {
+        return { id: itemId, status: 'paid' };
+      }
+
+      await this.paymentsService.markScheduleItemPaidAdmin(loanId, itemId, remaining, adminId);
+      return { id: itemId, status: 'paid' };
+    }
 
     const updated = await this.prisma.paymentScheduleItem.update({
       where: { id: itemId },
@@ -426,82 +443,73 @@ export class LoansService {
     ip: string,
     userAgent: string,
   ) {
-    const loan = await this.prisma.loan.findUnique({
-      where: { id: loanId },
-    });
-
-    if (!loan) {
-      throw new NotFoundException(`Loan with id ${loanId} not found`);
-    }
-
-    if (loan.userId !== userId) {
-      throw new UnauthorizedException('You can only sign your own loans');
-    }
-
-    if (loan.status !== 'pending_signature') {
-      throw new BadRequestException('Loan is not pending signature');
-    }
-
-    // Find valid OTP
-    const otp = await this.prisma.otpCode.findFirst({
-      where: {
-        userId,
-        code: dto.code,
-        purpose: 'sign-loan',
-        usedAt: null,
-        expiresAt: {
-          gt: new Date(),
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    if (!otp) {
-      throw new BadRequestException('Invalid or expired OTP code');
-    }
-
-    // Mark OTP as used
-    await this.prisma.otpCode.update({
-      where: { id: otp.id },
-      data: { usedAt: new Date() },
-    });
-
-    // Update loan status
     const signedAt = new Date();
-    const updatedLoan = await this.prisma.loan.update({
-      where: { id: loanId },
-      data: {
-        status: 'active',
+
+    const updatedLoan = await this.prisma.$transaction(async (tx) => {
+      const loan = await tx.loan.findUnique({ where: { id: loanId } });
+
+      if (!loan) {
+        throw new NotFoundException(`Loan with id ${loanId} not found`);
+      }
+
+      if (loan.userId !== userId) {
+        throw new UnauthorizedException('You can only sign your own loans');
+      }
+
+      if (loan.status !== 'pending_signature') {
+        throw new BadRequestException('Loan is not pending signature');
+      }
+
+      const otp = await tx.otpCode.findFirst({
+        where: {
+          userId,
+          code: dto.code,
+          purpose: 'sign-loan',
+          usedAt: null,
+          expiresAt: { gt: signedAt },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (!otp) {
+        throw new BadRequestException('Invalid or expired OTP code');
+      }
+
+      await tx.otpCode.update({
+        where: { id: otp.id },
+        data: { usedAt: signedAt },
+      });
+
+      const updated = await tx.loan.update({
+        where: { id: loanId },
+        data: {
+          status: 'active',
+          signedAt,
+          signedIp: ip,
+          signedUserAgent: userAgent,
+        },
+      });
+
+      const scheduleItems = this.generatePaymentSchedule(
+        loanId,
+        loan.amount,
+        loan.termDays,
         signedAt,
-        signedIp: ip,
-        signedUserAgent: userAgent,
-      },
+      );
+
+      await tx.paymentScheduleItem.createMany({ data: scheduleItems });
+
+      return updated;
     });
 
-    // Generate payment schedule
-    const scheduleItems = this.generatePaymentSchedule(
-      loanId,
-      loan.amount,
-      loan.termDays,
-      signedAt,
-    );
-
-    await this.prisma.paymentScheduleItem.createMany({
-      data: scheduleItems,
-    });
-
-    // Emit loan.signed event
     this.eventEmitter.emit('loan.signed', {
-      loanId: loan.id,
-      userId: loan.userId,
+      loanId: updatedLoan.id,
+      userId: updatedLoan.userId,
     });
 
-    // Emit loan.schedule.generated event
     this.eventEmitter.emit('loan.schedule.generated', {
-      loanId: loan.id,
-      userId: loan.userId,
+      loanId: updatedLoan.id,
+      userId: updatedLoan.userId,
     });
 
     return {

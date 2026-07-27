@@ -78,8 +78,10 @@ export class LoansController {
     @Param('id') id: string,
     @Param('itemId') itemId: string,
     @Body() dto: MarkScheduleItemPaidDto,
+    @Req() req: Request,
   ) {
-    return this.loansService.markScheduleItemPaidAdmin(id, itemId, dto);
+    const adminId = (req.user as any).id;
+    return this.loansService.markScheduleItemPaidAdmin(id, itemId, dto, adminId);
   }
 
   @Post(':id/close')

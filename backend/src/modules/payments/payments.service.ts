@@ -40,40 +40,51 @@ export class PaymentsService {
     let payment: { id: string; amount: number } | null = null;
 
     if (dto.status === 'approved') {
-      const created = await this.prisma.payment.create({
-        data: {
-          loanId: paymentRequest.loanId,
-          paymentRequestId: paymentRequest.id,
-          amount: paymentRequest.amount,
-          recordedByAdminId: adminId,
-        },
+      const result = await this.prisma.$transaction(async (tx) => {
+        const created = await tx.payment.create({
+          data: {
+            loanId: paymentRequest.loanId,
+            paymentRequestId: paymentRequest.id,
+            amount: paymentRequest.amount,
+            recordedByAdminId: adminId,
+          },
+        });
+
+        const updatedPr = await tx.paymentRequest.update({
+          where: { id: paymentRequestId },
+          data: { status: dto.status },
+        });
+
+        return { created, updatedPr };
       });
 
-      payment = { id: created.id, amount: created.amount };
+      payment = { id: result.created.id, amount: result.created.amount };
 
-      await this.recalculateSchedule(
-        paymentRequest.loanId,
-        paymentRequest.amount,
-      );
-    }
+      await this.recalculateSchedule(paymentRequest.loanId, paymentRequest.amount);
 
-    await this.prisma.paymentRequest.update({
-      where: { id: paymentRequestId },
-      data: { status: dto.status },
-    });
+      this.eventEmitter.emit('payment-request.status.changed', {
+        paymentRequestId: paymentRequest.id,
+        loanId: paymentRequest.loanId,
+        userId: paymentRequest.userId,
+        newStatus: dto.status,
+      });
 
-    this.eventEmitter.emit('payment-request.status.changed', {
-      paymentRequestId: paymentRequest.id,
-      loanId: paymentRequest.loanId,
-      userId: paymentRequest.userId,
-      newStatus: dto.status,
-    });
-
-    if (payment) {
       this.eventEmitter.emit('payment.recorded', {
         paymentId: payment.id,
         loanId: paymentRequest.loanId,
         userId: paymentRequest.userId,
+      });
+    } else {
+      await this.prisma.paymentRequest.update({
+        where: { id: paymentRequestId },
+        data: { status: dto.status },
+      });
+
+      this.eventEmitter.emit('payment-request.status.changed', {
+        paymentRequestId: paymentRequest.id,
+        loanId: paymentRequest.loanId,
+        userId: paymentRequest.userId,
+        newStatus: dto.status,
       });
     }
 
@@ -103,36 +114,85 @@ export class PaymentsService {
       throw new BadRequestException('Loan must be active');
     }
 
-    const payment = await this.prisma.payment.create({
-      data: {
-        loanId,
-        amount: dto.amount,
-        recordedByAdminId: adminId,
-      },
+    const pendingItems = await this.prisma.paymentScheduleItem.findMany({
+      where: { loanId, status: 'pending' },
+    });
+    const remaining = pendingItems.reduce(
+      (sum, item) => sum + (item.amount - item.paidAmount),
+      0,
+    );
+    const rounded = Math.round(remaining * 100) / 100;
+
+    if (dto.amount > rounded) {
+      throw new BadRequestException(
+        `Payment amount (${dto.amount}) exceeds remaining balance (${rounded})`,
+      );
+    }
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.payment.create({
+        data: {
+          loanId,
+          amount: dto.amount,
+          recordedByAdminId: adminId,
+        },
+      });
+
+      return { created };
     });
 
     await this.recalculateSchedule(loanId, dto.amount);
 
     this.eventEmitter.emit('payment.recorded', {
-      paymentId: payment.id,
+      paymentId: result.created.id,
       loanId,
       userId: loan.userId,
     });
 
     return {
-      id: payment.id,
-      loanId: payment.loanId,
-      amount: payment.amount,
-      date: payment.date,
+      id: result.created.id,
+      loanId: result.created.loanId,
+      amount: result.created.amount,
+      date: result.created.date,
     };
+  }
+
+  async markScheduleItemPaidAdmin(
+    loanId: string,
+    itemId: string,
+    amount: number,
+    adminId: string,
+  ) {
+    const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
+    if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
+    if (loan.status !== 'active') throw new BadRequestException('Loan must be active');
+
+    const item = await this.prisma.paymentScheduleItem.findFirst({
+      where: { id: itemId, loanId },
+    });
+    if (!item) throw new NotFoundException(`Schedule item with id ${itemId} not found`);
+
+    const remaining = Math.round((item.amount - item.paidAmount) * 100) / 100;
+    if (amount > remaining) {
+      throw new BadRequestException(`Payment amount (${amount}) exceeds remaining for this item (${remaining})`);
+    }
+
+    const payment = await this.prisma.payment.create({
+      data: {
+        loanId,
+        amount,
+        recordedByAdminId: adminId,
+      },
+    });
+
+    await this.recalculateSchedule(loanId, amount);
+
+    return { id: payment.id, amount: payment.amount, scheduleItemId: item.id };
   }
 
   private async recalculateSchedule(loanId: string, paymentAmount: number) {
     const pendingItems = await this.prisma.paymentScheduleItem.findMany({
-      where: {
-        loanId,
-        status: 'pending',
-      },
+      where: { loanId, status: 'pending' },
       orderBy: { dueDate: 'asc' },
     });
 
@@ -141,22 +201,26 @@ export class PaymentsService {
     for (const item of pendingItems) {
       if (remaining <= 0) break;
 
-      if (remaining >= item.amount) {
-        remaining -= item.amount;
+      const itemRemaining = item.amount - item.paidAmount;
+      if (itemRemaining <= 0) continue;
+
+      if (remaining >= itemRemaining) {
+        remaining -= itemRemaining;
         await this.prisma.paymentScheduleItem.update({
           where: { id: item.id },
-          data: { status: 'paid' },
+          data: { paidAmount: item.amount, status: 'paid' },
         });
       } else {
+        await this.prisma.paymentScheduleItem.update({
+          where: { id: item.id },
+          data: { paidAmount: item.paidAmount + remaining },
+        });
         remaining = 0;
       }
     }
 
     const stillPending = await this.prisma.paymentScheduleItem.count({
-      where: {
-        loanId,
-        status: 'pending',
-      },
+      where: { loanId, status: 'pending' },
     });
 
     if (stillPending === 0) {
@@ -165,9 +229,7 @@ export class PaymentsService {
         data: { status: 'closed' },
       });
 
-      const loan = await this.prisma.loan.findUnique({
-        where: { id: loanId },
-      });
+      const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
 
       this.eventEmitter.emit('loan.closed', {
         loanId,
