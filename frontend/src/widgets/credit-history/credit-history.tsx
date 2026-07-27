@@ -17,11 +17,11 @@ export function CreditHistory() {
             Своевременное погашение займа помогает улучшить кредитный рейтинг и
             открывает доступ к более выгодным условиям в будущем.
           </p>
-          <ul className="mt-8 space-y-3 text-left inline-block">
+          <div className="mt-8 space-y-3 text-left inline-block">
             {benefits.map((benefit) => (
-              <li
+              <div
                 key={benefit}
-                className="flex items-center gap-3 text-slate-700"
+                className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-5 py-3"
               >
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-700">
                   <svg
@@ -38,10 +38,10 @@ export function CreditHistory() {
                     />
                   </svg>
                 </span>
-                {benefit}
-              </li>
+                <span className="text-sm text-slate-700">{benefit}</span>
+              </div>
             ))}
-          </ul>
+          </div>
           <div className="mt-8">
             <Link
               href="/apply?type=individual"
