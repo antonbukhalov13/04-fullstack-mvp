@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { Pagination } from '@/shared/ui/pagination';
+import { LoadingOverlay } from '@/shared/ui/loading-overlay';
 
 interface Application {
   id: string;
@@ -54,17 +56,23 @@ export function AdminApplicationsList() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
 
-  const fetchApplications = async (s: string, st: string) => {
+  const fetchApplications = async (s: string, st: string, off: number = 0) => {
     setLoading(true);
     setError(null);
     try {
       const params: Record<string, string> = {};
       if (s.trim()) params.search = s.trim();
       if (st) params.status = st;
+      params.limit = String(limit);
+      params.offset = String(off);
       const qs = new URLSearchParams(params).toString();
-      const data = await apiRequest<Application[]>(`/applications${qs ? '?' + qs : ''}`, { admin: true });
-      setItems(data);
+      const data = await apiRequest<{ data: Application[]; total: number }>(`/applications${qs ? '?' + qs : ''}`, { admin: true });
+      setItems(data.data);
+      setTotal(data.total);
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;
@@ -83,12 +91,19 @@ export function AdminApplicationsList() {
   }, []);
 
   const handleSearch = () => {
-    fetchApplications(search, statusFilter);
+    setOffset(0);
+    fetchApplications(search, statusFilter, 0);
   };
 
   const handleStatusChange = (value: string) => {
     setStatusFilter(value);
-    fetchApplications(search, value);
+    setOffset(0);
+    fetchApplications(search, value, 0);
+  };
+
+  const handlePageChange = (newOffset: number) => {
+    setOffset(newOffset);
+    fetchApplications(search, statusFilter, newOffset);
   };
 
   if (loading && items.length === 0) {
@@ -108,6 +123,7 @@ export function AdminApplicationsList() {
   }
 
   return (
+    <LoadingOverlay loading={loading} hasData={items.length > 0}>
     <div>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
@@ -170,8 +186,10 @@ export function AdminApplicationsList() {
               ))}
             </tbody>
           </table>
+          <Pagination total={total} limit={limit} offset={offset} onPageChange={handlePageChange} />
         </div>
       )}
     </div>
+    </LoadingOverlay>
   );
 }

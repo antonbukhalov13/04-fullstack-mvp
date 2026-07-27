@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
 import { Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { Pagination } from '@/shared/ui/pagination';
+import { LoadingOverlay } from '@/shared/ui/loading-overlay';
 
 interface ClientSummary {
   id: string;
@@ -35,14 +37,22 @@ export function AdminClientsList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
 
-  const fetchClients = async (q: string) => {
+  const fetchClients = async (q: string, off: number = 0) => {
     setLoading(true);
     setError(null);
     try {
-      const qs = q.trim() ? `?search=${encodeURIComponent(q.trim())}` : '';
-      const data = await apiRequest<ClientSummary[]>(`/clients${qs}`, { admin: true });
-      setItems(data);
+      const params: Record<string, string> = {};
+      if (q.trim()) params.search = q.trim();
+      params.limit = String(limit);
+      params.offset = String(off);
+      const qs = new URLSearchParams(params).toString();
+      const data = await apiRequest<{ data: ClientSummary[]; total: number }>(`/clients?${qs}`, { admin: true });
+      setItems(data.data);
+      setTotal(data.total);
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;
@@ -60,7 +70,15 @@ export function AdminClientsList() {
     fetchClients('');
   }, []);
 
-  const handleSearch = () => fetchClients(search);
+  const handleSearch = () => {
+    setOffset(0);
+    fetchClients(search, 0);
+  };
+
+  const handlePageChange = (newOffset: number) => {
+    setOffset(newOffset);
+    fetchClients(search, newOffset);
+  };
 
   if (loading && items.length === 0) {
     return <div className="flex items-center justify-center py-20"><Spinner size="lg" /></div>;
@@ -71,6 +89,7 @@ export function AdminClientsList() {
   }
 
   return (
+    <LoadingOverlay loading={loading} hasData={items.length > 0}>
     <div>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <input
@@ -126,8 +145,10 @@ export function AdminClientsList() {
               ))}
             </tbody>
           </table>
+          <Pagination total={total} limit={limit} offset={offset} onPageChange={handlePageChange} />
         </div>
       )}
     </div>
+    </LoadingOverlay>
   );
 }

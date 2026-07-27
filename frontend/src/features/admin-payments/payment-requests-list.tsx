@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { Pagination } from '@/shared/ui/pagination';
 
 interface PaymentRequest {
   id: string;
@@ -44,14 +45,22 @@ export function PaymentRequestsList() {
   const [actionId, setActionId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const limit = 20;
 
-  const fetchItems = async (st: string) => {
+  const fetchItems = async (st: string, off: number = 0) => {
     setLoading(true);
     setError(null);
     try {
-      const qs = st ? `?status=${st}` : '';
-      const data = await apiRequest<PaymentRequest[]>(`/payment-requests${qs}`, { admin: true });
-      setItems(data);
+      const params: Record<string, string> = {};
+      if (st) params.status = st;
+      params.limit = String(limit);
+      params.offset = String(off);
+      const qs = new URLSearchParams(params).toString();
+      const data = await apiRequest<{ data: PaymentRequest[]; total: number }>(`/payment-requests?${qs}`, { admin: true });
+      setItems(data.data);
+      setTotal(data.total);
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;
@@ -71,7 +80,13 @@ export function PaymentRequestsList() {
 
   const handleStatusChange = (value: string) => {
     setStatusFilter(value);
-    fetchItems(value);
+    setOffset(0);
+    fetchItems(value, 0);
+  };
+
+  const handlePageChange = (newOffset: number) => {
+    setOffset(newOffset);
+    fetchItems(statusFilter, newOffset);
   };
 
   const decide = async (id: string, status: 'approved' | 'rejected') => {
@@ -86,7 +101,7 @@ export function PaymentRequestsList() {
         body: { status },
       });
       setActionSuccess(status === 'approved' ? 'Заявка подтверждена' : 'Заявка отклонена');
-      await fetchItems(statusFilter);
+      await fetchItems(statusFilter, offset);
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;
@@ -194,6 +209,7 @@ export function PaymentRequestsList() {
               ))}
             </tbody>
           </table>
+          <Pagination total={total} limit={limit} offset={offset} onPageChange={handlePageChange} />
         </div>
       )}
     </div>

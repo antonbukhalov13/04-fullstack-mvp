@@ -7,3 +7,5 @@ export { Card, CardHeader, CardContent, CardFooter } from './card';
 export { StatusBadge } from './status-badge';
 export { Spinner } from './spinner';
 export { EmptyState } from './empty-state';
+export { Pagination } from './pagination';
+export { LoadingOverlay } from './loading-overlay';

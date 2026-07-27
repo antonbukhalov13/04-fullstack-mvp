@@ -125,7 +125,7 @@ export function LoginForm() {
               </p>
               {mockOtp && (
                 <p className="mt-1 text-xs text-amber-600 bg-amber-50 rounded px-2 py-1">
-                  Mock-код: <span className="font-mono font-semibold">{mockOtp}</span>
+                  Тестовый код (dev): <span className="font-mono font-semibold">{mockOtp}</span>
                 </p>
               )}
             </div>

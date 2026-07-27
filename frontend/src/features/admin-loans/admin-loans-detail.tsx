@@ -47,6 +47,24 @@ function fmtDate(iso: string) {
   });
 }
 
+function parseUserAgent(ua: string | null): { browser: string; os: string } {
+  if (!ua) return { browser: '—', os: '—' };
+  let browser = 'Другой';
+  if (ua.includes('Firefox')) browser = 'Firefox';
+  else if (ua.includes('Edg/')) browser = 'Edge';
+  else if (ua.includes('Chrome')) browser = 'Chrome';
+  else if (ua.includes('Safari')) browser = 'Safari';
+
+  let os = 'Другая';
+  if (ua.includes('Windows')) os = 'Windows';
+  else if (ua.includes('Mac OS X')) os = 'macOS';
+  else if (ua.includes('Linux')) os = 'Linux';
+  else if (ua.includes('Android')) os = 'Android';
+  else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+
+  return { browser, os };
+}
+
 export function AdminLoanDetail() {
   const params = useParams();
   const loanId = (params?.id ?? '') as string;
@@ -252,8 +270,15 @@ export function AdminLoanDetail() {
               <p className="font-mono text-slate-700">{loan.signedIp}</p>
             </div>
             <div>
-              <p className="text-slate-500 mb-1">User-Agent</p>
-              <p className="font-mono text-slate-700 text-xs break-all">{loan.signedUserAgent}</p>
+              <p className="text-slate-500 mb-1">Браузер / ОС</p>
+              {(() => {
+                const { browser, os } = parseUserAgent(loan.signedUserAgent);
+                return (
+                  <p className="text-slate-700">
+                    {browser} <span className="text-slate-400">·</span> {os}
+                  </p>
+                );
+              })()}
             </div>
           </div>
         )}
