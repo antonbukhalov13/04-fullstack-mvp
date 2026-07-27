@@ -1359,3 +1359,19 @@ What I learned: В Next.js 16 App Router `searchParams` в server component — 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 76
+
+Goal: Привести все кнопки на публичном сайте к единому размеру (эталон — кнопка "Начать с небольшого займа")
+
+Prompt: Сделать все кнопки на сайте больше по ширине, привести к одной высоте, как пример кнопка "Начать с небольшого займа"
+
+Result: Frontend: hero.tsx — кнопка `px-10 py-3 text-base font-medium` → `px-6 py-3 text-sm font-semibold`. header.tsx desktop — `px-4 py-2 font-medium` → `px-6 py-3 font-semibold`. header.tsx mobile — `px-3 py-2.5 font-medium` → `px-6 py-3 font-semibold`. button.tsx lg size — `text-base` → `text-sm font-semibold`. ForBusiness, CreditHistory, Business page — уже были в эталонном стиле. npm run build OK (26 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Эталон public кнопок: `px-6 py-3 text-sm font-semibold`. Админ-кнопки (px-4 py-2) остались компактными — внутренний интерфейс.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
