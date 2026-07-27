@@ -1343,3 +1343,19 @@ What I learned: `scroll-mt-24` (6rem/96px) — стандартный отсту
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 75
+
+Goal: Кнопка "Оставить заявку" в секции "Для бизнеса" открывает форму с предвыбранным типом "Бизнес"
+
+Prompt: При переходе по кнопке Оставить заявку в секции Финансирование для бизнеса, должно переходить на форму где заранее в Тип заявителя выбрано поле Бизнес
+
+Result: Frontend: apply/page.tsx — принимает `searchParams`, передаёт в `ApplyForm`. apply-form.tsx — `ApplyForm` принимает `searchParams`, читает `type` query параметр через `use()`, устанавливает `initialType` ('business' | 'individual'). Ссылка в ForBusiness уже была `/apply?type=business`. npm run build OK (26 маршрутов).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: В Next.js 16 App Router `searchParams` в server component — это `Promise`, передаём в client component и распаковываем через `React.use()`.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
