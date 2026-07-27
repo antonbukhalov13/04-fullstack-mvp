@@ -19,7 +19,7 @@ import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
-import { INDIVIDUAL_LIMITS } from '@/shared/lib/calculator';
+import { INDIVIDUAL_LIMITS, calculateAnnuity } from '@/shared/lib/calculator';
 
 const BUSINESS_LIMITS = { amount: { min: 30000, max: 500000 }, term: { min: 30, max: 365 } };
 
@@ -282,12 +282,19 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
 
           {watchAmount > 0 && watchTerm > 0 && (
             <div className="rounded-lg bg-indigo-50 p-4 text-sm text-slate-700">
-              <p>
-                Платёж: ~<span className="font-semibold">{Math.round((watchAmount * 0.008 * Math.pow(1.008, watchTerm)) / (Math.pow(1.008, watchTerm) - 1))}</span> EUR/день
-              </p>
-              <p>
-                Итого к возврату: ~<span className="font-semibold">{Math.round(Math.round((watchAmount * 0.008 * Math.pow(1.008, watchTerm)) / (Math.pow(1.008, watchTerm) - 1)) * watchTerm)}</span> EUR
-              </p>
+              {(() => {
+                const { payment, total } = calculateAnnuity(watchAmount, watchTerm);
+                return (
+                  <>
+                    <p>
+                      Платёж: ~<span className="font-semibold">{Math.round(payment)}</span> EUR/день
+                    </p>
+                    <p>
+                      Итого к возврату: ~<span className="font-semibold">{Math.round(total)}</span> EUR
+                    </p>
+                  </>
+                );
+              })()}
             </div>
           )}
 
