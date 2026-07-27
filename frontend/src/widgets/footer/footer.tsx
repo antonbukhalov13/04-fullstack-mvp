@@ -31,7 +31,7 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-slate-50">
+    <footer className="border-t-2 border-slate-300 bg-slate-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 sm:gap-x-8">
           <div>
@@ -59,7 +59,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 border-t border-slate-300 pt-8">
+        <div className="mt-10 border-t border-slate-200 pt-8">
           <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-sm text-slate-500">
             <div className="flex items-center gap-2">
               <svg className="h-4 w-4 shrink-0 text-slate-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
