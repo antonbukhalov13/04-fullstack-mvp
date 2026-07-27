@@ -1591,15 +1591,39 @@ Prompt: Группа 6: Frontend safety
 
 Result:
 
-- #18 confirm(): добавлен `window.confirm()` в admin-application-detail (reject), admin-loans-detail (updateStatus, closeLoan), payment-requests-list (reject). Сообщения: «Изменить статус займа на...?», «Закрыть займ? Это действие необратимо.», «Отклонить заявку на оплату?»
-- #19 Status restrictions: в admin-loans-detail добавлен `allowedTransitions` объект — pending_signature→active, active→closed, overdue→closed, default→active/closed. Select показывает только допустимые переходы.
-- #23 variant="danger": admin-loans-detail «Закрыть займ» → `<Button variant="danger">`, payment-requests-list «Отклонить» → `<Button variant="danger">`
-- #24 shared Button: все raw `<button>` в admin заменены на `<Button>` из `@/shared/ui/button` — admin-applications-list (Найти), admin-application-detail (Применить, Оставить комментарий), admin-login-form (Войти), admin-clients-list (Найти), admin-loans-list (Найти), admin-loans-detail (Отметить оплату, Применить), manual-payment-form (Зафиксировать), overdue-schedule-list (Снять просрочку), payment-requests-list (Подтвердить, Отклонить). 10 файлов, 15 кнопок.
+- confirm(): добавлен `window.confirm()` в admin-application-detail (reject), admin-loans-detail (updateStatus, closeLoan), payment-requests-list (reject). Сообщения: «Изменить статус займа на...?», «Закрыть займ? Это действие необратимо.», «Отклонить заявку на оплату?»
+- Status restrictions: в admin-loans-detail добавлен `allowedTransitions` объект — pending_signature→active, active→closed, overdue→closed, default→active/closed. Select показывает только допустимые переходы.
+- variant="danger": admin-loans-detail «Закрыть займ» → `<Button variant="danger">`, payment-requests-list «Отклонить» → `<Button variant="danger">`
+- shared Button: все raw `<button>` в admin заменены на `<Button>` из `@/shared/ui/button` — admin-applications-list (Найти), admin-application-detail (Применить, Оставить комментарий), admin-login-form (Войти), admin-clients-list (Найти), admin-loans-list (Найти), admin-loans-detail (Отметить оплату, Применить), manual-payment-form (Зафиксировать), overdue-schedule-list (Снять просрочку), payment-requests-list (Подтвердить, Отклонить). 10 файлов, 15 кнопок.
 npm run build OK (26 routes).
 
 Used as-is / edited manually / rejected: used as-is
 
 What I learned: Строка "| " между approve/reject в payment-requests-list была handmade разделителем — заменена на gap-2 между двумя Button. Confirm перед reject (danger action) — стандартный паттерн, approve обычно без confirm.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 88
+
+Goal: Убрать дублирование калькулятора в apply-form и добавить поиск займа в manual-payment-form
+
+Prompt: Группа 7: Forms
+
+apply-form хардкодит формулу калькулятора вместо импорта из shared/lib/calculator, ручной ввод займа по UUID без поиска/автодополнения в manual-payment-form.
+
+Result:
+
+- Калькулятор: apply-form импортирует `calculateAnnuity` из `@/shared/lib/calculator` вместо хардкода формулы. IIFE в JSX вычисляет `payment` и `total` через вызов `calculateAnnuity(watchAmount, watchTerm)`.
+- Manual payment: добавлен autocomplete поиск — поле ввода принимает UUID или имя клиента, при вводе ≥2 символов выполняется GET `/loans?search=...&status=active`, dropdown показывает результаты (имя, телефон, #id). Клик по результату заполняет поле loanId. Dropdown закрывается кликом снаружи. Поиск работает через `apiRequest` с admin=true.
+- ownerId=0: проверено — backend уже реассоциирует файлы через `updateMany` при создании application и `updateFileOwnership` при создании contact_message. Pattern корректен.
+- Consent checkbox: проверено — уже реализовано как отдельный useState + handleFormSubmit, как требуется по AGENTS.md §10.
+npm run build OK (26 routes).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: ownerId=0 при загрузке файлов — не баг, а паттерн: сначала upload с нулевым owner, потом backend реассоциирует. calculateAnnuity возвращает { payment, total }, rounding берёт на себя. Search в manual-payment-form использует существующий GET /loans с search param.
 
 Model used: big-pickle
 
