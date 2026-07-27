@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, use, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import {
   object,
@@ -47,13 +47,20 @@ interface UploadedFile {
   name: string;
 }
 
-export function ApplyForm() {
-  const [applicantType, setApplicantType] = useState<ApplicantType>('individual');
+export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
+  const params = use(searchParams);
+  const initialType: ApplicantType = params.type === 'business' ? 'business' : 'individual';
+
+  const [applicantType, setApplicantType] = useState<ApplicantType>(initialType);
   const [submitState, setSubmitState] = useState<SubmitState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [successId, setSuccessId] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const limits = applicantType === 'individual' ? INDIVIDUAL_LIMITS : BUSINESS_LIMITS;
 
@@ -65,7 +72,7 @@ export function ApplyForm() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: valibotResolver(formSchema),
-    defaultValues: { applicantType: 'individual' },
+    defaultValues: { applicantType: initialType },
   });
 
   const watchAmount = watch('amount');
