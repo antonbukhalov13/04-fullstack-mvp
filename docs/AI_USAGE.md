@@ -1455,3 +1455,28 @@ What I learned: `hidden sm:inline` скрывал "Finance" на < 640px. Убр
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 82
+
+Goal: Исправить критичные дыры в авторизации и безопасности
+
+Prompt: Группа 1: Критичная безопасность
+
+токен не восстанавливается после F5, публичный файловый эндпоинт, GET /loans/:id без guard, JWT секрет по умолчанию, один JWT на user+admin.
+
+Result:
+
+- dashboard-sidebar.tsx и admin-sidebar.tsx — добавлен `setAuthToken(token)` / `setAdminAuthToken(token)` после чтения из localStorage. Теперь токен восстанавливается в модульной переменной после F5.
+- files.service.ts — добавлена валидация `ownerType` ( allowed: application, contact_message). JWT guard не добавлен т.к. файлы грузят неавторизованные пользователи (apply-form, contact-form).
+- loans.controller.ts — `@Get(':id')` добавлен `@UseGuards(JwtAuthGuard)`.
+- auth.module.ts, admin-auth.module.ts, jwt.strategy.ts, admin-jwt.strategy.ts — убран `'default-secret'`, добавлена fail-fast проверка (throw Error если env не задан).
+- admin-auth.module.ts и admin-jwt.strategy.ts — переключены на `JWT_SECRET_ADMIN`. `.env` — добавлен `JWT_SECRET_ADMIN`.
+npm run build OK (frontend 26 маршрутов, backend tsc --noEmit без ошибок).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Файловый эндпоинт нельзя защитить JWT guard-ом т.к. apply-form и contact-form грузят файлы до авторизации. Вместо этого — валидация ownerType. Разделение JWT_SECRET на user/admin — обязательно для избежания cross-auth токенов.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
