@@ -6,7 +6,7 @@ import Link from 'next/link';
 const navItems = [
   { href: '/how-it-works', label: 'Как это работает' },
   { href: '/business', label: 'Для бизнеса' },
-  { href: '/faq', label: 'Часто задаваемые вопросы' },
+  { href: '/faq', label: 'FAQ' },
 ];
 
 export function Header() {
@@ -18,10 +18,10 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-baseline gap-1.5" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <span className="text-xl font-bold text-indigo-600">LumenBridge</span>
-            <span className="hidden sm:inline text-sm font-semibold text-slate-600 pb-0.5">Finance</span>
+            <span className="text-sm font-semibold text-slate-600 pb-0.5">Finance</span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -39,16 +39,9 @@ export function Header() {
             </Link>
           </nav>
 
-          <Link
-            href="/apply"
-            className="hidden md:inline-flex lg:hidden items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
-          >
-            Получить займ
-          </Link>
-
           <button
             type="button"
-            className="lg:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 min-h-[44px] min-w-[44px]"
+            className="md:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 min-h-[44px] min-w-[44px]"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Меню"
           >
@@ -66,7 +59,7 @@ export function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white animate-in slide-in-from-top-2 duration-200">
+        <div className="md:hidden border-t border-slate-200 bg-white animate-in slide-in-from-top-2 duration-200">
           <div className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <Link
