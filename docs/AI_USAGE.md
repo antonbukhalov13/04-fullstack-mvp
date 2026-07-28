@@ -1887,3 +1887,19 @@ What I learned: DTO и transition map должны быть синхронизи
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 101
+
+Goal: Исправить дублирование overdue-уведомлений в `checkOverduePayments` при concurrent запросах — заменить read-update-emit цикл на атомарный UPDATE RETURNING
+
+Prompt: `checkOverduePayments()` вызывается на каждый GET-запрос клиента. Под concurrent запросами один и тот же pending item обрабатывается дважды: оба запроса читают его до обновления, оба обновляют, оба эмитят `payment.overdue`. Результат — дублирующиеся уведомления клиенту.
+
+Result: `backend/src/modules/clients/clients.service.ts` — заменён цикл `findMany` + `update` + `emit` на raw SQL `UPDATE ... RETURNING id`. Атомарно обновляет статус и возвращает только что обновлённые записи. Затем `findMany` по полученным ID + emit. Под concurrent запросами `RETURNING` вернёт пустой список второму запросу — дублей нет. Backend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Prisma `updateMany` не возвращает обновлённые записи — для атомарного "обновить и узнать что обновили" нужен raw SQL с `RETURNING`. Это стандартный паттерн для PostgreSQL.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
