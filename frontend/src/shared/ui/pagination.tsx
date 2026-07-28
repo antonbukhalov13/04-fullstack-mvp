@@ -20,7 +20,7 @@ export function Pagination({ total, limit, offset, onPageChange }: PaginationPro
         <button
           onClick={() => onPageChange(Math.max(0, offset - limit))}
           disabled={currentPage <= 1}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[36px]"
+          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[36px]"
         >
           Назад
         </button>
@@ -30,7 +30,7 @@ export function Pagination({ total, limit, offset, onPageChange }: PaginationPro
         <button
           onClick={() => onPageChange(offset + limit)}
           disabled={currentPage >= totalPages}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[36px]"
+          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 disabled:opacity-40 disabled:pointer-events-none transition-colors min-h-[36px]"
         >
           Далее
         </button>

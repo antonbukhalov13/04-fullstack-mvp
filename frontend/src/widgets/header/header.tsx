@@ -42,14 +42,14 @@ export function Header() {
             {isLoggedIn ? (
               <Link
                 href="/dashboard/applications"
-                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors min-h-[44px]"
+                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 transition-colors min-h-[44px]"
               >
                 Кабинет
               </Link>
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors min-h-[44px]"
+                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 transition-colors min-h-[44px]"
               >
                 Войти
               </Link>
@@ -97,7 +97,7 @@ export function Header() {
             {isLoggedIn ? (
               <Link
                 href="/dashboard/applications"
-                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 min-h-[44px]"
+                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 min-h-[44px]"
                 onClick={() => setMobileOpen(false)}
               >
                 Кабинет
@@ -105,7 +105,7 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 min-h-[44px]"
+                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 min-h-[44px]"
                 onClick={() => setMobileOpen(false)}
               >
                 Войти
