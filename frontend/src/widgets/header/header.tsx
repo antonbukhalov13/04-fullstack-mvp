@@ -39,6 +39,12 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/apply"
+              className="inline-flex items-center justify-center rounded-lg border border-indigo-600 px-6 py-3 text-sm font-semibold text-indigo-600 transition-colors hover:bg-indigo-600 hover:text-white min-h-[44px]"
+            >
+              Получить займ
+            </Link>
             {isLoggedIn ? (
               <Link
                 href="/dashboard/applications"
@@ -54,17 +60,11 @@ export function Header() {
                 Войти
               </Link>
             )}
-            <Link
-              href="/apply"
-              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors min-h-[44px]"
-            >
-              Получить займ
-            </Link>
           </nav>
 
           <button
             type="button"
-            className="lg:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 min-h-[44px] min-w-[44px]"
+            className="lg:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 active:bg-slate-200 min-h-[44px] min-w-[44px]"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Меню"
           >
@@ -94,6 +94,13 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/apply"
+              className="block rounded-lg border border-indigo-600 px-6 py-3 text-center text-sm font-semibold text-indigo-600 transition-colors hover:bg-indigo-600 hover:text-white min-h-[44px]"
+              onClick={() => setMobileOpen(false)}
+            >
+              Получить займ
+            </Link>
             {isLoggedIn ? (
               <Link
                 href="/dashboard/applications"
@@ -111,13 +118,6 @@ export function Header() {
                 Войти
               </Link>
             )}
-            <Link
-              href="/apply"
-              className="block rounded-lg bg-indigo-600 px-6 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 min-h-[44px]"
-              onClick={() => setMobileOpen(false)}
-            >
-              Получить займ
-            </Link>
           </div>
         </div>
       )}
