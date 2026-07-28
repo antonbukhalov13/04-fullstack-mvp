@@ -144,7 +144,7 @@ export function LoginForm() {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => { setStep('phone'); setMockOtp(''); setErrorMessage(''); }}
+                onClick={() => { setStep('phone'); setMockOtp(''); setErrorMessage(''); codeForm.reset(); }}
               >
                 Назад
               </Button>
