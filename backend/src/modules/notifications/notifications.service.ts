@@ -83,26 +83,38 @@ export class NotificationsService {
     previousStatus: string;
     newStatus: string;
   }) {
-    const message =
-      payload.newStatus === 'approved'
-        ? 'Заявка одобрена'
-        : payload.newStatus === 'rejected'
-          ? 'Заявка отклонена'
-          : null;
+    try {
+      const message =
+        payload.newStatus === 'approved'
+          ? 'Заявка одобрена'
+          : payload.newStatus === 'rejected'
+            ? 'Заявка отклонена'
+            : null;
 
-    if (message) {
-      await this.create(payload.userId, 'application.status.changed', message);
+      if (message) {
+        await this.create(payload.userId, 'application.status.changed', message);
+      }
+    } catch (err) {
+      this.logger.error('Failed to create notification for application.status.changed', err);
     }
   }
 
   @OnEvent('loan.created')
   async onLoanCreated(payload: { loanId: string; userId: string }) {
-    await this.create(payload.userId, 'loan.created', 'Займ ожидает подписания');
+    try {
+      await this.create(payload.userId, 'loan.created', 'Займ ожидает подписания');
+    } catch (err) {
+      this.logger.error('Failed to create notification for loan.created', err);
+    }
   }
 
   @OnEvent('loan.signed')
   async onLoanSigned(payload: { loanId: string; userId: string }) {
-    await this.create(payload.userId, 'loan.signed', 'Займ подписан и активирован');
+    try {
+      await this.create(payload.userId, 'loan.signed', 'Займ подписан и активирован');
+    } catch (err) {
+      this.logger.error('Failed to create notification for loan.signed', err);
+    }
   }
 
   @OnEvent('payment-request.created')
@@ -111,11 +123,15 @@ export class NotificationsService {
     loanId: string;
     userId: string;
   }) {
-    await this.create(
-      payload.userId,
-      'payment-request.created',
-      'Заявка на оплату создана',
-    );
+    try {
+      await this.create(
+        payload.userId,
+        'payment-request.created',
+        'Заявка на оплату создана',
+      );
+    } catch (err) {
+      this.logger.error('Failed to create notification for payment-request.created', err);
+    }
   }
 
   @OnEvent('payment-request.status.changed')
@@ -125,19 +141,23 @@ export class NotificationsService {
     userId: string;
     newStatus: string;
   }) {
-    const message =
-      payload.newStatus === 'approved'
-        ? 'Платёж подтверждён'
-        : payload.newStatus === 'rejected'
-          ? 'Платёж отклонён'
-          : null;
+    try {
+      const message =
+        payload.newStatus === 'approved'
+          ? 'Платёж подтверждён'
+          : payload.newStatus === 'rejected'
+            ? 'Платёж отклонён'
+            : null;
 
-    if (message) {
-      await this.create(
-        payload.userId,
-        'payment-request.status.changed',
-        message,
-      );
+      if (message) {
+        await this.create(
+          payload.userId,
+          'payment-request.status.changed',
+          message,
+        );
+      }
+    } catch (err) {
+      this.logger.error('Failed to create notification for payment-request.status.changed', err);
     }
   }
 
@@ -147,7 +167,11 @@ export class NotificationsService {
     loanId: string;
     userId: string;
   }) {
-    await this.create(payload.userId, 'payment.recorded', 'Платёж зафиксирован');
+    try {
+      await this.create(payload.userId, 'payment.recorded', 'Платёж зафиксирован');
+    } catch (err) {
+      this.logger.error('Failed to create notification for payment.recorded', err);
+    }
   }
 
   @OnEvent('payment.overdue')
@@ -156,11 +180,19 @@ export class NotificationsService {
     userId: string;
     scheduleItemId: string;
   }) {
-    await this.create(payload.userId, 'payment.overdue', 'Просрочка платежа');
+    try {
+      await this.create(payload.userId, 'payment.overdue', 'Просрочка платежа');
+    } catch (err) {
+      this.logger.error('Failed to create notification for payment.overdue', err);
+    }
   }
 
   @OnEvent('loan.closed')
   async onLoanClosed(payload: { loanId: string; userId: string }) {
-    await this.create(payload.userId, 'loan.closed', 'Займ закрыт');
+    try {
+      await this.create(payload.userId, 'loan.closed', 'Займ закрыт');
+    } catch (err) {
+      this.logger.error('Failed to create notification for loan.closed', err);
+    }
   }
 }
