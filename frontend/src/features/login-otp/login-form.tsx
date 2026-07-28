@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { object, pipe, string, minLength, type InferOutput } from 'valibot';
@@ -23,15 +23,61 @@ const codeSchema = object({
 type PhoneForm = InferOutput<typeof phoneSchema>;
 type CodeForm = InferOutput<typeof codeSchema>;
 
-type SubmitState = 'idle' | 'submitting' | 'error';
+const RESEND_COOLDOWN_SEC = 60;
+
+function useCountdown(expiresAt: Date | null) {
+  const [remaining, setRemaining] = useState<number>(0);
+
+  useEffect(() => {
+    if (!expiresAt) { setRemaining(0); return; }
+
+    const tick = () => {
+      const diff = Math.max(0, Math.floor((expiresAt.getTime() - Date.now()) / 1000));
+      setRemaining(diff);
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [expiresAt]);
+
+  const min = String(Math.floor(remaining / 60)).padStart(2, '0');
+  const sec = String(remaining % 60).padStart(2, '0');
+  return { remaining, formatted: `${min}:${sec}`, expired: remaining <= 0 };
+}
 
 export function LoginForm() {
   const router = useRouter();
   const [step, setStep] = useState<Step>('phone');
   const [phone, setPhone] = useState('');
   const [mockOtp, setMockOtp] = useState('');
-  const [submitState, setSubmitState] = useState<SubmitState>('idle');
+  const [submitState, setSubmitState] = useState<'idle' | 'submitting'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [expiresAt, setExpiresAt] = useState<Date | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const { formatted, expired } = useCountdown(expiresAt);
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+      return;
+    }
+    cooldownRef.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          if (cooldownRef.current) clearInterval(cooldownRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
+  }, [resendCooldown]);
 
   const phoneForm = useForm<PhoneForm>({
     resolver: valibotResolver(phoneSchema),
@@ -41,18 +87,23 @@ export function LoginForm() {
     resolver: valibotResolver(codeSchema),
   });
 
-  const onRequestOtp: SubmitHandler<PhoneForm> = async (data) => {
+  const doRequestOtp = useCallback(async (phoneValue: string) => {
     setSubmitState('submitting');
     setErrorMessage('');
 
     try {
-      const res = await api.post<{ mockOtp: string }>('/auth/request-otp', { phone: data.phone });
-      setPhone(data.phone);
+      const res = await api.post<{ mockOtp: string; expiresAt: string }>(
+        '/auth/request-otp',
+        { phone: phoneValue },
+      );
+      setPhone(phoneValue);
       setMockOtp(res.mockOtp);
+      setExpiresAt(new Date(res.expiresAt));
+      setResendCooldown(RESEND_COOLDOWN_SEC);
       phoneForm.reset();
       setStep('code');
     } catch (err) {
-      setSubmitState('error');
+      setSubmitState('idle');
       if (err instanceof ApiError) {
         const body = err.body as { message?: string | string[] };
         const msg = Array.isArray(body.message) ? body.message[0] : body.message;
@@ -63,6 +114,15 @@ export function LoginForm() {
     } finally {
       setSubmitState('idle');
     }
+  }, [phoneForm]);
+
+  const onRequestOtp: SubmitHandler<PhoneForm> = async (data) => {
+    await doRequestOtp(data.phone);
+  };
+
+  const onResend = async () => {
+    await doRequestOtp(phone);
+    codeForm.reset();
   };
 
   const onVerifyOtp: SubmitHandler<CodeForm> = async (data) => {
@@ -81,7 +141,7 @@ export function LoginForm() {
 
       router.push('/dashboard');
     } catch (err) {
-      setSubmitState('error');
+      setSubmitState('idle');
       if (err instanceof ApiError) {
         const body = err.body as { message?: string | string[] };
         const msg = Array.isArray(body.message) ? body.message[0] : body.message;
@@ -89,8 +149,6 @@ export function LoginForm() {
       } else {
         codeForm.setError('code', { message: err instanceof Error ? err.message : 'Произошла ошибка' });
       }
-    } finally {
-      setSubmitState('idle');
     }
   };
 
@@ -110,7 +168,7 @@ export function LoginForm() {
               error={phoneForm.formState.errors.phone?.message}
             />
 
-            {submitState === 'error' && (
+            {submitState === 'idle' && errorMessage && (
               <p className="text-sm text-red-600">{errorMessage}</p>
             )}
 
@@ -130,6 +188,15 @@ export function LoginForm() {
                 </p>
               )}
             </div>
+
+            {!expired ? (
+              <p className="text-xs text-slate-500">
+                Код действителен ещё <span className="font-medium text-slate-700">{formatted}</span>
+              </p>
+            ) : (
+              <p className="text-xs text-red-600">Код истёк</p>
+            )}
+
             <Input
               label="Код из SMS"
               placeholder="000000"
@@ -140,11 +207,29 @@ export function LoginForm() {
               error={codeForm.formState.errors.code?.message}
             />
 
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={resendCooldown > 0}
+              onClick={onResend}
+            >
+              {resendCooldown > 0
+                ? `Отправить код повторно (${resendCooldown} сек)`
+                : 'Отправить код повторно'}
+            </Button>
+
             <div className="flex gap-3">
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => { setStep('phone'); setMockOtp(''); setErrorMessage(''); codeForm.reset(); }}
+                onClick={() => {
+                  setStep('phone');
+                  setMockOtp('');
+                  setErrorMessage('');
+                  setExpiresAt(null);
+                  setResendCooldown(0);
+                  codeForm.reset();
+                }}
               >
                 Назад
               </Button>
