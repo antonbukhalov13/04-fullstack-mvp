@@ -1718,3 +1718,21 @@ What I learned: У модели Application нет `updatedAt` в Prisma-схе�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 93
+
+Goal: Добавить `JWT_SECRET_ADMIN` в `.env.example`
+
+Prompt: В `backend/.env.example` есть `JWT_SECRET`, но нет `JWT_SECRET_ADMIN`. Новый разработчик не узнает о необходимости второй переменной для admin JWT и получит crash при запуске admin-auth модуля.
+
+Result:
+
+- `backend/.env.example`: добавлена строка `JWT_SECRET_ADMIN=your-admin-secret-jwt-key-change-in-production` под `JWT_SECRET` в секции JWT.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Два отдельных JWT-секрета (user + admin) — легко забыть один из них при настройке окружения. `.env.example` должен содержать все обязательные переменные.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
