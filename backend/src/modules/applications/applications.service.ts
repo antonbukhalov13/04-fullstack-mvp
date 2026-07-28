@@ -284,7 +284,7 @@ export class ApplicationsService {
     return {
       id: updatedApplication.id,
       comment: updatedApplication.comment,
-      updatedAt: updatedApplication.createdAt,
+      updatedAt: new Date(),
     };
   }
 
