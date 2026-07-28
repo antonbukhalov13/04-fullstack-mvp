@@ -1903,3 +1903,23 @@ What I learned: Prisma `updateMany` не возвращает обновлённ
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 102
+
+Goal: Исправить race condition в `decidePaymentRequest` — два параллельных approve могут пройти проверку статуса вне транзакции
+
+Prompt: Проверка `paymentRequest.status !== 'pending'` вне `$transaction`. Два параллельных approve пройдут проверку, войдут в транзакцию. `Payment.paymentRequestId` `@unique` → вторая транзакция падает с P2002, но с некрасивой ошибкой 500. Нужно: re-read статуса внутри транзакции + catch P2002 с осмысленным сообщением.
+
+Result: `backend/src/modules/payments/payments.service.ts` —
+- Импорт `Prisma` из `@prisma/client` для `PrismaClientKnownRequestError`
+- Ветка `approved`: проверка статуса перенесена внутрь `$transaction` — `findUnique` внутри tx + `if (fresh.status !== 'pending') throw`
+- Весь approved-блок обёрнут в `try/catch`, P2002 ловится → `"Payment request has already been processed"`
+- Внешняя проверка `paymentRequest.status !== 'pending'` осталась как ранний rejection (без транзакции — дешевле). Backend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Для защиты от double-approval в Prisma+Postgres: (1) re-read + validate внутри транзакции, (2) unique constraint как второй рубеж, (3) catch P2002 для чистой ошибки вместо 500. Все три уровня вместе дают и безопасность, и UX.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
