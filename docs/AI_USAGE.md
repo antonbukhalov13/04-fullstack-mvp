@@ -2081,3 +2081,19 @@ What I learned: `items-baseline` выравнивает по базовой ли
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 111
+
+Goal: Сдвинуть breakpoint бургер-меню в хедере с `md` (768px) на `lg` (1024px) — бургер появляется раньше когда gap между логотипом и навигацией < 24px
+
+Prompt: Заменить `md:` на `lg:` в хедере — бургер появляется при 1024px вместо 768px
+
+Result: `widgets/header/header.tsx` — 3 правки: навигация `hidden md:flex` → `hidden lg:flex`, кнопка бургера `md:hidden` → `lg:hidden`, mobile dropdown `md:hidden` → `lg:hidden`. Breakpoint сдвинут на 256px вправо.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Tailwind `md` = 768px, `lg` = 1024px — замена одного на другой самый простой способ сдвинуть breakpoint без JS
+
+Model used: big-pickle
+
+Instrument used: OpenCode
