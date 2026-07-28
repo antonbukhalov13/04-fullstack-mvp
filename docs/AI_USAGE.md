@@ -1736,3 +1736,22 @@ What I learned: Два отдельных JWT-секрета (user + admin) — 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 94
+
+Goal: Добавить автоматическое создание S3-бакета при старте бэкенда
+
+Prompt: MinIO бакет не создаётся автоматически — при первом запуске загрузка файлов падает, пока бакет не будет создан вручную. Нужно добавить проверку и создание бакета при старте приложения.
+
+Result:
+
+- `backend/src/modules/files/files.service.ts`: добавлен `OnModuleInit`. При старте проверяетсяexistence бакета через `HeadBucketCommand` — если его нет, создаётся через `CreateBucketCommand`. Добавлен `Logger` для логирования результата. Импортированы `CreateBucketCommand` и `HeadBucketCommand` из `@aws-sdk/client-s3`.
+- Backend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `HeadBucketCommand` в AWS SDK v3 бросает ошибку если бакет не существует — используем try/catch для определения необходимости создания. `OnModuleInit` — подходящий хук для инициализации ресурсов при старте NestJS-приложения.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
