@@ -1,9 +1,11 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  CreateBucketCommand,
+  HeadBucketCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -22,9 +24,10 @@ const ALLOWED_OWNER_TYPES = ['application', 'contact_message'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 @Injectable()
-export class FilesService {
+export class FilesService implements OnModuleInit {
   private s3Client: S3Client;
   private bucket: string;
+  private readonly logger = new Logger(FilesService.name);
 
   constructor(
     private configService: ConfigService,
@@ -41,6 +44,17 @@ export class FilesService {
       },
       forcePathStyle: true, // Required for MinIO
     });
+  }
+
+  async onModuleInit() {
+    try {
+      await this.s3Client.send(new HeadBucketCommand({ Bucket: this.bucket }));
+      this.logger.log(`S3 bucket "${this.bucket}" already exists`);
+    } catch {
+      this.logger.log(`S3 bucket "${this.bucket}" not found, creating...`);
+      await this.s3Client.send(new CreateBucketCommand({ Bucket: this.bucket }));
+      this.logger.log(`S3 bucket "${this.bucket}" created`);
+    }
   }
 
   async uploadFile(
