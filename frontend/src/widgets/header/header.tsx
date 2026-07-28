@@ -25,7 +25,7 @@ export function Header() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-1.5">
-            <span className="text-xl font-bold text-indigo-600">LumenBridge</span>
+            <span className="text-xl font-bold text-indigo-600 -mt-1">LumenBridge</span>
             <span className="text-sm font-semibold text-slate-600">Finance</span>
           </Link>
 
