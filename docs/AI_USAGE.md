@@ -1987,3 +1987,19 @@ What I learned: `setError` из react-hook-form устанавливает ка�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 106
+
+Goal: Обновлять кнопку Войти/Кабинет в хедере сразу после логина/логоута без перезагрузки страницы
+
+Prompt: После входа в кабинет кнопка "Войти" меняется на "Кабинет" только после перезагрузки страницы. Аналогично после выхода. Нужно чтобы кнопка обновлялась сразу.
+
+Result: `frontend/src/widgets/header/header.tsx` — добавлен `usePathname()` из `next/navigation`, `useEffect` зависит от `pathname` вместо пустого массива. При смене роута (login → dashboard, dashboard → home) перепроверяется токен в localStorage. Frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `usePathname()` как зависимость `useEffect` — простой способ перепроверять auth-состояние при навигации в Next.js App Router. Не нужен ни context, ни event emitter — достаточно перечитать localStorage при смене роута.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
