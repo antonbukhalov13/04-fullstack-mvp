@@ -2113,3 +2113,19 @@ What I learned: `min-h-[36px]` на inline-flex ссылках задавал и
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 113
+
+Goal: Поменять местами кнопки в хедере, сделать "Получить займ" outline-кнопкой и добавить active state бургеру
+
+Prompt: Поменять местами кнопки Войти/Кабинет и Получить займ в хедере. Сделать кнопку "Получить займ" outline: рамка indigo-600, текст indigo-600, при наведении заливка indigo-600 + белый текст. Добавить active:bg-slate-200 бургер-кнопке.
+
+Result: `widgets/header/header.tsx` — десктоп-nav и mobile dropdown: "Получить займ" перемещена перед "Войти/Кабинет". Кнопка "Получить займ" изменена: `bg-indigo-600 text-white` → `border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white`. Бургер-кнопка: добавлен `active:bg-slate-200`.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: outline-кнопка требует контрастного цвета текста (indigo-600) в обычном состоянии, белый только при hover с заливкой
+
+Model used: big-pickle
+
+Instrument used: OpenCode
