@@ -5,8 +5,10 @@ import {
   UploadedFile,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { FilesService } from './files.service';
 
 @Controller('files')
@@ -14,6 +16,7 @@ export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Post('upload')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       limits: {

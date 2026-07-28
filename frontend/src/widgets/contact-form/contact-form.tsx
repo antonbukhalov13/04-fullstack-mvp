@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { object, pipe, string, minLength, email, type InferOutput } from 'valibot';
 import { valibotResolver } from '@hookform/resolvers/valibot';
-import { api } from '@/shared/api';
+import { api, getAuthToken } from '@/shared/api';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { Button } from '@/shared/ui/button';
@@ -52,9 +52,12 @@ export function ContactForm() {
       if (file) {
         const formData = new FormData();
         formData.append('file', file);
+        const token = getAuthToken();
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
         const uploadRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/files/upload?ownerType=contact_message&ownerId=0`,
-          { method: 'POST', body: formData },
+          { method: 'POST', body: formData, headers },
         );
         if (!uploadRes.ok) throw new Error('Ошибка загрузки файла');
         const uploadData = await uploadRes.json();

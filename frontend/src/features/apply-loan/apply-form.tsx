@@ -14,7 +14,7 @@ import {
 } from 'valibot';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import Link from 'next/link';
-import { api, ApiError } from '@/shared/api';
+import { api, ApiError, getAuthToken } from '@/shared/api';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/button';
@@ -87,9 +87,13 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
     try {
       const formData = new FormData();
       formData.append('file', file);
+      const token = getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/files/upload?ownerType=application&ownerId=0`,
-        { method: 'POST', body: formData },
+        { method: 'POST', body: formData, headers },
       );
       if (!res.ok) throw new Error('Ошибка загрузки файла');
       const data = await res.json();
