@@ -40,8 +40,8 @@ export function LoansList() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await apiRequest<LoanItem[]>('/loans/me');
-        if (!cancelled) setItems(data);
+        const res = await apiRequest<{ data: LoanItem[]; total: number; limit: number; offset: number }>('/loans/me');
+        if (!cancelled) setItems(res.data);
       } catch (err) {
         if (!cancelled) {
           if (err instanceof ApiError) {

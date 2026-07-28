@@ -47,8 +47,8 @@ export function NotificationsList() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await apiRequest<Notification[]>('/users/me/notifications');
-        if (!cancelled) setItems(data);
+        const res = await apiRequest<{ data: Notification[]; total: number; limit: number; offset: number }>('/users/me/notifications');
+        if (!cancelled) setItems(res.data);
       } catch (err) {
         if (!cancelled) {
           if (err instanceof ApiError) {

@@ -40,8 +40,8 @@ export function OverdueScheduleList() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiRequest<OverdueItem[]>('/loans/overdue', { admin: true });
-      setItems(data);
+      const res = await apiRequest<{ data: OverdueItem[]; total: number; limit: number; offset: number }>('/loans/overdue', { admin: true });
+      setItems(res.data);
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;

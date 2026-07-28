@@ -38,9 +38,9 @@ export function ManualPaymentForm({ onRecorded }: { onRecorded?: () => void }) {
     if (q.trim().length < 2) { setSearchResults([]); setShowDropdown(false); return; }
     setSearching(true);
     try {
-      const data = await apiRequest<LoanSearchResult[]>(`/loans?search=${encodeURIComponent(q.trim())}&status=active`, { admin: true });
-      setSearchResults(data);
-      setShowDropdown(data.length > 0);
+      const res = await apiRequest<{ data: LoanSearchResult[]; total: number; limit: number; offset: number }>(`/loans?search=${encodeURIComponent(q.trim())}&status=active`, { admin: true });
+      setSearchResults(res.data);
+      setShowDropdown(res.data.length > 0);
     } catch {
       setSearchResults([]);
     } finally {

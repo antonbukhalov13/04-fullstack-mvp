@@ -56,8 +56,8 @@ export function AdminNotificationsList() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await apiRequest<AdminNotification[]>('/admin/notifications', { admin: true });
-        if (!cancelled) setItems(data);
+        const res = await apiRequest<{ data: AdminNotification[]; total: number; limit: number; offset: number }>('/admin/notifications', { admin: true });
+        if (!cancelled) setItems(res.data);
       } catch (err) {
         if (!cancelled) {
           if (err instanceof ApiError) {
