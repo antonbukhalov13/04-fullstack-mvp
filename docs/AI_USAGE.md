@@ -1942,3 +1942,27 @@ What I learned: API пагинации возвращает объект `{data,
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 104
+
+Goal: Исправить обработку пагинированных ответов API во всех списках фронтенда + очистка поля телефона после запроса OTP
+
+Prompt: Все списки (мои заявки, мои займы, мои уведомления, админ уведомления, админ просроченные, поиск займов) получают от backend объект `{data, total, limit, offset}`, но фронтенд ожидает массив напрямую — `items.filter` / `items.map` падают с `TypeError`. Также после ввода номера телефона на форме входа номер остаётся в поле.
+
+Result:
+- `features/my-applications/applications-list.tsx` — `apiRequest<{data: Application[]; ...}>`, данные из `res.data`
+- `features/my-loans/loans-list.tsx` — аналогично
+- `features/my-notifications/notifications-list.tsx` — аналогично
+- `features/admin-notifications/admin-notifications-list.tsx` — аналогично
+- `features/admin-payments/manual-payment-form.tsx` — аналогично для поиска займов
+- `features/admin-payments/overdue-schedule-list.tsx` — аналогично
+- `features/login-otp/login-form.tsx` — добавлен `phoneForm.reset()` после успешного запроса OTP
+- Frontend tsc OK, все `apiRequest<...[]>` в проекте заменены.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Backend с пагинацией всегда возвращает `{data, total, limit, offset}` — фронтенд должен оборачивать тип ответа и обращаться к `.data`. Это коснулось 6 компонентов одновременно — лучше проверять все списки сразу при добавлении пагинации на backend.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
