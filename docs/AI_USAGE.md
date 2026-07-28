@@ -2019,3 +2019,29 @@ What I learned: `form.reset()` очищает все значения формы
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 108
+
+Goal: Добавить таймер обратного отсчёта OTP и кнопку повторной отправки с дебаунсом 60 сек
+
+Prompt: Пользователь не знает сколько времени действителен код — получает ошибку только после истечения. Нужен таймер "Код действителен ещё X:XX" рядом с полем ввода + кнопка "Отправить код повторно" с кулдауном 60 сек.
+
+Result:
+- `features/login-otp/login-form.tsx` —
+  - Хук `useCountdown(expiresAt)` — считает обратный отсчёт каждую секунду, формат `MM:SS`
+  - Состояние `expiresAt` — обновляется при каждом запросе OTP (первичном и повторном)
+  - Текст "Код действителен ещё 4:32" над полем ввода, при 0:00 — "Код истёк" красным
+  - Кнопка "Отправить код повторно" — disabled первые 60 сек, показывает оставшееся время
+  - Вынес `doRequestOtp` в `useCallback` — переиспользуется для первого запроса и resend
+  - При resend: новый `expiresAt`, сброс кулдауна и формы кода
+  - При "Назад": сброс всех состояний (expiresAt, resendCooldown)
+- Backend уже возвращал `expiresAt` — изменения не потребовалось.
+- Frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Таймер обратного отсчёта OTP — `useEffect` с `setInterval(1000)`, чистка через `clearInterval`. `expiresAt` приходит с backend, фронтенд только считает разницу. Resend button с cooldown: `useRef` для interval + состояние `resendCooldown`, уменьшается каждую секунду.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
