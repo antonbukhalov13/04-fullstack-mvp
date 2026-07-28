@@ -1755,3 +1755,31 @@ What I learned: `HeadBucketCommand` в AWS SDK v3 бросает ошибку е
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 95
+
+Goal: Исправить форму заявки: обязательные поля, валидация email, inline-ошибки, отступы, курсор, стиль блока успеха
+
+Prompt: email с лейблом "(необязательно)" показывает "Некорректный email" при пустом значении — пустая строка не undefined, optional() пропускает undefined но не "", email() падает; поля Имя/Фамилия не помечены как обязательные, но валидируются в onSubmit — ошибка показывается общим сообщением внизу формы, не inline на поле; при отправке с пустыми полями красным обводятся только phone/amount/termDays (через valibot), но не firstName/lastName — setError внутри onSubmit не даёт ре-рендер; нет отступа между формой и футером; ссылка "Подать ещё одну заявку" в блоке успеха сливается с зелёным текстом; нет cursor-pointer на кнопках.
+
+Result:
+
+- `frontend/src/features/apply-loan/apply-form.tsx`:
+  - Валидатор: `email` заменён на `check((v) => v === '' || EMAIL_REGEX.test(v))` — пустая строка проходит.
+  - Новый `handleFormSubmit`: валидирует ВСЕ обязательные поля (phone, amount, termDays, firstName/lastName, companyName/registrationNumber) через `setError` ДО вызова `handleSubmit`. `clearErrors()` очищает предыдущие ошибки.
+  - `useForm`: добавлены `getValues`, `setError`, `clearErrors`.
+  - Лейблы: обязательные — с `*` ("Имя *", "Телефон *", "Сумма (EUR) *" и т.д.), необязательные — без индикатора.
+  - Блок успеха: `p-6` → `p-8`, `space-y-4`, кнопка "Подать ещё одну заявку" — `text-slate-500 hover:text-slate-700` (серый как футер), `cursor-pointer`.
+  - Кнопка "Отправить заявку": через shared `<Button>`, `cursor-pointer` на всех кнопках.
+- `frontend/src/shared/ui/button.tsx`: добавлен `cursor-pointer` в базовые стили.
+- `frontend/src/app/apply/page.tsx`: `py-12` → `py-12 pb-24` — больше отступа перед футером.
+- Backend DTO уже имел валидацию обязательных полей (строки 308–327 applications.service.ts) — без изменений.
+- Frontend tsc OK.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: `setError` из react-hook-form, вызванный внутри `onSubmit` (через `handleSubmit`), не даёт ре-рендер — форма уже прошла цикл валидации. Нужно валидировать обязательные поля вручную в обработчике ДО вызова `handleSubmit`. `clearErrors()` перед валидацией очищает ошибки от предыдущей попытки. `optional()` в valibot пропускает `undefined`, но не пустую строку — для optional email нужен `check((v) => v === '' || regex)`.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
