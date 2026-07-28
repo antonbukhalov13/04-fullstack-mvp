@@ -2045,3 +2045,23 @@ What I learned: Таймер обратного отсчёта OTP — `useEffec
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 109
+
+Goal: Добавить hover-эффект на все кнопки с серой рамкой — заливка фоном цвета рамки при наведении
+
+Prompt: При наведении на кнопки с серой рамкой (Кабинет, Войти, Назад, Отправить код повторно, pagination) — кнопка заливается цветом рамки и сливается с ней. Текст становится тёмным (slate-900).
+
+Result:
+- `shared/ui/button.tsx` — variant `secondary`: `hover:bg-slate-50 active:bg-slate-100` → `hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400`
+- `shared/ui/pagination.tsx` — обе кнопки (Назад/Далее): аналогично
+- `widgets/header/header.tsx` — 4 кнопки (Кабинет/Войти, десктоп + мобилка): аналогично
+- Frontend tsc OK.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: Hover-эффект "заливка цветом рамки" — `hover:bg-{color} hover:text-slate-900 hover:border-{color}`. Тёмный текст на slate-300 фоне читается лучше белого и не выбивается из минималистичного стиля сайта. Все серые кнопки проекта проходят через shared Button (`variant="secondary"`) или кастомные стили header/pagination — достаточно обновить в 3 местах.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
