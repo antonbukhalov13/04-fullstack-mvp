@@ -11,20 +11,23 @@ export class ClientsService {
 
   async checkOverduePayments() {
     const now = new Date();
+
+    // Атомарно обновляем pending → overdue и получаем только что обновлённые ID
+    const updated = await this.prisma.$queryRaw<{ id: string }[]>`
+      UPDATE "PaymentScheduleItem"
+      SET status = 'overdue'
+      WHERE status = 'pending' AND "dueDate" < ${now}
+      RETURNING id
+    `;
+
+    if (updated.length === 0) return 0;
+
     const overdueItems = await this.prisma.paymentScheduleItem.findMany({
-      where: {
-        status: 'pending',
-        dueDate: { lt: now },
-      },
+      where: { id: { in: updated.map((r) => r.id) } },
       include: { loan: true },
     });
 
     for (const item of overdueItems) {
-      await this.prisma.paymentScheduleItem.update({
-        where: { id: item.id },
-        data: { status: 'overdue' },
-      });
-
       this.eventEmitter.emit('payment.overdue', {
         loanId: item.loanId,
         userId: item.loan.userId,
