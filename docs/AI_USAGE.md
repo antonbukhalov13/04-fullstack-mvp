@@ -2097,3 +2097,19 @@ What I learned: Tailwind `md` = 768px, `lg` = 1024px — замена одног
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 112
+
+Goal: Уменьшить вертикальные отступы между ссылками в футере и центрировать юридический текст
+
+Prompt: Уменьшить отступы между ссылками в футере (О компании, Как это работает и тд), центрировать текст "LumenBridge Finance Ltd осуществляет..."
+
+Result: `widgets/footer/footer.tsx` — `space-y-2` → `space-y-1` и обратно, `min-h-[36px]` → `min-h-[20px]` у ссылок, `text-center` добавлен к абзацу с юридическим текстом.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `min-h-[36px]` на inline-flex ссылках задавал избыточную высоту — уменьшение до `min-h-[20px]` исправило футер без потери кликабельности
+
+Model used: big-pickle
+
+Instrument used: OpenCode
