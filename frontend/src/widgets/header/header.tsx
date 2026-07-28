@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { getAuthToken } from '@/shared/api';
 
 const navItems = [
@@ -13,10 +14,11 @@ const navItems = [
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsLoggedIn(!!(getAuthToken() ?? localStorage.getItem('token')));
-  }, []);
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 bg-slate-50 border-b border-slate-200">
