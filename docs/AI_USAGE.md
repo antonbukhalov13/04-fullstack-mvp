@@ -2065,3 +2065,19 @@ What I learned: Hover-эффект "заливка цветом рамки" — 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 110
+
+Goal: Выровнять логотип с навигацией по вертикали — убрать смещение "Finance" при сужении экрана
+
+Prompt: При сужении ширины экрана заметно что логотип и слово "Finance" находятся на другом уровне чем навигационные ссылки. Нужно выровнять.
+
+Result: `widgets/header/header.tsx` — логотип-ссылка: `items-baseline` → `items-center`, убран `pb-0.5` у "Finance". Теперь логотип выровнен по центру как и nav-ссылки. Frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `items-baseline` выравнивает по базовой линии текста — подходит когда тексты разного размера и нужно выровнять по буквам. `items-center` выравнивает по центру — лучше когда нужно совпадение с соседними flex-элементами (nav links).
+
+Model used: big-pickle
+
+Instrument used: OpenCode
