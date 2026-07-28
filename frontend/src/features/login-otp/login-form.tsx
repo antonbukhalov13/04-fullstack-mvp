@@ -49,6 +49,7 @@ export function LoginForm() {
       const res = await api.post<{ mockOtp: string }>('/auth/request-otp', { phone: data.phone });
       setPhone(data.phone);
       setMockOtp(res.mockOtp);
+      phoneForm.reset();
       setStep('code');
     } catch (err) {
       setSubmitState('error');
