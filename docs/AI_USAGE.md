@@ -1966,3 +1966,24 @@ What I learned: Backend с пагинацией всегда возвращае�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 105
+
+Goal: Показывать ошибку неверного OTP-кода на поле ввода (красная рамка + текст) и перевести сообщения об ошибках auth на русский
+
+Prompt: При вводе неправильного кода из SMS ничего не видно — ошибка показывалась общим `<p>` текстом отдельно от поля. Также сообщения об ошибках от backend были на английском.
+
+Result:
+- `features/login-otp/login-form.tsx` — ошибка API передаётся через `codeForm.setError('code', { message: ... })` вместо `setErrorMessage(...)`. Добавлен `clearErrors('code')` при `onChange` и перед отправкой. Удалён общий `<p>` блок для шага `code`.
+- `backend/src/modules/auth/auth.service.ts` — `"Invalid or expired OTP code"` → `"Неверный или просроченный код"`, `"User not found"` → `"Пользователь не найден"`
+- `backend/src/modules/auth/jwt.strategy.ts` — `"User not found"` → `"Пользователь не найден"`
+- `backend/src/modules/loans/loans.service.ts` — `"Invalid or expired OTP code"` → `"Неверный или просроченный код"`
+- Backend + Frontend tsc OK.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: `setError` из react-hook-form устанавливает кастомную ошибку, которая НЕ очищается автоматически при вводе — нужен `onChange: () => clearErrors(...)` на поле. Такая ошибка НЕ блокирует кнопку submit, что позволяет пользователю повторить ввод. Сообщения об ошибках для пользователя всегда на русском — на backend и frontend.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
