@@ -42,8 +42,8 @@ export function ApplicationsList() {
     let cancelled = false;
     (async () => {
       try {
-        const data = await apiRequest<Application[]>('/applications/me');
-        if (!cancelled) setItems(data);
+        const res = await apiRequest<{ data: Application[]; total: number; limit: number; offset: number }>('/applications/me');
+        if (!cancelled) setItems(res.data);
       } catch (err) {
         if (!cancelled) {
           if (err instanceof ApiError) {

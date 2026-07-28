@@ -40,7 +40,7 @@ export function Header() {
             {isLoggedIn ? (
               <Link
                 href="/dashboard/applications"
-                className="text-sm text-slate-600 hover:text-slate-900 transition-colors py-2.5"
+                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors min-h-[44px]"
               >
                 Кабинет
               </Link>
@@ -95,7 +95,7 @@ export function Header() {
             {isLoggedIn ? (
               <Link
                 href="/dashboard/applications"
-                className="block rounded-lg px-3 py-3 text-sm text-slate-600 hover:bg-slate-100 min-h-[44px]"
+                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 min-h-[44px]"
                 onClick={() => setMobileOpen(false)}
               >
                 Кабинет
