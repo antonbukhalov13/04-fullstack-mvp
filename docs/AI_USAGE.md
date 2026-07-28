@@ -1923,3 +1923,22 @@ What I learned: Для защиты от double-approval в Prisma+Postgres: (1)
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 103
+
+Goal: Исправить кнопки в хедере (Кабинет/Войти одинаковый дизайн) и починить `items.map` ошибку в applications-list
+
+Prompt: Кнопка "Кабинет" в хедере была простой текстовой ссылкой без рамки. Нужно стилизовать её как кнопку "Войти" (серая рамка `border-slate-300`), чтобы залогиненный пользователь видел кнопку "Кабинет" с рамкой, а незалогиненный — кнопку "Войти" с такой же рамкой. Также при переходе в личный кабинет приложение падало с `items.map is not a function`.
+
+Result:
+
+- `frontend/src/widgets/header/header.tsx` — десктоп и мобилка: одна условная кнопка, `isLoggedIn` → "Кабинет", иначе → "Войти". Обе с `border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 min-h-[44px]`.
+- `frontend/src/features/my-applications/applications-list.tsx` — исправлен вызов API: backend возвращает `{data, total, limit, offset}`, а не массив напрямую. Тип изменён на `apiRequest<{data: Application[]; ...}>`, данные берутся из `res.data`. Frontend tsc OK.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: API пагинации возвращает объект `{data, total, limit, offset}`, а не массив — фронтенд должен оборачивать тип ответа и обращаться к `.data`. В хедере лучше иметь одну условную кнопку с одинаковым стилем для обоих состояний, а не две отдельные кнопки.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
