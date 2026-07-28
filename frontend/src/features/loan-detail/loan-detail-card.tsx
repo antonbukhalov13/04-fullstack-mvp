@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
+import { Button } from '@/shared/ui/button';
 
 interface ScheduleItem {
   id: string;
@@ -270,14 +271,13 @@ export function LoanDetailCard() {
             </p>
 
             {signState === 'idle' && (
-              <button
+              <Button
                 onClick={requestOtp}
                 disabled={signLoading}
-                className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
               >
                 {signLoading ? <Spinner size="sm" className="mr-2" /> : null}
                 Запросить код подписания
-              </button>
+              </Button>
             )}
 
             {signState === 'otp_sent' && (
@@ -296,14 +296,14 @@ export function LoanDetailCard() {
                     placeholder="Введите 6-значный код"
                     className="w-full sm:w-44 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   />
-                  <button
+                  <Button
                     onClick={confirmSign}
                     disabled={otpCode.length !== 6 || signLoading}
-                    className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
+                    className="bg-green-600 text-white hover:bg-green-700 active:bg-green-800"
                   >
                     {signLoading ? <Spinner size="sm" className="mr-2" /> : null}
                     Подтвердить
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -330,12 +330,12 @@ export function LoanDetailCard() {
           <p className="text-sm text-slate-600 mb-3">
             Ознакомьтесь с условиями договора займа.
           </p>
-          <button
+          <Button
+            variant="secondary"
             onClick={() => setShowContract(true)}
-            className="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
           >
             Просмотреть договор
-          </button>
+          </Button>
         </div>
       )}
 
@@ -460,14 +460,13 @@ export function LoanDetailCard() {
             <p className="mt-2 text-sm text-green-600">Заявка на оплату создана.</p>
           )}
 
-          <button
+          <Button
             onClick={submitPaymentRequest}
             disabled={!payAmount || parseFloat(payAmount) <= 0 || !payRef.trim() || payLoading}
-            className="mt-3 inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
           >
             {payLoading ? <Spinner size="sm" className="mr-2" /> : null}
             Отправить заявку
-          </button>
+          </Button>
         </div>
       )}
 

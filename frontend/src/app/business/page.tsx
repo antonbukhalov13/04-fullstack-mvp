@@ -183,7 +183,7 @@ export default function BusinessPage() {
           <div className="mt-8">
             <Link
               href="/apply?type=business"
-              className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors"
             >
               Оставить заявку
             </Link>

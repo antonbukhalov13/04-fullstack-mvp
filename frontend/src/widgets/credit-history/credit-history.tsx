@@ -45,7 +45,7 @@ export function CreditHistory() {
           <div className="mt-8">
             <Link
               href="/apply?type=individual"
-              className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors"
             >
               Начать с небольшого займа
             </Link>

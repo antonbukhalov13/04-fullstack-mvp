@@ -202,13 +202,13 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           <button
             onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
-            className="text-sm font-semibold text-slate-500 hover:text-slate-700 cursor-pointer inline-flex items-center min-h-[44px]"
+            className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-500 hover:text-slate-700"
           >
             Подать ещё одну заявку
           </button>
           <Link
             href="/dashboard/applications"
-            className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
+            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors min-h-[44px]"
           >
             В личный кабинет
           </Link>

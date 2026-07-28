@@ -47,14 +47,14 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors min-h-[44px]"
+                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors min-h-[44px]"
               >
                 Войти
               </Link>
             )}
             <Link
               href="/apply"
-              className="inline-flex items-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors min-h-[44px]"
+              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors min-h-[44px]"
             >
               Получить займ
             </Link>
@@ -103,7 +103,7 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                className="block rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-200 min-h-[44px]"
+                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 min-h-[44px]"
                 onClick={() => setMobileOpen(false)}
               >
                 Войти
@@ -111,7 +111,7 @@ export function Header() {
             )}
             <Link
               href="/apply"
-              className="block rounded-lg bg-indigo-600 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-indigo-700 min-h-[44px]"
+              className="block rounded-lg bg-indigo-600 px-6 py-3 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 min-h-[44px]"
               onClick={() => setMobileOpen(false)}
             >
               Получить займ
