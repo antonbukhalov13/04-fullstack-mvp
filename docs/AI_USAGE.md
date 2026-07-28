@@ -1839,3 +1839,19 @@ What I learned: При рефакторинге приватного метод�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 98
+
+Goal: Обернуть все `@OnEvent` handlers в `notifications.service.ts` в try/catch с логированием — ошибки в listeners не должны молча теряться
+
+Prompt: Все `@OnEvent` handlers в `notifications.service.ts` — async, но без `try/catch`. Если `this.create` упадёт — unhandled rejection, ошибка теряется молча. По AGENTS.md §9.1: "оборачивай тело `@OnEvent` в try/catch и логируй ошибку".
+
+Result: `backend/src/modules/notifications/notifications.service.ts` — все 8 `@OnEvent` handlers обёрнуты в `try/catch` с `this.logger.error(...)`. Backend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `emit()` + async handler без try/catch = silent unhandled rejection. Лучшая практика: один try/catch в listener, логирование ошибки, основной бизнес-процесс не зависит от уведомлений.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
