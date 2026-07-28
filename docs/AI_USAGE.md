@@ -1783,3 +1783,38 @@ What I learned: `setError` из react-hook-form, вызванный внутри
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 96
+
+Goal: Унифицировать все кнопки в проекте по стилю эталонной кнопки "Получить займ" из hero-секции
+
+Prompt: Все кнопки в проекте должны быть одинаковые: `font-semibold`, `px-6 py-3`, `shadow-sm`, одинаковый размер текста. Эталон — кнопка "Получить займ" из hero.tsx: `bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700`. Нужно обновить shared Button component и все raw кнопки/ссылки-кнопки проекта.
+
+Result:
+
+- `frontend/src/shared/ui/button.tsx`:
+  - `font-medium` → `font-semibold` во всех size-стилях
+  - `sm`: `px-3 py-2.5` → `px-4 py-2.5`; `md`: `px-4 py-2.5` → `px-6 py-3`; `lg`: убран дублирующий `font-semibold` (уже в базе)
+  - `shadow-sm` уже был в variant-стилях primary/secondary/danger — оставлен
+- `frontend/src/features/loan-detail/loan-detail-card.tsx`: 4 raw `<button>` → `<Button>`:
+  - "Запросить код подписания" → `<Button>` (primary)
+  - "Подтвердить" → `<Button>` с кастомным `bg-green-600` цветом
+  - "Просмотреть договор" → `<Button variant="secondary">`
+  - "Отправить заявку" → `<Button>` (primary)
+- `frontend/src/features/apply-loan/apply-form.tsx`: кнопка "Подать ещё одну заявку" — выровнена по стилю (font-semibold, px-6 py-3, justify-center)
+- `frontend/src/widgets/header/header.tsx`: "Войти" (десктоп + моб.) — `px-6 py-3 font-semibold shadow-sm hover:bg-slate-50`; "Получить займ" (десктоп + моб.) — добавлен `shadow-sm`
+- `frontend/src/features/apply-loan/apply-form.tsx`: "В личный кабинет" — добавлен `shadow-sm`
+- `frontend/src/widgets/credit-history/credit-history.tsx`: "Начать с небольшого займа" — добавлены `shadow-sm`, `justify-center`
+- `frontend/src/app/business/page.tsx`: "Оставить заявку" — добавлены `shadow-sm`, `justify-center`
+- `frontend/src/widgets/for-business/for-business.tsx`: "Оставить заявку" — добавлены `shadow-sm`, `justify-center`
+- Frontend tsc OK.
+
+Не трогали (специальные элементы, не CTA): pagination, hamburger FAB, close/✕, accordion toggle, tab buttons, "Удалить" файл.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Tailwind preflight сбрасывает стили кнопок — `font-medium` вместо `font-semibold` по умолчанию. Эталонный стиль кнопки задаётся в hero-компоненте и должен быть единственным источником правды для CTA-кнопок. Shared Button component — централизованное место для контроля стиля всех кнопок проекта.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
