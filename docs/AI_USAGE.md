@@ -1678,3 +1678,24 @@ What I learned: Prisma не поддерживает GIN-индексы — то
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 91
+
+Goal: Добавить JWT-guard на файловый контроллер и обновить фронтенд для передачи токена при загрузке файлов
+
+Prompt: `POST /files/upload` не имеет JWT guard. Любой человек может загружать файлы в S3 без авторизации. Нужно добавить `JwtAuthGuard` на контроллер и обновить фронтенд (apply-form.tsx и contact-form.tsx), чтобы загрузка файлов передавала токен авторизации.
+
+Result:
+
+- `backend/src/modules/files/files.controller.ts`: добавлен `@UseGuards(JwtAuthGuard)` на метод `uploadFile`. Импортирован `JwtAuthGuard` из `../../common/guards/jwt-auth.guard`.
+- `frontend/src/features/apply-loan/apply-form.tsx`: добавлен импорт `getAuthToken`, загрузка файла теперь включает `Authorization: Bearer <token>` в headers (если токен есть).
+- `frontend/src/widgets/contact-form/contact-form.tsx`: аналогично — добавлен импорт `getAuthToken`, загрузка вложения включает Authorization header.
+Backend tsc OK, frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `apiRequest` не поддерживает FormData (ставит Content-Type: application/json и делает JSON.stringify). Для загрузки файлов нужен сырой fetch с ручной простановкой Authorization header через `getAuthToken()`. Если пользователь не авторизован — загрузка вернёт 401, это ожидаемое поведение для безопасности.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
