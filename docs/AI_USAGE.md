@@ -1855,3 +1855,19 @@ What I learned: `emit()` + async handler без try/catch = silent unhandled rej
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 99
+
+Goal: Исправить IDOR в `markScheduleItemPaidAdmin` — при смене статуса на overdue/pending нет проверки принадлежности itemId к loanId
+
+Prompt: При `dto.status !== 'paid'` в `markScheduleItemPaidAdmin` — `paymentScheduleItem.update({ where: { id: itemId } })` без проверки `loanId`. Admin может менять статус чужих schedule items через произвольный itemId.
+
+Result: `backend/src/modules/loans/loans.service.ts` — добавлена проверка `findFirst({ where: { id: itemId, loanId } })` перед update в ветке overdue/pending. Backend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: IDOR в ветке не `paid` возник потому что проверка ownership была добавлена только для одного из трёх возможных статусов. При добавлении нового варианта статуса нужно проверять ownership во всех ветках, а не только в основной.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
