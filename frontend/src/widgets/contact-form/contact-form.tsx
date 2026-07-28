@@ -109,21 +109,21 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleFormSubmit} className="space-y-4">
-      <Input label="Имя" {...register('name')} error={errors.name?.message} />
+      <Input label="Имя *" {...register('name')} error={errors.name?.message} />
       <Input
-        label="Email"
+        label="Email *"
         type="email"
         {...register('email')}
         error={errors.email?.message}
       />
       <Input
-        label="Телефон"
+        label="Телефон *"
         type="tel"
         {...register('phone')}
         error={errors.phone?.message}
       />
       <Textarea
-        label="Сообщение"
+        label="Сообщение *"
         rows={4}
         {...register('message')}
         error={errors.message?.message}
