@@ -48,7 +48,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-slate-500 hover:text-slate-700 transition-colors inline-flex items-center min-h-[36px]"
+                      className="text-sm text-slate-500 hover:text-slate-700 transition-colors inline-flex items-center min-h-[20px]"
                     >
                       {link.label}
                     </Link>
@@ -88,7 +88,7 @@ export function Footer() {
             </div>
           </div>
 
-          <p className="mt-6 text-[13px] text-slate-400 leading-relaxed">
+          <p className="mt-6 text-[13px] text-slate-400 leading-relaxed text-center">
             LumenBridge Finance Ltd осуществляет деятельность в соответствии с применимым
             европейским законодательством. Обработка персональных данных осуществляется в
             рамках требований GDPR.
