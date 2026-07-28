@@ -310,6 +310,11 @@ export class LoansService {
       return { id: itemId, status: 'paid' };
     }
 
+    const item = await this.prisma.paymentScheduleItem.findFirst({
+      where: { id: itemId, loanId },
+    });
+    if (!item) throw new NotFoundException(`Schedule item with id ${itemId} not found on this loan`);
+
     const updated = await this.prisma.paymentScheduleItem.update({
       where: { id: itemId },
       data: { status: dto.status as any },
