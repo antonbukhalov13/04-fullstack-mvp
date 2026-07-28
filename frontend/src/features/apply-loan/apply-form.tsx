@@ -7,9 +7,9 @@ import {
   pipe,
   string,
   minLength,
-  email,
   number,
   optional,
+  check,
   type InferOutput,
 } from 'valibot';
 import { valibotResolver } from '@hookform/resolvers/valibot';
@@ -25,15 +25,17 @@ const BUSINESS_LIMITS = { amount: { min: 30000, max: 500000 }, term: { min: 30, 
 
 type ApplicantType = 'individual' | 'business';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const formSchema = object({
   applicantType: string(),
   phone: pipe(string(), minLength(1, 'Обязательное поле')),
   firstName: optional(string()),
   lastName: optional(string()),
-  email: optional(pipe(string(), email('Некорректный email'))),
+  email: optional(pipe(string(), check((v) => v === '' || EMAIL_REGEX.test(v), 'Некорректный email'))),
   companyName: optional(string()),
   registrationNumber: optional(string()),
-  companyEmail: optional(pipe(string(), email('Некорректный email'))),
+  companyEmail: optional(pipe(string(), check((v) => v === '' || EMAIL_REGEX.test(v), 'Некорректный email'))),
   companyPhone: optional(string()),
   amount: number('Введите сумму'),
   termDays: number('Введите срок'),
@@ -70,6 +72,9 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
     handleSubmit,
     reset,
     watch,
+    getValues,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: valibotResolver(formSchema),
@@ -110,17 +115,32 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
     setUploadedFiles((prev) => prev.filter((f) => f.id !== id));
   };
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    clearErrors();
+    const vals = getValues();
+    let valid = true;
+
+    if (!vals.phone?.trim()) { setError('phone', { message: 'Обязательное поле' }); valid = false; }
+    if (!vals.amount || vals.amount <= 0) { setError('amount', { message: 'Введите сумму' }); valid = false; }
+    if (!vals.termDays || vals.termDays <= 0) { setError('termDays', { message: 'Введите срок' }); valid = false; }
+
+    if (applicantType === 'individual') {
+      if (!vals.firstName?.trim()) { setError('firstName', { message: 'Обязательное поле' }); valid = false; }
+      if (!vals.lastName?.trim()) { setError('lastName', { message: 'Обязательное поле' }); valid = false; }
+    } else {
+      if (!vals.companyName?.trim()) { setError('companyName', { message: 'Обязательное поле' }); valid = false; }
+      if (!vals.registrationNumber?.trim()) { setError('registrationNumber', { message: 'Обязательное поле' }); valid = false; }
+    }
+
+    if (valid) {
+      handleSubmit(onSubmit)(e);
+    }
+  };
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setSubmitState('submitting');
     setErrorMessage('');
-
-    if (applicantType === 'individual') {
-      if (!data.firstName?.trim()) { setErrorMessage('Обязательное поле: Имя'); setSubmitState('error'); return; }
-      if (!data.lastName?.trim()) { setErrorMessage('Обязательное поле: Фамилия'); setSubmitState('error'); return; }
-    } else {
-      if (!data.companyName?.trim()) { setErrorMessage('Обязательное поле: Название компании'); setSubmitState('error'); return; }
-      if (!data.registrationNumber?.trim()) { setErrorMessage('Обязательное поле: Регистрационный номер'); setSubmitState('error'); return; }
-    }
 
     if (data.amount < limits.amount.min || data.amount > limits.amount.max) {
       setErrorMessage(`Сумма должна быть от ${limits.amount.min.toLocaleString()} до ${limits.amount.max.toLocaleString()} EUR`);
@@ -170,19 +190,19 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
 
   if (submitState === 'success') {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center">
+      <div className="rounded-xl border border-green-200 bg-green-50 p-8 text-center space-y-4">
         <p className="text-green-800 font-medium">
           Заявка отправлена. Мы свяжемся с вами в ближайшее время.
         </p>
         {successId && (
-          <p className="mt-2 text-sm text-green-700">
+          <p className="text-sm text-green-700">
             Номер заявки: <span className="font-mono">{successId}</span>
           </p>
         )}
-        <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           <button
             onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
-            className="text-sm font-semibold text-green-700 hover:text-green-600 inline-flex items-center min-h-[44px]"
+            className="text-sm font-semibold text-slate-500 hover:text-slate-700 cursor-pointer inline-flex items-center min-h-[44px]"
           >
             Подать ещё одну заявку
           </button>
@@ -200,7 +220,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
   return (
     <Card>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleFormSubmit} className="space-y-6">
           <Select
             label="Тип заявителя"
             value={applicantType}
@@ -214,7 +234,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
           </Select>
 
           <Input
-            label="Телефон"
+            label="Телефон *"
             type="tel"
             placeholder="+353..."
             {...register('phone')}
@@ -224,17 +244,17 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
           {applicantType === 'individual' ? (
             <>
               <Input
-                label="Имя"
+                label="Имя *"
                 {...register('firstName')}
                 error={errors.firstName?.message}
               />
               <Input
-                label="Фамилия"
+                label="Фамилия *"
                 {...register('lastName')}
                 error={errors.lastName?.message}
               />
               <Input
-                label="Email (необязательно)"
+                label="Email"
                 type="email"
                 {...register('email')}
                 error={errors.email?.message}
@@ -243,23 +263,23 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
           ) : (
             <>
               <Input
-                label="Название компании"
+                label="Название компании *"
                 {...register('companyName')}
                 error={errors.companyName?.message}
               />
               <Input
-                label="Регистрационный номер"
+                label="Регистрационный номер *"
                 {...register('registrationNumber')}
                 error={errors.registrationNumber?.message}
               />
               <Input
-                label="Email компании (необязательно)"
+                label="Email компании"
                 type="email"
                 {...register('companyEmail')}
                 error={errors.companyEmail?.message}
               />
               <Input
-                label="Телефон компании (необязательно)"
+                label="Телефон компании"
                 type="tel"
                 {...register('companyPhone')}
                 error={errors.companyPhone?.message}
@@ -269,14 +289,14 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="Сумма (EUR)"
+              label="Сумма (EUR) *"
               type="number"
               placeholder={`${limits.amount.min.toLocaleString()}–${limits.amount.max.toLocaleString()}`}
               {...register('amount', { valueAsNumber: true })}
               error={errors.amount?.message}
             />
             <Input
-              label="Срок (дней)"
+              label="Срок (дней) *"
               type="number"
               placeholder={`${limits.term.min}–${limits.term.max}`}
               {...register('termDays', { valueAsNumber: true })}
