@@ -1690,11 +1690,30 @@ Result:
 - `backend/src/modules/files/files.controller.ts`: добавлен `@UseGuards(JwtAuthGuard)` на метод `uploadFile`. Импортирован `JwtAuthGuard` из `../../common/guards/jwt-auth.guard`.
 - `frontend/src/features/apply-loan/apply-form.tsx`: добавлен импорт `getAuthToken`, загрузка файла теперь включает `Authorization: Bearer <token>` в headers (если токен есть).
 - `frontend/src/widgets/contact-form/contact-form.tsx`: аналогично — добавлен импорт `getAuthToken`, загрузка вложения включает Authorization header.
-Backend tsc OK, frontend tsc OK.
+- Backend tsc OK, frontend tsc OK.
 
 Used as-is / edited manually / rejected: used as-is
 
 What I learned: `apiRequest` не поддерживает FormData (ставит Content-Type: application/json и делает JSON.stringify). Для загрузки файлов нужен сырой fetch с ручной простановкой Authorization header через `getAuthToken()`. Если пользователь не авторизован — загрузка вернёт 401, это ожидаемое поведение для безопасности.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
+
+## Request 92
+
+Goal: Исправить возврат `createdAt` вместо `updatedAt` в `addComment`
+
+Prompt: `applications.service.ts:287` — метод `addComment` возвращает `updatedAt: updatedApplication.createdAt`. Это баг: поле называется `updatedAt`, но отдаёт дату создания заявки. У модели Application нет `updatedAt` поля в Prisma-схеме (только `createdAt`), поэтому простая замена на `updatedAt` даст undefined.
+
+Result:
+
+- `backend/src/modules/applications/applications.service.ts:287`: заменено на `updatedAt: new Date()` — текущий момент времени, когда комментарий был обновлён. Семантически корректно: поле отражает время последнего обновления комментария.
+- Backend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: У модели Application нет `updatedAt` в Prisma-схеме — только `createdAt`. Нельзя просто заменить `createdAt` на `updatedAt` — Prisma вернёт undefined. Используем `new Date()` для отражения момента обновления.
 
 Model used: big-pickle
 
