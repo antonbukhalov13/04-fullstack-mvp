@@ -2129,3 +2129,19 @@ What I learned: outline-кнопка требует контрастного ц�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 114
+
+Goal: Сделать фон всех страниц и секций единым slate-100 — убрать все section/page-level background overrides
+
+Prompt: Сделать фон на всех страницах заметнее, не просто белый. Сначала убрать bg-white со страниц, потом bg-slate-50 со секций лендинга.
+
+Result: `globals.css` — `--background: #f8fafc` (slate-50) → `#f1f5f9` (slate-100). Убран `bg-white` с `<main>` на 8 страницах (terms, credit-policy, aml-kyc, privacy, how-it-works, business, cookie-policy, faq). Убран `bg-white` с `<section>` на 7 виджетах лендинга (how-it-works, calculator, for-business, contact-section, when-money-needed, about-company, faq-preview). Убран `bg-slate-50` с `<section>` на 6 виджетах (loan-terms, transparent-terms, credit-history, trust-block, client-safety, contact-details). Убран `bg-white` с `<div>` в `admin/(dashboard)/layout.tsx`. Hero оставлен с градиентом `from-indigo-50 to-slate-50`. Карточки/инпуты/кнопки с `bg-white` не тронуты.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: `bg-white` и `bg-slate-50` на `<main>` / `<section>` перекрывают глобальный фон — оба нужно убирать чтобы страницы и секции наследовали единый фон. `bg-slate-50` (#f8fafc) выглядит как белый на фоне slate-100 (#f1f5f9). Карточки и элементы формы должны оставаться белыми для контраста.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
