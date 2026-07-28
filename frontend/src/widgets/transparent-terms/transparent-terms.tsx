@@ -24,7 +24,7 @@ const points = [
 
 export function TransparentTerms() {
   return (
-    <section className="py-16 bg-slate-50">
+    <section className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
           Вы заранее знаете все условия

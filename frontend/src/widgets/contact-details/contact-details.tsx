@@ -1,6 +1,6 @@
 export function ContactDetails() {
   return (
-    <section id="contact-details" className="py-16 bg-slate-50 scroll-mt-24">
+    <section id="contact-details" className="py-16 scroll-mt-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">

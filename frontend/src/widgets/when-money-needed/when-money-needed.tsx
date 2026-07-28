@@ -19,7 +19,7 @@ const cards = [
 
 export function WhenMoneyNeeded() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
           Когда деньги нужны сейчас
