@@ -1818,3 +1818,24 @@ What I learned: Tailwind preflight сбрасывает стили кнопок 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 97
+
+Goal: Обернуть `recalculateSchedule` в `$transaction` — исправить баг, при котором crash между `payment.create` и обновлением расписания приводит к неконсистентным данным
+
+Prompt: `recalculateSchedule` вызывается после `$transaction` в `recordDirectPayment` и `decidePaymentRequest` — если упадёт между `payment.create` и обновлением расписания, данные будут неконсистентными. `recalculateSchedule` должна принимать `tx` как первый параметр и вызываться внутри транзакции.
+
+Result:
+
+- `recalculateSchedule` принимает `tx: any` как первый параметр, все запросы к БД внутри метода идут через `tx` вместо `this.prisma`
+- `decidePaymentRequest`: `recalculateSchedule(tx, ...)` перенесён внутрь `$transaction` (строка 58)
+- `recordDirectPayment`: `recalculateSchedule(tx, ...)` перенесён внутрь `$transaction` (строка 141)
+- `markScheduleItemPaidAdmin`: `payment.create` + `recalculateSchedule` обёрнуты в `$transaction` — вынужденное следствие изменения сигнатуры `recalculateSchedule` (иначе проект не собирается). Backend tsc OK.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: При рефакторинге приватного метода все его вызывающие автоматически ломаются — `markScheduleItemPaidAdmin` пришлось тоже оборачивать в транзакцию
+
+Model used: big-pickle
+
+Instrument used: OpenCode
