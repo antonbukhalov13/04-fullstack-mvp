@@ -67,7 +67,7 @@ export function LoginForm() {
 
   const onVerifyOtp: SubmitHandler<CodeForm> = async (data) => {
     setSubmitState('submitting');
-    setErrorMessage('');
+    codeForm.clearErrors('code');
 
     try {
       const res = await api.post<{ accessToken: string; user: { id: string; phone: string; name: string | null } }>(
@@ -85,9 +85,9 @@ export function LoginForm() {
       if (err instanceof ApiError) {
         const body = err.body as { message?: string | string[] };
         const msg = Array.isArray(body.message) ? body.message[0] : body.message;
-        setErrorMessage(msg ?? 'Неверный или просроченный код');
+        codeForm.setError('code', { message: msg ?? 'Неверный или просроченный код' });
       } else {
-        setErrorMessage(err instanceof Error ? err.message : 'Произошла ошибка');
+        codeForm.setError('code', { message: err instanceof Error ? err.message : 'Произошла ошибка' });
       }
     } finally {
       setSubmitState('idle');
@@ -134,13 +134,11 @@ export function LoginForm() {
               label="Код из SMS"
               placeholder="000000"
               maxLength={6}
-              {...codeForm.register('code')}
+              {...codeForm.register('code', {
+                onChange: () => codeForm.clearErrors('code'),
+              })}
               error={codeForm.formState.errors.code?.message}
             />
-
-            {submitState === 'error' && (
-              <p className="text-sm text-red-600">{errorMessage}</p>
-            )}
 
             <div className="flex gap-3">
               <Button

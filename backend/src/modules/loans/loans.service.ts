@@ -510,7 +510,7 @@ export class LoansService {
       });
 
       if (!otp) {
-        throw new BadRequestException('Invalid or expired OTP code');
+        throw new BadRequestException('Неверный или просроченный код');
       }
 
       await tx.otpCode.update({

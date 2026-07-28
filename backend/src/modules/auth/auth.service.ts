@@ -84,7 +84,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('Пользователь не найден');
     }
 
     // Find valid OTP
@@ -104,7 +104,7 @@ export class AuthService {
     });
 
     if (!otp) {
-      throw new BadRequestException('Invalid or expired OTP code');
+      throw new BadRequestException('Неверный или просроченный код');
     }
 
     // Mark OTP as used
