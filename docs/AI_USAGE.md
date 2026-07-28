@@ -1871,3 +1871,19 @@ What I learned: IDOR в ветке не `paid` возник потому что 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 100
+
+Goal: Убрать unreachable statuses `overdue`/`default` из UpdateLoanStatusDto — они недоступны через validateLoanStatusTransition
+
+Prompt: DTO разрешает `['active', 'closed', 'overdue', 'default']`, но `validateLoanStatusTransition` не пускает ни к `overdue` (выставляется автоматически в `checkOverduePayments`), ни к `default` (нигде не используется). Admin получает непонятную ошибку при попытке.
+
+Result: `backend/src/modules/loans/dto/update-loan-status.dto.ts` — `@IsIn(['active', 'closed', 'overdue', 'default'])` → `@IsIn(['active', 'closed'])`. Backend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: DTO и transition map должны быть синхронизированы. Если статус выставляется автоматически (overdue через cron/check), он не должен быть в ручном DTO.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
