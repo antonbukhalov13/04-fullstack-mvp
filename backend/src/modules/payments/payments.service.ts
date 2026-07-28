@@ -55,12 +55,12 @@ export class PaymentsService {
           data: { status: dto.status },
         });
 
+        await this.recalculateSchedule(tx, paymentRequest.loanId, paymentRequest.amount);
+
         return { created, updatedPr };
       });
 
       payment = { id: result.created.id, amount: result.created.amount };
-
-      await this.recalculateSchedule(paymentRequest.loanId, paymentRequest.amount);
 
       this.eventEmitter.emit('payment-request.status.changed', {
         paymentRequestId: paymentRequest.id,
@@ -138,10 +138,10 @@ export class PaymentsService {
         },
       });
 
+      await this.recalculateSchedule(tx, loanId, dto.amount);
+
       return { created };
     });
-
-    await this.recalculateSchedule(loanId, dto.amount);
 
     this.eventEmitter.emit('payment.recorded', {
       paymentId: result.created.id,
@@ -177,21 +177,29 @@ export class PaymentsService {
       throw new BadRequestException(`Payment amount (${amount}) exceeds remaining for this item (${remaining})`);
     }
 
-    const payment = await this.prisma.payment.create({
-      data: {
-        loanId,
-        amount,
-        recordedByAdminId: adminId,
-      },
-    });
+    const payment = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.payment.create({
+        data: {
+          loanId,
+          amount,
+          recordedByAdminId: adminId,
+        },
+      });
 
-    await this.recalculateSchedule(loanId, amount);
+      await this.recalculateSchedule(tx, loanId, amount);
+
+      return created;
+    });
 
     return { id: payment.id, amount: payment.amount, scheduleItemId: item.id };
   }
 
-  private async recalculateSchedule(loanId: string, paymentAmount: number) {
-    const pendingItems = await this.prisma.paymentScheduleItem.findMany({
+  private async recalculateSchedule(
+    tx: any,
+    loanId: string,
+    paymentAmount: number,
+  ) {
+    const pendingItems = await tx.paymentScheduleItem.findMany({
       where: { loanId, status: 'pending' },
       orderBy: { dueDate: 'asc' },
     });
@@ -206,12 +214,12 @@ export class PaymentsService {
 
       if (remaining >= itemRemaining) {
         remaining -= itemRemaining;
-        await this.prisma.paymentScheduleItem.update({
+        await tx.paymentScheduleItem.update({
           where: { id: item.id },
           data: { paidAmount: item.amount, status: 'paid' },
         });
       } else {
-        await this.prisma.paymentScheduleItem.update({
+        await tx.paymentScheduleItem.update({
           where: { id: item.id },
           data: { paidAmount: item.paidAmount + remaining },
         });
@@ -219,17 +227,17 @@ export class PaymentsService {
       }
     }
 
-    const stillPending = await this.prisma.paymentScheduleItem.count({
+    const stillPending = await tx.paymentScheduleItem.count({
       where: { loanId, status: 'pending' },
     });
 
     if (stillPending === 0) {
-      await this.prisma.loan.update({
+      await tx.loan.update({
         where: { id: loanId },
         data: { status: 'closed' },
       });
 
-      const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
+      const loan = await tx.loan.findUnique({ where: { id: loanId } });
 
       this.eventEmitter.emit('loan.closed', {
         loanId,
