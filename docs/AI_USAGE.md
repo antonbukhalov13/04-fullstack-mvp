@@ -2003,3 +2003,19 @@ What I learned: `usePathname()` как зависимость `useEffect` — п
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 107
+
+Goal: Очищать поле "Код из SMS" при нажатии кнопки "Назад" в форме входа
+
+Prompt: При нажатии "Назад" когда поле кода заполнено — цифры остаются видны. Приходится вручную удалять чтобы ввести номер телефона заново.
+
+Result: `features/login-otp/login-form.tsx` — добавлен `codeForm.reset()` в `onClick` кнопки "Назад". Frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `form.reset()` очищает все значения формы — нужно вызывать при навигации между шагами multi-step формы, чтобы не переносить данные между шагами.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
