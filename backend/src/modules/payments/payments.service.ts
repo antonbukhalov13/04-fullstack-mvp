@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { DecidePaymentRequestDto } from './dto/decide-payment-request.dto';
 import { RecordPaymentDto } from './dto/record-payment.dto';
@@ -29,10 +30,6 @@ export class PaymentsService {
       throw new NotFoundException(`Payment request with id ${paymentRequestId} not found`);
     }
 
-    if (paymentRequest.status !== 'pending') {
-      throw new BadRequestException('Payment request is not pending');
-    }
-
     if (paymentRequest.loan.status !== 'active') {
       throw new BadRequestException('Loan must be active');
     }
@@ -40,27 +37,43 @@ export class PaymentsService {
     let payment: { id: string; amount: number } | null = null;
 
     if (dto.status === 'approved') {
-      const result = await this.prisma.$transaction(async (tx) => {
-        const created = await tx.payment.create({
-          data: {
-            loanId: paymentRequest.loanId,
-            paymentRequestId: paymentRequest.id,
-            amount: paymentRequest.amount,
-            recordedByAdminId: adminId,
-          },
+      try {
+        const result = await this.prisma.$transaction(async (tx) => {
+          // Re-read inside transaction to prevent double-approval race
+          const fresh = await tx.paymentRequest.findUnique({
+            where: { id: paymentRequestId },
+          });
+
+          if (!fresh || fresh.status !== 'pending') {
+            throw new BadRequestException('Payment request is no longer pending');
+          }
+
+          const created = await tx.payment.create({
+            data: {
+              loanId: paymentRequest.loanId,
+              paymentRequestId: paymentRequest.id,
+              amount: paymentRequest.amount,
+              recordedByAdminId: adminId,
+            },
+          });
+
+          await tx.paymentRequest.update({
+            where: { id: paymentRequestId },
+            data: { status: dto.status },
+          });
+
+          await this.recalculateSchedule(tx, paymentRequest.loanId, paymentRequest.amount);
+
+          return { created };
         });
 
-        const updatedPr = await tx.paymentRequest.update({
-          where: { id: paymentRequestId },
-          data: { status: dto.status },
-        });
-
-        await this.recalculateSchedule(tx, paymentRequest.loanId, paymentRequest.amount);
-
-        return { created, updatedPr };
-      });
-
-      payment = { id: result.created.id, amount: result.created.amount };
+        payment = { id: result.created.id, amount: result.created.amount };
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+          throw new BadRequestException('Payment request has already been processed');
+        }
+        throw err;
+      }
 
       this.eventEmitter.emit('payment-request.status.changed', {
         paymentRequestId: paymentRequest.id,
