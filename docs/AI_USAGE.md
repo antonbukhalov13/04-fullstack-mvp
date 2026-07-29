@@ -2225,3 +2225,24 @@ What I learned: Unicode-стрелка ← может криво рендери�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 120
+
+Goal: UI-правки личного кабинета и карточек контактных сообщений: сайдбар, список клиентов, карточка займа, форма заявки на оплату, сообщения
+
+Prompt: В сайдбаре личного кабинета: «Выйти» после списка навигации с border-t, стиль кнопки — `text-slate-500 hover:bg-red-50 hover:text-red-600` без иконки, как в админ-сайдбаре. В карточке займа: `mt-4` над кнопкой «Отправить заявку»; заголовок «График платежей» перенесён внутрь `rounded-lg border bg-white p-6` блока. В списке клиентов админки: колонка Имя/Фамилия разделена (первое слово → Имя, остальное → Фамилия). Страница логина: добавлен `pt-16` для отступа от хедера. Переименовать «Реквизиты / Reference» → «Назначение платежа» с плейсхолдером «Например: перевод с карты».
+
+Result:
+- `dashboard-sidebar.tsx` — «Выйти» внизу с `border-t border-slate-200`, кнопка `text-slate-500 hover:bg-red-50 hover:text-red-600` без иконки
+- `admin-clients-list.tsx` — колонки Имя/Фамилия через `c.name.split(' ')[0]` и `.slice(1).join(' ')`
+- `loan-detail-card.tsx` — `mt-4` над кнопкой отправки заявки, «График платежей» внутри `rounded-lg border bg-white p-6`, «Реквизиты / Reference» → «Назначение платежа» с плейсхолдером
+- `admin/(auth)/login/page.tsx` — добавлен `pt-16`
+- Frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Разделение имени на Имя/Фамилию через `.split(' ')[0]` и `.slice(1).join(' ')` — простое решение без изменения бэкенда. `pt-16` на странице логина компенсирует фиксированный хедер.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
