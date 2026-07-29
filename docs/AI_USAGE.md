@@ -2246,3 +2246,24 @@ What I learned: Разделение имени на Имя/Фамилию че�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 121
+
+Goal: Исправить стили форм и файлов: цвет «Отправить ещё», file upload текст-ссылка, треугольники select, отступ /admin/login
+
+Prompt: В контактной форме success: цвет текста «Отправить ещё» — сделать slate-500 (как «Подать ещё одну заявку» в apply-form). Кнопку «Выбрать файл» в контактной форме и в бизнес-секции apply-form: убрать button-стили (bg-indigo-50, rounded-lg, px-4 py-2.5), сделать текст-ссылкой как «Смотреть все вопросы» (text-indigo-600 hover:text-indigo-500, без фона/рамки, прижато к левому краю). В shared Select добавить справа два маленьких треугольника (вверх/вниз) как индикатор выпадающего списка. На /admin/login увеличить pt-16 → pt-24 для большего отступа от хедера.
+
+Result:
+- `contact-form.tsx` — «Отправить ещё»: `text-green-700` → `text-slate-500`, file upload label: убраны `rounded-lg bg-indigo-50 px-4 py-2.5 hover:bg-indigo-100`, изменено `text-indigo-700` → `text-indigo-600`, фон/рамка убраны
+- `apply-form.tsx` — file upload label business-секции: убраны `rounded-lg bg-indigo-50 px-4 py-2.5 hover:bg-indigo-100`, изменено `text-indigo-700` → `text-indigo-600`, фон/рамка убраны
+- `select.tsx` — select обёрнут в `position: relative`, добавлены два SVG-треугольника (один вверх, один вниз) поверх `appearance-none`, `pr-8` для padding под иконки, `pointer-events-none`
+- `admin/(auth)/login/page.tsx` — `pt-16` → `pt-24`
+- Frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: File upload как текст-ссылка — достаточно убрать bg/rounded-lg/padding, оставить текст + svg с indigo-600 цветом. Select с `appearance-none` полностью скрывает нативный индикатор — два stacked SVG-треугольника с fill дают визуальный эквивалент. `pointer-events-none` на контейнере с иконками пропускает клики на select под ними. `pr-8` даёт место для иконок внутри select.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
