@@ -1,4 +1,5 @@
-import { IsOptional, IsString, IsIn } from 'class-validator';
+import { IsOptional, IsString, IsIn, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class QueryApplicationsDto {
   @IsOptional()
@@ -21,4 +22,14 @@ export class QueryApplicationsDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  limit?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  offset?: number;
 }
