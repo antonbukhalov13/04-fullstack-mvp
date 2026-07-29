@@ -2177,3 +2177,19 @@ What I learned: Использование только `pending` в recalculate
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 117
+
+Goal: Добавить страницу сообщений в админку, починить OptionalJwtAuthGuard и исправить 400 на списках заявок/займов
+
+Prompt: Исправить OptionalJwtAuthGuard — handleRequest не работает, т.к. passport-jwt вызывает this.fail() при отсутствии Authorization header. Переопределить canActivate с try/catch. Создать admin-контроллер contact-messages со списком и ссылками на скачивание вложений. Исправить 400 Bad Request на эндпоинтах /applications, /loans, /payment-requests — фронтенд шлёт limit/offset, но DTO не содержат этих полей и ValidationPipe с forbidNonWhitelisted их отклоняет.
+
+Result: OptionalJwtAuthGuard — canActivate обёрнут в try/catch, всегда возвращает true. Создан AdminContactMessagesController (GET /admin/contact-messages с пагинацией). ContactMessagesService.findAllAdmin возвращает attachmentUrl/attachmentName из S3 (try/catch на каждое сообщение). FilesController — добавлен GET /files/:id/download (signed S3 URL, под AdminJwtAuthGuard). Добавлена frontend-страница admin/contact-messages со списком карточек и ссылками на скачивание. В sidebar добавлен пункт «Сообщения». В QueryApplicationsDto, QueryAdminLoansDto, QueryPaymentRequestsDto добавлены limit и offset с @IsOptional @Type(() => Number) @IsNumber(). Все 7 admin-эндпоинтов возвращают 200.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: AuthGuard('jwt').canActivate() возвращает union-тип без catch — нужно try/catch. handleRequest не срабатывает когда passport-jwt вызывает this.fail() — только переопределение canActivate решает проблему. S3-вызовы нужно оборачивать в try/catch чтобы отказ MinIO не ломал страницу админки. Если в route handler используются и DTO и отдельные @Query('limit'), все query-параметры сначала проходят через DTO — с forbidNonWhitelisted поля не из DTO вызывают 400.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
