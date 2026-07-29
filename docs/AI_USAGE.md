@@ -2193,3 +2193,19 @@ What I learned: AuthGuard('jwt').canActivate() возвращает union-тип
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 118
+
+Goal: Исправить баги limit/offset в DTO, 401 admin на GET /loans/:id, инлайн-валидация суммы/срока на /apply, ошибка загрузки файла в форме обратной связи, User.name не заполнялся
+
+Prompt: Добавить limit/offset в QueryApplicationsDto, QueryAdminLoansDto, QueryPaymentRequestsDto — ValidationPipe с forbidNonWhitelisted отклоняет неизвестные params. Добавить GET /loans/:id/admin с AdminJwtAuthGuard — user JWT подписан JWT_SECRET, admin — JWT_SECRET_ADMIN, loans/:id висел только на JwtAuthGuard. Добавить range-валидацию для amount/termDays в handleFormSubmit через setError (перенести из onSubmit где была общая ошибка). Убрать MIME-фильтр в FilesService — разрешить любые типы файлов. Показывать в формах реальную ошибку с бэкенда вместо «Ошибка загрузки файла». Заполнять User.name из firstName/lastName или companyName при создании заявки.
+
+Result: В QueryApplicationsDto, QueryAdminLoansDto, QueryPaymentRequestsDto добавлены limit/offset с @Type(() => Number) @IsNumber(). В LoansController добавлен GET :id/admin с AdminJwtAuthGuard + RolesGuard через findOneAdmin. ApplyForm — range-валидация перенесена из onSubmit (setErrorMessage) в handleFormSubmit (setError на каждое поле), дублирующие проверки удалены из onSubmit. Из FilesService удалён ALLOWED_MIME_TYPES и проверка на него — проходят любые файлы до 10MB. В contact-form.tsx и apply-form.tsx добавлено чтение errBody.message из ответа бэкенда при ошибке аплоада. В ApplicationsService.create добавлено user.name = [firstName, lastName].join(' ') || companyName когда name is null. Бэкенд перезапущен через setsid чтобы не падал при закрытии shell.
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: ValidationPipe с forbidNonWhitelisted + whitelist отклоняет все необъявленные query-параметры — DTO должен объявлять limit/offset с @IsOptional + @Type(() => Number), т.к. query-параметры приходят строками. Admin-токены (JWT_SECRET_ADMIN) не проходят через JwtStrategy (JWT_SECRET) — нужен отдельный admin-роут. NestJS процесс умирает когда shell с nohup выходит — setsid держит его живым. MIME-фильтр лучше убрать совсем, чем гадать какие типы нужны пользователю.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
