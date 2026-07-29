@@ -2288,3 +2288,21 @@ What I learned: `useRef<ReturnType<typeof setTimeout>>()` требует нач�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 123
+
+Goal: Выровнять отступы на странице входа в админ-панель — одинаковые сверху и снизу, как на /login
+
+Prompt: сейчас между формой входа Админ-панель и футером нет отступа. сделай отступы между формой и хедером, и формой и футером такими же как на странице /login
+
+Result:
+- `admin/(auth)/login/page.tsx` — `pt-24` → `py-12` (равные отступы сверху и снизу по 48px, как на /login)
+- Frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: На странице /login стоит `py-12` (48px сверху и снизу), а на /admin/login был только `pt-24` без нижнего отступа — карточка прижималась к футеру.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
