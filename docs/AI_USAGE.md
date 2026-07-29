@@ -2209,3 +2209,19 @@ What I learned: ValidationPipe с forbidNonWhitelisted + whitelist отклон�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 119
+
+Goal: UI-правки админ-панели: сайдбар, логин, платежи, карточки сообщений, кнопки
+
+Prompt: Переместить блок «Вы вошли как» наверх сайдбара, «Выйти» — сразу после списка навигации с border-t. Добавить overflow-y-auto в сайдбар на мобильных. Заменить ← на SVG-стрелки в back-ссылках (admin-clients/detail, admin-applications/detail, admin-loans/detail). В просрочках сменить красный цвет суммы на чёрный (text-red-700 → text-slate-700). Переименовать заголовок столбца Reference → Назначение. Добавить размер кнопок xs (px-3 py-1.5 text-xs min-h-[32px]), применить к Подтвердить/Отклонить в платежах. В /admin/login: ошибки валидации и Invalid credentials переведены на русский, добавлен operator / operator123 в тестовые данные, центровка формы через min-h-full вместо min-h-screen. В карточках сообщений: ссылка на скачивание файла перенесена под текст сообщения; длинные сообщения (>150 символов) обрезаются до 3 строк с «развернуть», короткие показываются полностью без клика.
+
+Result: AdminSidebar — блок «Вы вошли как» вверху с border-b, «Выйти» после nav с border-t, nav с overflow-y-auto. SVG-стрелки: в admin-client-detail.tsx, admin-application-detail.tsx, admin-loans-detail.tsx — inline-flex с SVG вместо символа ←. OverdueScheduleList — цвет суммы text-slate-700. PaymentRequestsList — заголовок «Назначение». Button — добавлен размер xs. PaymentRequestsList — кнопки Подтвердить/Отклонить на size=xs. AdminLoginForm — DTO-валидация на русском (IsString/IsNotEmpty/MinLength с message), сервис — «Неверный логин или пароль». Login page — оператор credentials, min-h-full. AdminContactMessagesList — ссылка под сообщением, expand/collapse только для сообщений длиннее 150 символов (line-clamp-3 + «развернуть»).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Unicode-стрелка ← может криво рендериться — SVG arrow через inline-flex надёжнее. min-h-screen внутри main с flex-1 даёт перекос центра — min-h-full решает. class-validator принимает русские сообщения через { message: '...' }. line-clamp работает только с overflow:hidden + display:-webkit-box — Tailwind делает это автоматически. Для определения «длинного» текста достаточно порога длины строки без измерения DOM.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
