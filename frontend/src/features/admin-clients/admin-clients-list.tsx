@@ -117,6 +117,7 @@ export function AdminClientsList() {
             <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               <tr>
                 <th className="px-4 py-3">Имя</th>
+                <th className="px-4 py-3">Фамилия</th>
                 <th className="px-4 py-3">Телефон</th>
                 <th className="px-4 py-3">Займов</th>
                 <th className="px-4 py-3">Активных</th>
@@ -131,7 +132,8 @@ export function AdminClientsList() {
                   className="hover:bg-slate-50 transition-colors cursor-pointer"
                   onClick={() => router.push(`/admin/clients/${c.id}`)}
                 >
-                  <td className="px-4 py-3 font-medium text-slate-900">{c.name ?? '—'}</td>
+                  <td className="px-4 py-3 font-medium text-slate-900">{c.name ? c.name.split(' ')[0] : '—'}</td>
+                  <td className="px-4 py-3 text-slate-700">{c.name ? c.name.split(' ').slice(1).join(' ') || '—' : '—'}</td>
                   <td className="px-4 py-3 text-slate-600">{c.phone}</td>
                   <td className="px-4 py-3 text-slate-700">{c.applicationsCount}</td>
                   <td className="px-4 py-3">

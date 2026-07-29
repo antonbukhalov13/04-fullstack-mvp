@@ -444,12 +444,12 @@ export function LoanDetailCard() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Реквизиты / Reference</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Назначение платежа</label>
               <input
                 type="text"
                 value={payRef}
                 onChange={(e) => setPayRef(e.target.value)}
-                placeholder="Номер транзакции или комментарий"
+                placeholder="Например: перевод с карты"
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
               />
             </div>
@@ -460,18 +460,20 @@ export function LoanDetailCard() {
             <p className="mt-2 text-sm text-green-600">Заявка на оплату создана.</p>
           )}
 
-          <Button
-            onClick={submitPaymentRequest}
-            disabled={!payAmount || parseFloat(payAmount) <= 0 || !payRef.trim() || payLoading}
-          >
-            {payLoading ? <Spinner size="sm" className="mr-2" /> : null}
-            Отправить заявку
-          </Button>
+          <div className="mt-4">
+            <Button
+              onClick={submitPaymentRequest}
+              disabled={!payAmount || parseFloat(payAmount) <= 0 || !payRef.trim() || payLoading}
+            >
+              {payLoading ? <Spinner size="sm" className="mr-2" /> : null}
+              Отправить заявку
+            </Button>
+          </div>
         </div>
       )}
 
       {/* График платежей */}
-      <div>
+      <div className="rounded-lg border border-slate-200 bg-white p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-3">График платежей</h3>
         <div className="overflow-x-auto rounded-lg border border-slate-200">
           <table className="w-full text-sm">

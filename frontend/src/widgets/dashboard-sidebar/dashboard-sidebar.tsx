@@ -92,42 +92,41 @@ export function DashboardSidebar() {
           'lg:relative lg:translate-x-0 lg:transition-none',
         ].join(' ')}
       >
-        <nav className="p-4 space-y-1 flex-1">
-          {navItems.map((item) => {
-            const active = pathname?.startsWith(item.href) ?? false;
-            const showBadge = item.href === '/dashboard/notifications' && unreadCount > 0;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={[
-                  'flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                  active
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-                ].join(' ')}
-              >
-                <span>{item.label}</span>
-                {showBadge && (
-                  <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold">
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+        <div className="flex-1 flex flex-col min-h-0">
+          <nav className="p-4 space-y-1 overflow-y-auto">
+            {navItems.map((item) => {
+              const active = pathname?.startsWith(item.href) ?? false;
+              const showBadge = item.href === '/dashboard/notifications' && unreadCount > 0;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={[
+                    'flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                    active
+                      ? 'bg-indigo-50 text-indigo-700'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+                  ].join(' ')}
+                >
+                  <span>{item.label}</span>
+                  {showBadge && (
+                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
 
-        <div className="p-4 border-t border-slate-200">
-          <button
-            onClick={handleLogout}
-            className="inline-flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-            </svg>
-            Выйти
-          </button>
+          <div className="border-t border-slate-200 p-4">
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+            >
+              Выйти
+            </button>
+          </div>
         </div>
       </aside>
     </>
