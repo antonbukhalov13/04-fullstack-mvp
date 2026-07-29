@@ -40,9 +40,18 @@ export class ApplicationsService {
       where: { phone: dto.phone },
     });
 
+    const userName = dto.applicantType === 'individual'
+      ? [dto.firstName, dto.lastName].filter(Boolean).join(' ')
+      : dto.companyName;
+
     if (!user) {
       user = await this.prisma.user.create({
-        data: { phone: dto.phone },
+        data: { phone: dto.phone, name: userName || null },
+      });
+    } else if (!user.name && userName) {
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data: { name: userName },
       });
     }
 

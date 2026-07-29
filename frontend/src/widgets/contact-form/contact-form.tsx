@@ -59,7 +59,10 @@ export function ContactForm() {
           `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/files/upload?ownerType=contact_message&ownerId=0`,
           { method: 'POST', body: formData, headers },
         );
-        if (!uploadRes.ok) throw new Error('Ошибка загрузки файла');
+        if (!uploadRes.ok) {
+          const errBody = await uploadRes.json().catch(() => ({}));
+          throw new Error(errBody.message || 'Ошибка загрузки файла');
+        }
         const uploadData = await uploadRes.json();
         attachmentId = uploadData.id;
       }

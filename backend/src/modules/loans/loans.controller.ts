@@ -76,6 +76,13 @@ export class LoansController {
     return this.loansService.findOneForUser(id, user.id);
   }
 
+  @Get(':id/admin')
+  @UseGuards(AdminJwtAuthGuard, RolesGuard)
+  @Roles('admin', 'operator')
+  async findOneForAdmin(@Param('id') id: string) {
+    return this.loansService.findOneAdmin(id);
+  }
+
   @Patch(':id/status')
   @UseGuards(AdminJwtAuthGuard, RolesGuard)
   @Roles('admin', 'operator')

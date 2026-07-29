@@ -12,13 +12,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { randomUUID } from 'crypto';
 import path from 'path';
 
-const ALLOWED_MIME_TYPES = [
-  'application/pdf',
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-];
-
 const ALLOWED_OWNER_TYPES = ['application', 'contact_message'];
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -69,12 +62,6 @@ export class FilesService implements OnModuleInit {
     if (file.size > MAX_FILE_SIZE) {
       throw new BadRequestException(
         `File size exceeds limit of ${MAX_FILE_SIZE / 1024 / 1024}MB`,
-      );
-    }
-
-    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      throw new BadRequestException(
-        `Invalid file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`,
       );
     }
 

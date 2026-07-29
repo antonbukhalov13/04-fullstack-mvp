@@ -100,7 +100,10 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
         `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/files/upload?ownerType=application&ownerId=0`,
         { method: 'POST', body: formData, headers },
       );
-      if (!res.ok) throw new Error('Ошибка загрузки файла');
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody.message || 'Ошибка загрузки файла');
+      }
       const data = await res.json();
       setUploadedFiles((prev) => [...prev, { id: data.id, name: file.name }]);
     } catch (err) {
@@ -123,7 +126,13 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
 
     if (!vals.phone?.trim()) { setError('phone', { message: 'Обязательное поле' }); valid = false; }
     if (!vals.amount || vals.amount <= 0) { setError('amount', { message: 'Введите сумму' }); valid = false; }
+    else if (vals.amount < limits.amount.min || vals.amount > limits.amount.max) {
+      setError('amount', { message: `От ${limits.amount.min.toLocaleString()} до ${limits.amount.max.toLocaleString()} EUR` }); valid = false;
+    }
     if (!vals.termDays || vals.termDays <= 0) { setError('termDays', { message: 'Введите срок' }); valid = false; }
+    else if (vals.termDays < limits.term.min || vals.termDays > limits.term.max) {
+      setError('termDays', { message: `От ${limits.term.min} до ${limits.term.max} дней` }); valid = false;
+    }
 
     if (applicantType === 'individual') {
       if (!vals.firstName?.trim()) { setError('firstName', { message: 'Обязательное поле' }); valid = false; }
@@ -141,15 +150,6 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setSubmitState('submitting');
     setErrorMessage('');
-
-    if (data.amount < limits.amount.min || data.amount > limits.amount.max) {
-      setErrorMessage(`Сумма должна быть от ${limits.amount.min.toLocaleString()} до ${limits.amount.max.toLocaleString()} EUR`);
-      setSubmitState('error'); return;
-    }
-    if (data.termDays < limits.term.min || data.termDays > limits.term.max) {
-      setErrorMessage(`Срок должен быть от ${limits.term.min} до ${limits.term.max} дней`);
-      setSubmitState('error'); return;
-    }
 
     try {
       const payload: Record<string, unknown> = {

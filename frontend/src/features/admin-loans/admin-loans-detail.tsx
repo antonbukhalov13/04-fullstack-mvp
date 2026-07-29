@@ -79,7 +79,7 @@ export function AdminLoanDetail() {
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   const fetchLoan = async () => {
-    const data = await apiRequest<LoanDetail>(`/loans/${loanId}`, { admin: true });
+    const data = await apiRequest<LoanDetail>(`/loans/${loanId}/admin`, { admin: true });
     setLoan(data);
   };
 
