@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
 import { Spinner } from '@/shared/ui';
@@ -66,9 +66,20 @@ export function AdminClientsList() {
     }
   };
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     fetchClients('');
   }, []);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setOffset(0);
+      fetchClients(search, 0);
+    }, 300);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [search]);
 
   const handleSearch = () => {
     setOffset(0);
@@ -116,8 +127,7 @@ export function AdminClientsList() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-3">Имя</th>
-                <th className="px-4 py-3">Фамилия</th>
+                <th className="px-4 py-3">Клиент</th>
                 <th className="px-4 py-3">Телефон</th>
                 <th className="px-4 py-3">Займов</th>
                 <th className="px-4 py-3">Активных</th>
@@ -132,8 +142,7 @@ export function AdminClientsList() {
                   className="hover:bg-slate-50 transition-colors cursor-pointer"
                   onClick={() => router.push(`/admin/clients/${c.id}`)}
                 >
-                  <td className="px-4 py-3 font-medium text-slate-900">{c.name ? c.name.split(' ')[0] : '—'}</td>
-                  <td className="px-4 py-3 text-slate-700">{c.name ? c.name.split(' ').slice(1).join(' ') || '—' : '—'}</td>
+                  <td className="px-4 py-3 font-medium text-slate-900">{c.name ?? '—'}</td>
                   <td className="px-4 py-3 text-slate-600">{c.phone}</td>
                   <td className="px-4 py-3 text-slate-700">{c.applicationsCount}</td>
                   <td className="px-4 py-3">
