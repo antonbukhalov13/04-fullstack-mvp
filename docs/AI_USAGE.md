@@ -2145,3 +2145,19 @@ What I learned: `bg-white` и `bg-slate-50` на `<main>` / `<section>` пере
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 115
+
+Goal: Исправить file upload для анонимных пользователей — сделать JWT-гард опциональным
+
+Prompt: Создать OptionalJwtAuthGuard который не кидает 401 при отсутствии токена (handleRequest возвращает null вместо ошибки). Заменить JwtAuthGuard на OptionalJwtAuthGuard в FilesController.uploadFile.
+
+Result: `backend/src/common/guards/optional-jwt-auth.guard.ts` — новый guard, extends AuthGuard('jwt'), handleRequest возвращает null вместо ошибки. `backend/src/modules/files/files.controller.ts` — @UseGuards(JwtAuthGuard) → @UseGuards(OptionalJwtAuthGuard). Фронтенд не тронут — он уже корректно не передаёт токен анонимным пользователям.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: AuthGuard('jwt') при отсутствии заголовка Authorization кидает 401. Для optional auth нужно переопределить handleRequest и вернуть null — passport сам не выбросит UnauthorizedException.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
