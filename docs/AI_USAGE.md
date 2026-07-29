@@ -2267,3 +2267,24 @@ What I learned: File upload как текст-ссылка — достаточ�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 122
+
+Goal: Исправить столбец Клиент (убрать fallback на телефон), добавить live debounced search на все админские списки
+
+Prompt: в столбце Клиент указан номер телефона, нужно переместить номера в столбец Телефон. Исправить эту ошибку и в других вкладках если там будет также. В поиске сделать live search — результаты видны сразу при вводе (debounce 300ms) без нажатия Найти, но кнопку Найти оставить для принудительного поиска.
+
+Result:
+- `admin-clients-list.tsx` — Клиент: `c.name ?? '—'`, Телефон: `c.phone` (раньше падал на телефон при name=null); добавлен debounced (300ms) live search через useEffect + setTimeout на search
+- `admin-loans-list.tsx` — добавлен debounced (300ms) live search
+- `admin-applications-list.tsx` — добавлен debounced (300ms) live search
+- Кнопка Найти оставлена для принудительного поиска
+- Frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `useRef<ReturnType<typeof setTimeout>>()` требует начальное значение в React 19 — `useRef<ReturnType<typeof setTimeout> | null>(null)`. Debounced search надо чистить в return clean-up функции, а также при каждом новом change перед set-таймаутом. Live search + ручная кнопка работают параллельно без конфликтов.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
