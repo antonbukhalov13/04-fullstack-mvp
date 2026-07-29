@@ -26,11 +26,14 @@ function fmtDate(iso: string) {
   });
 }
 
+const LONG_MSG_THRESHOLD = 150;
+
 export function AdminContactMessagesList() {
   const [items, setItems] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+
 
   useEffect(() => {
     let cancelled = false;
@@ -86,47 +89,44 @@ export function AdminContactMessagesList() {
   return (
     <div className="space-y-3">
       {items.map((m) => {
+        const isLong = m.message.length > LONG_MSG_THRESHOLD;
         const isOpen = expanded === m.id;
         return (
           <div
             key={m.id}
-            className="rounded-lg border border-slate-200 bg-white"
+            className={[
+              'rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm',
+              isLong ? 'cursor-pointer transition-colors hover:bg-slate-50' : '',
+            ].join(' ')}
+            onClick={isLong ? () => setExpanded(isOpen ? null : m.id) : undefined}
           >
-            <button
-              type="button"
-              onClick={() => setExpanded(isOpen ? null : m.id)}
-              className="w-full flex items-start gap-3 px-4 py-3 text-left text-sm transition-colors hover:bg-slate-50"
-            >
+            <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="font-medium text-slate-900">{m.name}</span>
                   <span className="text-xs text-slate-400">{m.phone}</span>
                 </div>
                 <p className="text-xs text-slate-500 truncate">{m.email}</p>
-                {!isOpen && (
-                  <p className="mt-1 text-slate-600 line-clamp-1">{m.message}</p>
+                <p className={['mt-1 text-slate-700 break-words', isLong && !isOpen ? 'line-clamp-3' : ''].join(' ')}>
+                  {m.message || '—'}
+                </p>
+                {isLong && !isOpen && (
+                  <span className="mt-0.5 inline-flex text-xs text-indigo-600">развернуть</span>
                 )}
-              </div>
-              <div className="flex flex-col items-end gap-1 shrink-0">
-                <span className="text-xs text-slate-400">{fmtDate(m.createdAt)}</span>
                 {m.attachmentUrl && (
                   <a
                     href={m.attachmentUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-indigo-600 underline hover:text-indigo-800"
+                    className="mt-1 inline-flex items-center gap-1 text-xs text-indigo-600 underline hover:text-indigo-800"
                     onClick={(e) => e.stopPropagation()}
                   >
                     📎 {m.attachmentName ?? 'файл'}
                   </a>
                 )}
               </div>
-            </button>
-            {isOpen && (
-              <div className="px-4 pb-3 text-sm text-slate-700 break-words border-t border-slate-100">
-                {m.message || '—'}
-              </div>
-            )}
+              <span className="text-xs text-slate-400 shrink-0">{fmtDate(m.createdAt)}</span>
+            </div>
           </div>
         );
       })}

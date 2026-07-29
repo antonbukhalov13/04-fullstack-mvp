@@ -192,7 +192,7 @@ export function AdminLoanDetail() {
       <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
         {error}
         <div className="mt-3">
-          <Link href="/admin/loans" className="text-indigo-600 hover:underline text-sm">← К списку</Link>
+          <Link href="/admin/loans" className="inline-flex items-center gap-1 text-indigo-600 hover:underline text-sm"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>К списку</Link>
         </div>
       </div>
     );
@@ -212,8 +212,9 @@ export function AdminLoanDetail() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin/loans" className="text-sm text-indigo-600 hover:underline">
-        ← Займы
+      <Link href="/admin/loans" className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+        Займы
       </Link>
 
       {/* Параметры займа */}

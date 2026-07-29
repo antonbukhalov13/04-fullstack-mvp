@@ -81,7 +81,7 @@ export function AdminClientDetail() {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
         {error}
-        <div className="mt-3"><Link href="/admin/clients" className="text-indigo-600 hover:underline text-sm">← К списку</Link></div>
+        <div className="mt-3"><Link href="/admin/clients" className="inline-flex items-center gap-1 text-indigo-600 hover:underline text-sm"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>К списку</Link></div>
       </div>
     );
   }
@@ -93,7 +93,10 @@ export function AdminClientDetail() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin/clients" className="text-sm text-indigo-600 hover:underline">← Клиенты</Link>
+      <Link href="/admin/clients" className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+        Клиенты
+      </Link>
 
       {/* Контакты */}
       <div className="rounded-lg border border-slate-200 bg-white p-6">

@@ -124,7 +124,7 @@ export function OverdueScheduleList() {
                       #{item.loanId.slice(0, 8)}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-red-700 font-medium">{fmt(item.amount)}</td>
+                  <td className="px-4 py-3 text-slate-700 font-medium">{fmt(item.amount)}</td>
                   <td className="px-4 py-3 text-slate-500">{fmtDate(item.dueDate)}</td>
                   <td className="px-4 py-3">
                     <Button

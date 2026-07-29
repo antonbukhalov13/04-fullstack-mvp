@@ -163,7 +163,7 @@ export function PaymentRequestsList() {
               <tr>
                 <th className="px-4 py-3">Клиент</th>
                 <th className="px-4 py-3">Сумма</th>
-                <th className="px-4 py-3">Reference</th>
+                <th className="px-4 py-3">Назначение</th>
                 <th className="px-4 py-3">Займ</th>
                 <th className="px-4 py-3">Дата</th>
                 <th className="px-4 py-3">Статус</th>
@@ -187,7 +187,7 @@ export function PaymentRequestsList() {
                       <div className="flex items-center gap-2">
                         <Button
                           variant="primary"
-                          size="sm"
+                          size="xs"
                           onClick={() => decide(pr.id, 'approved')}
                           disabled={actionId === pr.id}
                           loading={actionId === pr.id}
@@ -196,7 +196,7 @@ export function PaymentRequestsList() {
                         </Button>
                         <Button
                           variant="danger"
-                          size="sm"
+                          size="xs"
                           onClick={() => decide(pr.id, 'rejected')}
                           disabled={actionId === pr.id}
                         >

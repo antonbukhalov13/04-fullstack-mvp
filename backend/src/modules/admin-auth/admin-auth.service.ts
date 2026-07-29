@@ -27,7 +27,7 @@ export class AdminAuthService {
     });
 
     if (!adminUser) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Неверный логин или пароль');
     }
 
     const isPasswordValid = await bcrypt.compare(
@@ -36,7 +36,7 @@ export class AdminAuthService {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Неверный логин или пароль');
     }
 
     const payload: AdminJwtPayload = {

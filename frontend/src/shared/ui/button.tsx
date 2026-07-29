@@ -1,7 +1,7 @@
 import { type ButtonHTMLAttributes, type ReactNode, forwardRef } from 'react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
-type Size = 'sm' | 'md' | 'lg';
+type Size = 'xs' | 'sm' | 'md' | 'lg';
 
 const variantStyles: Record<Variant, string> = {
   primary:
@@ -15,6 +15,7 @@ const variantStyles: Record<Variant, string> = {
 };
 
 const sizeStyles: Record<Size, string> = {
+  xs: 'px-3 py-1.5 text-xs min-h-[32px]',
   sm: 'px-4 py-2.5 text-sm min-h-[44px]',
   md: 'px-6 py-3 text-sm min-h-[44px]',
   lg: 'px-6 py-3 text-sm min-h-[44px]',
