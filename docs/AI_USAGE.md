@@ -2161,3 +2161,19 @@ What I learned: AuthGuard('jwt') при отсутствии заголовка 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 116
+
+Goal: Исправить recalculateSchedule — включить overdue статус в пересчёт графика и проверку закрытия займа
+
+Prompt: recalculateSchedule игнорирует overdue пункты графика — пересчитывает и проверяет закрытие займа только по pending. Просроченные платежи не списываются, и заём может закрыться как оплаченный с непокрытыми просрочками.
+
+Result: `backend/src/modules/payments/payments.service.ts` — 3 правки: recordDirectPayment, recalculateSchedule, closing check — все `status: 'pending'` заменены на `status: { in: ['pending', 'overdue'] }`. Теперь просроченные пункты графика участвуют в пересчёте и блокируют закрытие займа.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Использование только `pending` в recalculateSchedule создаёт скрытую финансовую дыру — платеж не покрывает просроченный пункт, и заём может закрыться неоплаченным. Нужно включать `overdue` наравне с `pending`.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
