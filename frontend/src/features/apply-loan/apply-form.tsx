@@ -335,7 +335,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
                 <label
                   htmlFor="business-files"
                   className={[
-                    'inline-flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2.5 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors min-h-[44px]',
+                    'inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition-colors min-h-[44px]',
                     isUploading ? 'opacity-50 pointer-events-none' : 'cursor-pointer',
                   ].join(' ')}
                 >
