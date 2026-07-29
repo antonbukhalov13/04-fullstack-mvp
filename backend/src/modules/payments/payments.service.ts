@@ -128,7 +128,7 @@ export class PaymentsService {
     }
 
     const pendingItems = await this.prisma.paymentScheduleItem.findMany({
-      where: { loanId, status: 'pending' },
+      where: { loanId, status: { in: ['pending', 'overdue'] } },
     });
     const remaining = pendingItems.reduce(
       (sum, item) => sum + (item.amount - item.paidAmount),
@@ -213,7 +213,7 @@ export class PaymentsService {
     paymentAmount: number,
   ) {
     const pendingItems = await tx.paymentScheduleItem.findMany({
-      where: { loanId, status: 'pending' },
+      where: { loanId, status: { in: ['pending', 'overdue'] } },
       orderBy: { dueDate: 'asc' },
     });
 
@@ -241,7 +241,7 @@ export class PaymentsService {
     }
 
     const stillPending = await tx.paymentScheduleItem.count({
-      where: { loanId, status: 'pending' },
+      where: { loanId, status: { in: ['pending', 'overdue'] } },
     });
 
     if (stillPending === 0) {
