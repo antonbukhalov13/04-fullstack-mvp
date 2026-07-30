@@ -321,7 +321,7 @@ What I learned: краткий вывод — что можно было сфо�
 
 Model used: [актуальная модель]
 
-Provider used: OpenCode Zen
+Provider used: [актуальный провайдер]
 
 Instrument used: OpenCode
 ```
