@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
-import { Spinner } from '@/shared/ui';
+import { StatusBadge, Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { dispatchNotificationChange } from '@/shared/lib/notification-events';
 
 interface OverdueItem {
   id: string;
@@ -68,6 +69,7 @@ export function OverdueScheduleList() {
         body: { status: 'pending' },
       });
       await fetchItems();
+      dispatchNotificationChange();
     } catch {
       // ignore
     } finally {

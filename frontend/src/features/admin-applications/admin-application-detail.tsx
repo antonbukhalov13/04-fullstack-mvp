@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { dispatchNotificationChange } from '@/shared/lib/notification-events';
 
 interface ApplicationDetail {
   id: string;
@@ -102,6 +103,7 @@ export function AdminApplicationDetail() {
       setNewStatus('');
       setComment('');
       await fetchApp();
+      dispatchNotificationChange();
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { dispatchNotificationChange } from '@/shared/lib/notification-events';
 
 interface LoanDetail {
   id: string;
@@ -120,6 +121,7 @@ export function AdminLoanDetail() {
       setActionSuccess(`Статус изменён на «${statusLabels[newStatus] ?? newStatus}»`);
       setNewStatus('');
       await fetchLoan();
+      dispatchNotificationChange();
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { apiRequest, ApiError } from '@/shared/api';
 import { Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { dispatchNotificationChange } from '@/shared/lib/notification-events';
 
 interface LoanSearchResult {
   id: string;
@@ -74,6 +75,7 @@ export function ManualPaymentForm({ onRecorded }: { onRecorded?: () => void }) {
       setLoanId('');
       setAmount('');
       onRecorded?.();
+      dispatchNotificationChange();
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;

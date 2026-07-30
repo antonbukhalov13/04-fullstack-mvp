@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { getAuthToken, setAuthToken } from '@/shared/api';
+import { NOTIFICATION_CHANGE_EVENT } from '@/shared/lib/notification-events';
 
 const navItems = [
   { href: '/dashboard/applications', label: 'Заявки' },
@@ -45,14 +46,22 @@ export function DashboardSidebar() {
       } catch { /* ignore */ }
     };
     fetchCount();
-    const interval = setInterval(fetchCount, 30000);
+    const interval = setInterval(fetchCount, 3000);
     const handleRead = () => fetchCount();
     window.addEventListener('notification-read', handleRead);
+    const handleFocus = () => fetchCount();
+    window.addEventListener('focus', handleFocus);
+    const handleVisibility = () => { if (!document.hidden) fetchCount(); };
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener(NOTIFICATION_CHANGE_EVENT, fetchCount);
     return () => {
       clearInterval(interval);
       window.removeEventListener('notification-read', handleRead);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener(NOTIFICATION_CHANGE_EVENT, fetchCount);
     };
-  }, [authorized]);
+  }, [authorized, pathname]);
 
   useEffect(() => {
     setOpen(false);

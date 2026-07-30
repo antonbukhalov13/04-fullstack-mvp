@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { dispatchNotificationChange } from '@/shared/lib/notification-events';
 
 interface ScheduleItem {
   id: string;
@@ -152,6 +153,7 @@ export function LoanDetailCard() {
       setSignState('done');
       setMockOtp(null);
       await fetchLoan();
+      dispatchNotificationChange();
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;
@@ -180,6 +182,7 @@ export function LoanDetailCard() {
       setPayAmount('');
       setPayRef('');
       await fetchLoan();
+      dispatchNotificationChange();
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;

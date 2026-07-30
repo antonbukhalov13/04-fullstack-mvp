@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { getAdminAuthToken, setAdminAuthToken } from '@/shared/api';
+import { NOTIFICATION_CHANGE_EVENT } from '@/shared/lib/notification-events';
 
 interface AdminUser {
   id: string;
@@ -65,14 +66,22 @@ export function AdminSidebar() {
       } catch { /* ignore */ }
     };
     fetchCount();
-    const interval = setInterval(fetchCount, 30000);
+    const interval = setInterval(fetchCount, 3000);
     const handleRead = () => fetchCount();
     window.addEventListener('notification-read', handleRead);
+    const handleFocus = () => fetchCount();
+    window.addEventListener('focus', handleFocus);
+    const handleVisibility = () => { if (!document.hidden) fetchCount(); };
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener(NOTIFICATION_CHANGE_EVENT, fetchCount);
     return () => {
       clearInterval(interval);
       window.removeEventListener('notification-read', handleRead);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener(NOTIFICATION_CHANGE_EVENT, fetchCount);
     };
-  }, [authorized]);
+  }, [authorized, pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token');

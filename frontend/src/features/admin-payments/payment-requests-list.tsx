@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
+import { dispatchNotificationChange } from '@/shared/lib/notification-events';
 import { Pagination } from '@/shared/ui/pagination';
 
 interface PaymentRequest {
@@ -102,6 +103,7 @@ export function PaymentRequestsList() {
       });
       setActionSuccess(status === 'approved' ? 'Заявка подтверждена' : 'Заявка отклонена');
       await fetchItems(statusFilter, offset);
+      dispatchNotificationChange();
     } catch (err) {
       if (err instanceof ApiError) {
         const body = err.body as Record<string, unknown>;
