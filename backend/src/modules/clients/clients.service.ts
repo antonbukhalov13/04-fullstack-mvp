@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { resolveDisplayName } from '../../common/utils/applicant-name';
 
 @Injectable()
 export class ClientsService {
@@ -80,7 +81,7 @@ export class ClientsService {
       data: users.map((user) => ({
         id: user.id,
         phone: user.phone,
-        name: user.name,
+        name: resolveDisplayName(user, user.applications[0]),
         createdAt: user.createdAt,
         applicationsCount: user.applications.length,
         activeLoansCount: user.loans.filter((l) => l.status === 'active').length,
@@ -128,7 +129,7 @@ export class ClientsService {
     return {
       id: user.id,
       phone: user.phone,
-      name: user.name,
+      name: resolveDisplayName(user, user.applications[0]),
       createdAt: user.createdAt,
       applications: user.applications,
       loans: user.loans,

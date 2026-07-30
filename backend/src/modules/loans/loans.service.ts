@@ -11,6 +11,7 @@ import { QueryAdminLoansDto } from './dto/query-admin-loans.dto';
 import { UpdateLoanStatusDto } from './dto/update-loan-status.dto';
 import { MarkScheduleItemPaidDto } from './dto/mark-schedule-item-paid.dto';
 import { PaymentsService } from '../payments/payments.service';
+import { resolveDisplayName } from '../../common/utils/applicant-name';
 
 const INACTIVE_STATUSES = ['pending_signature', 'closed'] as const;
 
@@ -100,6 +101,9 @@ export class LoansService {
               user: {
                 select: { id: true, name: true, phone: true },
               },
+              application: {
+                select: { firstName: true, lastName: true, companyName: true },
+              },
             },
           },
         },
@@ -116,7 +120,10 @@ export class LoansService {
         loanId: item.loan.id,
         loanAmount: item.loan.amount,
         loanStatus: item.loan.status,
-        user: item.loan.user,
+        user: {
+          ...item.loan.user,
+          name: resolveDisplayName(item.loan.user, item.loan.application),
+        },
       })),
       total,
       limit: take,
@@ -155,6 +162,9 @@ export class LoansService {
           user: {
             select: { id: true, name: true, phone: true },
           },
+          application: {
+            select: { firstName: true, lastName: true, companyName: true },
+          },
           scheduleItems: {
             select: { dueDate: true, amount: true, status: true },
             orderBy: { dueDate: 'asc' },
@@ -178,7 +188,10 @@ export class LoansService {
           status: loan.status,
           signedAt: loan.signedAt,
           createdAt: loan.createdAt,
-          user: loan.user,
+          user: {
+            ...loan.user,
+            name: resolveDisplayName(loan.user, loan.application),
+          },
           totalRepay: Math.round(totalRepay * 100) / 100,
           nextPayment: nextPending
             ? { amount: nextPending.amount, dueDate: nextPending.dueDate }
@@ -206,6 +219,9 @@ export class LoansService {
         createdAt: true,
         user: {
           select: { id: true, name: true, phone: true },
+        },
+        application: {
+          select: { firstName: true, lastName: true, companyName: true },
         },
         scheduleItems: {
           select: { id: true, dueDate: true, amount: true, status: true },
@@ -240,7 +256,10 @@ export class LoansService {
       signedIp: loan.signedIp,
       signedUserAgent: loan.signedUserAgent,
       createdAt: loan.createdAt,
-      user: loan.user,
+      user: {
+        ...loan.user,
+        name: resolveDisplayName(loan.user, loan.application),
+      },
       totalRepay: Math.round(totalRepay * 100) / 100,
       totalPaid: Math.round(totalPaid * 100) / 100,
       remaining: Math.round((totalRepay - totalPaid) * 100) / 100,

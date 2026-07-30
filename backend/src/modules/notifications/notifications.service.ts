@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
+import { resolveDisplayName } from '../../common/utils/applicant-name';
 
 @Injectable()
 export class NotificationsService {
@@ -55,13 +56,34 @@ export class NotificationsService {
           isRead: true,
           createdAt: true,
           user: {
-            select: { id: true, name: true, phone: true },
+            select: {
+              id: true,
+              name: true,
+              phone: true,
+              applications: {
+                take: 1,
+                orderBy: { createdAt: 'desc' },
+                select: { firstName: true, lastName: true, companyName: true },
+              },
+            },
           },
         },
       }),
       this.prisma.notification.count({ where }),
     ]);
-    return { data: items, total, limit: take, offset: skip };
+    return {
+      data: items.map((item: any) => ({
+        ...item,
+        user: {
+          id: item.user.id,
+          name: resolveDisplayName(item.user, item.user?.applications?.[0]),
+          phone: item.user.phone,
+        },
+      })),
+      total,
+      limit: take,
+      offset: skip,
+    };
   }
 
   async markAsReadAdmin(id: string) {

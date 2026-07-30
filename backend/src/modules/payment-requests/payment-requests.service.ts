@@ -7,6 +7,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePaymentRequestDto } from './dto/create-payment-request.dto';
 import { QueryPaymentRequestsDto } from './dto/query-payment-requests.dto';
+import { resolveDisplayName } from '../../common/utils/applicant-name';
 
 @Injectable()
 export class PaymentRequestsService {
@@ -67,6 +68,9 @@ export class PaymentRequestsService {
               id: true,
               amount: true,
               status: true,
+              application: {
+                select: { firstName: true, lastName: true, companyName: true },
+              },
             },
           },
           user: {
@@ -84,7 +88,17 @@ export class PaymentRequestsService {
       this.prisma.paymentRequest.count({ where }),
     ]);
 
-    return { data: items, total, limit: take, offset: skip };
+    return { data: items.map((item) => {
+      const { loan: { application, ...loanRest }, ...rest } = item as any;
+      return {
+        ...rest,
+        loan: loanRest,
+        user: {
+          ...item.user,
+          name: resolveDisplayName(item.user, application),
+        },
+      };
+    }), total, limit: take, offset: skip };
   }
 
   async findUserPaymentRequests(userId: string) {
