@@ -139,9 +139,11 @@ export class NotificationsService {
       const message =
         payload.newStatus === 'approved'
           ? 'Заявка одобрена'
-          : payload.newStatus === 'rejected'
-            ? 'Заявка отклонена'
-            : null;
+          : payload.newStatus === 'in_progress'
+            ? 'Заявка взята в обработку'
+            : payload.newStatus === 'rejected'
+              ? 'Заявка отклонена'
+              : null;
 
       if (message) {
         await this.create(payload.userId, 'application.status.changed', message);
