@@ -128,26 +128,26 @@ export function AdminContactMessagesList() {
                     <span className="text-xs text-slate-400">{m.phone}</span>
                   </div>
                   <p className="text-xs text-slate-500 truncate">{m.email}</p>
-                  <p
-                    ref={setParaRef(m.id)}
-                    className={['mt-1 text-slate-700', exceedsThreshold && !isOpen ? 'line-clamp-3' : ''].join(' ')}
-                    style={{ overflowWrap: 'anywhere' }}
-                  >
-                    {m.message || '—'}
-                  </p>
-                  {m.attachmentUrl && (
-                    <a
-                      href={m.attachmentUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-xs text-indigo-600 underline hover:text-indigo-800"
-                    >
-                      📎 {m.attachmentName ?? 'файл'}
-                    </a>
-                  )}
                 </div>
                 <span className="text-xs text-slate-400 shrink-0">{fmtDate(m.createdAt)}</span>
               </div>
+              <p
+                ref={setParaRef(m.id)}
+                className={['mt-3 text-slate-700', exceedsThreshold && !isOpen ? 'line-clamp-3' : ''].join(' ')}
+                style={{ overflowWrap: 'anywhere' }}
+              >
+                {m.message || '—'}
+              </p>
+              {m.attachmentUrl && (
+                <a
+                  href={m.attachmentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex items-center gap-1 text-xs text-indigo-600 underline hover:text-indigo-800"
+                >
+                  📎 {m.attachmentName ?? 'файл'}
+                </a>
+              )}
             </div>
             {showButton && (
               <button
