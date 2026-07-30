@@ -2306,3 +2306,25 @@ What I learned: На странице /login стоит `py-12` (48px сверх
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 124
+
+Goal: Починить прочерк (-) в столбце Клиент — resolve имя пользователя из заявки если User.name пуст
+
+Prompt: Нужно, чтобы (-) во вкладках админ-панели в столбце Клиент менялся на данные клиента (имя и фамилию). User.name не заполняется для существующих пользователей. Сделать resolveDisplayName() — если User.name пуст, доставать имя из связанной Application (firstName/lastName/companyName).
+
+Result:
+- Создан `backend/src/common/utils/applicant-name.ts` — `resolveDisplayName()`: если `user.name` есть → возвращает его; иначе достаёт из `application` (`companyName` или `firstName + lastName`)
+- `loans.service.ts` — добавлен `application` в select для `findAllAdmin`, `findOneAdmin`, `findAllOverdueItemsAdmin`; name resolved через `resolveDisplayName`
+- `payment-requests.service.ts` — добавлен `loan.application` в select для `findAll`; name resolved; `application` исключён из ответа
+- `clients.service.ts` — name resolved из первой заявки (applications уже были в include)
+- `notifications.service.ts` — добавлены `user.applications` в select для `findAllAdmin`; name resolved; `applications` исключён из ответа
+- Backend tsc OK, frontend tsc OK.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `resolveDisplayName` — runtime-решение без миграции БД, чинит прочерк для всех пользователей сразу (и старых, и новых). В Prisma можно вкладывать связанные сущности через select внутри select. Чтобы не отправлять лишние поля (application, applications) в ответ API, нужно явно пересобрать объект без них.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
