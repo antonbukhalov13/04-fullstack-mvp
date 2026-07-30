@@ -2506,3 +2506,28 @@ What I learned: `space-y-*` gap между элементами нужно пе�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 134
+
+Goal: Сделать счётчик непрочитанных уведомлений мгновенно обновляющимся
+
+Prompt: Счетчик непрочитанных уведомлений должен обновляться сразу, сейчас он обновляется только после перезагрузки страницы. Должно быть и в админ-панели и в кабинете.
+
+Result:
+- `shared/lib/notification-events.ts`:
+  - Новый файл с `dispatchNotificationChange()` и константой `NOTIFICATION_CHANGE_EVENT`
+- `widgets/dashboard-sidebar.tsx`, `widgets/admin-sidebar.tsx`:
+  - Интервал polling уменьшен с 30s до 3s (одинаково для обоих)
+  - Добавлены слушатели `focus`, `visibilitychange`, `notification-change`, `notification-read`
+  - Добавлена зависимость `pathname` для refetch при навигации
+- Все 8 точек мутации, которые создают уведомления, диспатчат `notification-change`:
+  - admin: изменение статуса заявки, изменение статуса займа, решение по запросу на оплату, фиксация платежа, возврат просрочки
+  - user: подписание займа, создание запроса на оплату
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Для мгновенного обновления счётчика нужна комбинация короткого polling (3s), событий фокуса/видимости, refetch при навигации и кастомного event из всех мутаций. Оба сайдбара должны быть симметричны.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
