@@ -148,8 +148,11 @@ export function AdminSidebar() {
                   ].join(' ')}
                 >
                   <span>{item.label}</span>
-                  {item.href === '/admin/notifications' && unreadCount > 0 && (
-                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-indigo-600 text-white text-xs font-bold">
+                  {item.href === '/admin/notifications' && (
+                    <span className={[
+                      'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold',
+                      unreadCount > 0 ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-500',
+                    ].join(' ')}>
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}

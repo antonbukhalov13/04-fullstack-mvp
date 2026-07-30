@@ -107,7 +107,6 @@ export function DashboardSidebar() {
           <nav className="p-4 space-y-1 overflow-y-auto">
             {navItems.map((item) => {
               const active = pathname?.startsWith(item.href) ?? false;
-              const showBadge = item.href === '/dashboard/notifications' && unreadCount > 0;
               return (
                 <Link
                   key={item.href}
@@ -120,8 +119,11 @@ export function DashboardSidebar() {
                   ].join(' ')}
                 >
                   <span>{item.label}</span>
-                  {showBadge && (
-                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-indigo-600 text-white text-xs font-bold">
+                  {item.href === '/dashboard/notifications' && (
+                    <span className={[
+                      'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold',
+                      unreadCount > 0 ? 'bg-indigo-600 text-white' : 'bg-slate-300 text-slate-500',
+                    ].join(' ')}>
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
