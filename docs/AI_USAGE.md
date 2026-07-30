@@ -2371,3 +2371,21 @@ What I learned: При пагинации локальный `unread` из `item
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 127
+
+Goal: Скрыть публичные Header/Footer на маршрутах /admin/*
+
+Prompt: Скрыть Header и Footer на всех страницах админ-панели, т.к. они перекрывают админ-сайдбар и мешают навигации
+
+Result:
+- `header.tsx` — добавлена проверка `pathname.startsWith('/admin')`, возврат null
+- `footer.tsx` — добавлен `'use client'`, импорт `usePathname`, проверка `/admin`, возврат null
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Footer был серверным компонентом — пришлось сделать его клиентским ради доступа к `usePathname`. Альтернатива — layout group в Next.js App Router, но текущее решение проще и не требует реструктуризации.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
