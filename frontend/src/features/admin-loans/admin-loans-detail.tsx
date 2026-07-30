@@ -6,8 +6,6 @@ import Link from 'next/link';
 import { apiRequest, ApiError } from '@/shared/api';
 import { StatusBadge, Spinner } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
-import { dispatchNotificationChange } from '@/shared/lib/notification-events';
-
 interface LoanDetail {
   id: string;
   amount: number;
@@ -28,14 +26,6 @@ interface LoanDetail {
   payments: { id: string; amount: number; date: string }[];
 }
 
-const statusLabels: Record<string, string> = {
-  pending_signature: 'Ожидает подписания',
-  active: 'Активный',
-  closed: 'Закрыт',
-  overdue: 'Просрочен',
-  default: 'Дефолт',
-};
-
 function fmt(n: number) {
   return n.toLocaleString('ru-RU') + ' €';
 }
@@ -48,24 +38,6 @@ function fmtDate(iso: string) {
   });
 }
 
-function parseUserAgent(ua: string | null): { browser: string; os: string } {
-  if (!ua) return { browser: '—', os: '—' };
-  let browser = 'Другой';
-  if (ua.includes('Firefox')) browser = 'Firefox';
-  else if (ua.includes('Edg/')) browser = 'Edge';
-  else if (ua.includes('Chrome')) browser = 'Chrome';
-  else if (ua.includes('Safari')) browser = 'Safari';
-
-  let os = 'Другая';
-  if (ua.includes('Windows')) os = 'Windows';
-  else if (ua.includes('Mac OS X')) os = 'macOS';
-  else if (ua.includes('Linux')) os = 'Linux';
-  else if (ua.includes('Android')) os = 'Android';
-  else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
-
-  return { browser, os };
-}
-
 export function AdminLoanDetail() {
   const params = useParams();
   const loanId = (params?.id ?? '') as string;
@@ -74,7 +46,6 @@ export function AdminLoanDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [newStatus, setNewStatus] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
@@ -105,35 +76,6 @@ export function AdminLoanDetail() {
     })();
     return () => { cancelled = true; };
   }, [loanId]);
-
-  const updateStatus = async () => {
-    if (!newStatus) return;
-    if (!window.confirm(`Изменить статус займа на «${statusLabels[newStatus] ?? newStatus}»?`)) return;
-    setActionLoading(true);
-    setActionError(null);
-    setActionSuccess(null);
-    try {
-      await apiRequest(`/loans/${loanId}/status`, {
-        method: 'PATCH',
-        admin: true,
-        body: { status: newStatus },
-      });
-      setActionSuccess(`Статус изменён на «${statusLabels[newStatus] ?? newStatus}»`);
-      setNewStatus('');
-      await fetchLoan();
-      dispatchNotificationChange();
-    } catch (err) {
-      if (err instanceof ApiError) {
-        const body = err.body as Record<string, unknown>;
-        const msg = Array.isArray(body?.message) ? body.message[0] : typeof body?.message === 'string' ? body.message : null;
-        setActionError(msg ?? 'Ошибка при изменении статуса');
-      } else {
-        setActionError('Ошибка при изменении статуса');
-      }
-    } finally {
-      setActionLoading(false);
-    }
-  };
 
   const markPaid = async (itemId: string) => {
     setActionLoading(true);
@@ -202,16 +144,6 @@ export function AdminLoanDetail() {
 
   if (!loan) return null;
 
-  const allowedTransitions: Record<string, string[]> = {
-    pending_signature: ['active'],
-    active: ['closed'],
-    overdue: ['closed'],
-    default: ['active', 'closed'],
-  };
-
-  const availableStatuses = (allowedTransitions[loan.status] ?? [])
-    .map((value) => ({ value, label: statusLabels[value] ?? value }));
-
   return (
     <div className="space-y-6">
       <Link href="/admin/loans" className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
@@ -266,25 +198,6 @@ export function AdminLoanDetail() {
           </div>
         </div>
 
-        {loan.signedIp && (
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-slate-500 mb-1">IP подписания</p>
-              <p className="font-mono text-slate-700">{loan.signedIp}</p>
-            </div>
-            <div>
-              <p className="text-slate-500 mb-1">Браузер / ОС</p>
-              {(() => {
-                const { browser, os } = parseUserAgent(loan.signedUserAgent);
-                return (
-                  <p className="text-slate-700">
-                    {browser} <span className="text-slate-400">·</span> {os}
-                  </p>
-                );
-              })()}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* График платежей */}
@@ -389,37 +302,10 @@ export function AdminLoanDetail() {
       )}
 
       {/* Действия */}
-      <div className="rounded-lg border border-slate-200 bg-white p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Действия</h3>
-
-        <div className="space-y-4">
-          {/* Смена статуса */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Изменить статус</label>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <select
-                value={newStatus}
-                onChange={(e) => setNewStatus(e.target.value)}
-                className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none bg-white"
-              >
-                <option value="">Выберите статус</option>
-                {availableStatuses.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-              <Button
-                variant="primary"
-                onClick={updateStatus}
-                disabled={!newStatus || actionLoading}
-                loading={actionLoading}
-              >
-                Применить
-              </Button>
-            </div>
-          </div>
-
-          {/* Закрыть займ */}
-          {loan.status !== 'closed' && (
+      {loan.status !== 'closed' && (
+        <div className="rounded-lg border border-slate-200 bg-white p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Действия</h3>
+          <div className="space-y-4">
             <div>
               <Button
                 variant="danger"
@@ -430,12 +316,11 @@ export function AdminLoanDetail() {
                 Закрыть займ
               </Button>
             </div>
-          )}
-
-          {actionError && <p className="text-sm text-red-600">{actionError}</p>}
-          {actionSuccess && <p className="text-sm text-green-600">{actionSuccess}</p>}
+            {actionError && <p className="text-sm text-red-600">{actionError}</p>}
+            {actionSuccess && <p className="text-sm text-green-600">{actionSuccess}</p>}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
