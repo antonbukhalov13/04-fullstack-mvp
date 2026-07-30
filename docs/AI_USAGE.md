@@ -32,6 +32,8 @@ What I learned: Структура полностью соответствует
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 3
@@ -49,6 +51,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Не удалять стандартные NestJS-файлы — они могут понадобиться
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -68,6 +72,8 @@ What I learned: Prisma v7 перенесла URL из schema.prisma в prisma.co
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 5
@@ -85,6 +91,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Next.js 16 использует Turbopack. Tailwind v4 через @tailwindcss/postcss. Проверил что tsconfig paths совпадают со структурой FSD — пришлось поправить алиасы для shared/ui и shared/lib
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -104,6 +112,8 @@ What I learned: OwnerType/ownerId удобнее передавать как que
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 7
@@ -121,6 +131,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Нельзя добавлять связи на модели, которых ещё нет в schema
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -140,6 +152,8 @@ What I learned: При добавлении модели нужно обновл
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 9
@@ -157,6 +171,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: @unique на optional foreign key обязателен для one-to-one связей в Prisma
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -176,6 +192,8 @@ What I learned: Prisma v7 требует driver adapter (PrismaPg). Seed-скр�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 11
@@ -193,6 +211,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: class-validator и class-transformer обязательны для DTO. Passport + JWT: стратегия наследуется от PassportStrategy, guard от AuthGuard('jwt')
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -212,6 +232,8 @@ What I learned: Для user и admin JWT нужны отдельные стра�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 13
@@ -229,6 +251,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Контрольные значения для тестов считать через node.js, а не на глаз
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -248,6 +272,8 @@ What I learned: FileAttachment.ownerType/ownerId обновляются чере
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 15
@@ -265,6 +291,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Record<string, string[]> — удобный паттерн для валидации переходов статусов
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -284,6 +312,8 @@ What I learned: EventEmitterModule.forRoot() в imports AppModule, EventEmitter2
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 16
@@ -301,6 +331,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: ConflictException для 409. Проверку loans.length > 0 делать до update статуса. Починил TypeScript ошибку — переменная loan нуждалась в явном типе any для conditional присваивания
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -320,6 +352,8 @@ What I learned: import type обязателен с isolatedModules + emitDecora
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 18
@@ -337,6 +371,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Для items.push в пустом массиве нужно указывать тип. Починил ошибку — при createMany передавал неправильный формат данных, пришлось поправить структуру объектов
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -356,6 +392,8 @@ What I learned: POST /loans/:id/payment-requests в loans controller, GET — в
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 20
@@ -373,6 +411,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Для переменной null нужно указывать тип явно. Пересчёт графика: погашаем pending элементы по dueDate, если все paid — Loan.closed
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -412,6 +452,8 @@ What I learned: @OnEvent декоратор из @nestjs/event-emitter рабо�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 22
@@ -429,6 +471,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: ContactMessage.attachmentId связан с FileAttachment через прикладную логику, а не через Prisma @relation. FilesModule уже экспортирует FilesService — повторный экспорт не нужен. Убрал дублирующий экспорт из contact-messages.module.ts
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -448,6 +492,8 @@ What I learned: AdminJwtAuthGuard лежит в common/guards/, а не в admin
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 24
@@ -465,6 +511,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Токен хранится в модульной переменной — реальное хранение (localStorage/cookie) будет в Request 42. Типы DTO берутся из Prisma schema, но на фронте описанные как интерфейсы, а не импортируемые из бэкенда
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -484,6 +532,8 @@ What I learned: Все компоненты — client components (forwardRef с
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 26
@@ -501,6 +551,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Header — client component (useState для мобильного меню). Footer — server component (статический контент). Ссылки в футере ведут на страницы, которые будут созданы позже (Request 35-39). Footer-заготовка упрощённая — полные реквизиты будут в Request 34. Подправил стили — выровнял отступы в Header, поправил z-index для мобильного меню
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -528,6 +580,8 @@ What I learned: Hero — server component (нет хуков/состояния)
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 28
@@ -545,6 +599,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Valibot v1.4 убрал namespace export `v` — нужно импортировать функции поимённо (object, pipe, number, minValue, maxValue). @hookform/resolvers нужен отдельный пакет для интеграции с valibot
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -564,6 +620,8 @@ What I learned: Обе секции — server components (статически�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 30
@@ -581,6 +639,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Обе секции — server components (статический контент). Добавил SVG-иконку галочки для «Прозрачные условия». Подправил размеры SVG-иконок для единообразия, поправил отступы между пунктами
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -600,6 +660,8 @@ What I learned: Клиентский контент содержит дубли�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 32
@@ -617,6 +679,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована. Подправил стили предупреждения для бизнеса, поправил отступы в trust-block
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -636,6 +700,8 @@ What I learned: Форма обратной связи — client component (rea
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 34
@@ -653,6 +719,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Все три контакта (адрес/email/телефон) теперь в одной горизонтальной линии с `flex-wrap` для адаптива. Иконки SVG слева от текста, как на странице контактов. Дополнительно: контакты сделаны ссылками (maps.google.com, mailto:, tel:), уменьшен отступ между GDPR и копирайтом (mt-6 → mt-3)
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -672,6 +740,8 @@ What I learned: Страница — server component. Добавил numbered c
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 36
@@ -689,6 +759,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: CTA «Оставить заявку» ведёт на /apply?type=business — предвыбор типа будет работать когда форма заявки будет реализована. Требования к заёмщикам разбиты на 2 колонки (компании/ИП) — каждый список документов в отдельном блоке. Починил CTA-ссылку — изначально вела на /apply без параметра, поправил на /apply?type=business
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -708,6 +780,8 @@ What I learned: FAQ — client component из-за состояния аккор
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 38
@@ -725,6 +799,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Server component. Списки через <ul>/<li>. Подправил стили списков — выровнял отступы, поправил типографику заголовков для соответствия дизайну
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -744,6 +820,8 @@ What I learned: Cookie Policy берётся из клиентского кон�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 40
@@ -761,6 +839,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Заглушки по AGENTS.md п.12 — один и тот же подход для Terms/Credit/AML-KYC. Server components, одинаковая структура с centered layout. Подправил стили — выровнял bordered блоки, поправил отступы
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -780,6 +860,8 @@ What I learned: valibot v1.x не поддерживает union schemas — е�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 42
@@ -797,6 +879,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: ApiError содержит status и body — message из backend приходит в body.message. При ошибке валидации message — массив, берём первый элемент
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -816,6 +900,8 @@ What I learned: Mock-код отображается в UI для удобств
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 44
@@ -833,6 +919,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: pathname из usePathname() может быть null — добавил optional chaining. Sidebar — client component (useEffect + localStorage для проверки авторизации)
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -852,6 +940,8 @@ What I learned: fetchApi не существует — правильное им
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 46
@@ -869,6 +959,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: cheduleItems для nextPayment вычисляются из PaymentScheduleItem (pending = следующий платёж)
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -888,6 +980,8 @@ What I learned: Select в Prisma должен включать userId для п�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 48
@@ -905,6 +999,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Секция подписания скрыта при других статусах — видна только при pending_signature. fetchLoan вынесен в отдельную функцию для повторного использования после confirm-sign
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -924,6 +1020,8 @@ What I learned: paymentRequests добавлены в findOneForUser select дл
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 50
@@ -941,6 +1039,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Optimistic UI для markAsRead — сначала обновляем статус локально, потом PATCH. При ошибке откат. Все три списка кабинета теперь следуют единому паттерну loading/error/empty
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -960,6 +1060,8 @@ What I learned: Admin token хранится отдельно от user token (s
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 52
@@ -977,6 +1079,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Route groups `(auth)` и `(dashboard)` позволяют разделить layout для логина (без sidebar) и панели (с sidebar). Нет родительского `/admin/layout.tsx` — sidebar только в `(dashboard)/layout.tsx`
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -996,6 +1100,8 @@ What I learned: useSearchParams() требует Suspense boundary в Next.js 16
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 54
@@ -1013,6 +1119,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: findOne в clients.service включает applications, loans (с scheduleItems + payments), paymentRequests, notifications — полная информация для карточки клиента
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1032,6 +1140,8 @@ What I learned: Model Payment использует `date` вместо `paidAt` 
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 56
@@ -1049,6 +1159,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: GET /loans/overdue добавлен в loans.controller перед GET /loans/:id — NestJS разрешает статические маршруты до параметрических, но порядок важен
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1068,6 +1180,8 @@ What I learned: Notifications были user-scoped только (GET /users/me/n
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 58
@@ -1086,6 +1200,8 @@ What I learned: iOS Safari auto-zoom при фокусе на input — текс
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 59
@@ -1101,6 +1217,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: «Безопасность клиентов» (section 12) была пропущена при сборке лендинга
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1118,6 +1236,8 @@ What I learned: Вертикальный timeline с alternating left/right че
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 61
@@ -1133,6 +1253,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: items-baseline + pb на дочернем элементе — простой способ визуально опустить текст относительно логотипа без position/margin
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1150,6 +1272,8 @@ What I learned: /about не существовала — замена на `/#ab
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 63
@@ -1165,6 +1289,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Футер уже имел bg-slate-50 — проверка перед лишними правками экономит время
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1182,6 +1308,8 @@ What I learned: `transition duration-300` вместо `transition-colors` — �
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 65
@@ -1197,6 +1325,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `defaultValues` в react-hook-form решает проблему undefined для чекбоксов
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1214,6 +1344,8 @@ What I learned: В contact-details ссылки уже совпадали с и�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 67
@@ -1229,6 +1361,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: -
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1246,6 +1380,8 @@ What I learned: -
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 69
@@ -1261,6 +1397,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Next.js App Router поддерживает SVG-фавикон через `metadata.icons.icon` без отдельного HTML-тега
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1278,6 +1416,8 @@ What I learned: Скрытый input + styled label через htmlFor — на�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 71
@@ -1293,6 +1433,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Контактные ссылки в footer и contact-details раньше имели разные цвета — slate-500 vs indigo-600. Теперь обе секции одинаковые: slate-500 для текста, indigo-600 для SVG иконок.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1310,6 +1452,8 @@ What I learned: Порядок секций в page.tsx не соответст�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 73
@@ -1325,6 +1469,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Ссылки в футере теперь ведут на якори главной страницы вместо отдельного роута. Порядок в "Поддержка": FAQ → Обратная связь → Контакты.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1342,6 +1488,8 @@ What I learned: `scroll-mt-24` (6rem/96px) — стандартный отсту
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 75
@@ -1357,6 +1505,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: В Next.js 16 App Router `searchParams` в server component — это `Promise`, передаём в client component и распаковываем через `React.use()`.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1374,6 +1524,8 @@ What I learned: Эталон public кнопок: `px-6 py-3 text-sm font-semibo
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 77
@@ -1389,6 +1541,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `border-l-4 border-indigo-600 pl-6 sm:pl-8` — акцентная полоса слева, минималистичный способ выделить блок текста. Полностью в тон сайта (bg-white, как HowItWorks/ForBusiness).
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1406,6 +1560,8 @@ What I learned: `rounded-lg border border-slate-200 bg-white` — лёгкая �
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 79
@@ -1421,6 +1577,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `border-t-2` (2px) vs `border-t` (1px) — разница в толщине. `border-slate-300` vs `border-slate-200` — разница в контрасте на `bg-slate-50`.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1438,6 +1596,8 @@ What I learned: Сокращение "Часто задаваемые вопро
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 81
@@ -1453,6 +1613,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `hidden sm:inline` скрывал "Finance" на < 640px. Убрано — теперь бренд всегда полный.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1479,6 +1641,8 @@ What I learned: Файловый эндпоинт нельзя защитить 
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 83
@@ -1503,6 +1667,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Prisma v7 `$transaction` принимает async callback — всё внутри callback выполняется в одной транзакции. `paidAmount` на PaymentScheduleItem позволяет корректно обрабатывать partial payments без потери данных. `recalculateSchedule` — единая точка распределения платежей по графику, все методы создают Payment перед вызовом.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1531,6 +1697,8 @@ What I learned: Prisma enum не принимает string-литералы в u
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 85
@@ -1554,6 +1722,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: @nestjs/throttler v3 использует `ThrottlerModule.forRoot([{ name, ttl, limit }])` вместо объекта. Prisma не поддерживает GIN-индексы — создаются через raw SQL миграцию. Пагинация через take/skip + count() — стандартный паттерн.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1579,6 +1749,8 @@ What I learned: Header был без auth links — элементарный п�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 87
@@ -1603,6 +1775,8 @@ What I learned: Строка "| " между approve/reject в payment-requests-
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 88
@@ -1626,6 +1800,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: ownerId=0 при загрузке файлов — не баг, а паттерн: сначала upload с нулевым owner, потом backend реассоциирует. calculateAnnuity возвращает { payment, total }, rounding берёт на себя. Search в manual-payment-form использует существующий GET /loans с search param.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1654,6 +1830,8 @@ What I learned: Backend уже возвращает `{ data, total, limit, offse
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 90
@@ -1677,6 +1855,8 @@ What I learned: Prisma не поддерживает GIN-индексы — то
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 91
@@ -1698,6 +1878,8 @@ What I learned: `apiRequest` не поддерживает FormData (стави�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 92
@@ -1717,6 +1899,8 @@ What I learned: У модели Application нет `updatedAt` в Prisma-схе�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 93
@@ -1734,6 +1918,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Два отдельных JWT-секрета (user + admin) — легко забыть один из них при настройке окружения. `.env.example` должен содержать все обязательные переменные.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1753,6 +1939,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `HeadBucketCommand` в AWS SDK v3 бросает ошибку если бакет не существует — используем try/catch для определения необходимости создания. `OnModuleInit` — подходящий хук для инициализации ресурсов при старте NestJS-приложения.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1781,6 +1969,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: `setError` из react-hook-form, вызванный внутри `onSubmit` (через `handleSubmit`), не даёт ре-рендер — форма уже прошла цикл валидации. Нужно валидировать обязательные поля вручную в обработчике ДО вызова `handleSubmit`. `clearErrors()` перед валидацией очищает ошибки от предыдущей попытки. `optional()` в valibot пропускает `undefined`, но не пустую строку — для optional email нужен `check((v) => v === '' || regex)`.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1817,6 +2007,8 @@ What I learned: Tailwind preflight сбрасывает стили кнопок 
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 97
@@ -1838,6 +2030,8 @@ What I learned: При рефакторинге приватного метод�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 98
@@ -1853,6 +2047,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `emit()` + async handler без try/catch = silent unhandled rejection. Лучшая практика: один try/catch в listener, логирование ошибки, основной бизнес-процесс не зависит от уведомлений.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1870,6 +2066,8 @@ What I learned: IDOR в ветке не `paid` возник потому что 
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 100
@@ -1886,6 +2084,8 @@ What I learned: DTO и transition map должны быть синхронизи
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 101
@@ -1901,6 +2101,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Prisma `updateMany` не возвращает обновлённые записи — для атомарного "обновить и узнать что обновили" нужен raw SQL с `RETURNING`. Это стандартный паттерн для PostgreSQL.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1922,6 +2124,8 @@ What I learned: Для защиты от double-approval в Prisma+Postgres: (1)
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 103
@@ -1940,6 +2144,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: API пагинации возвращает объект `{data, total, limit, offset}`, а не массив — фронтенд должен оборачивать тип ответа и обращаться к `.data`. В хедере лучше иметь одну условную кнопку с одинаковым стилем для обоих состояний, а не две отдельные кнопки.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -1965,6 +2171,8 @@ What I learned: Backend с пагинацией всегда возвращае�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 105
@@ -1986,6 +2194,8 @@ What I learned: `setError` из react-hook-form устанавливает ка�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 106
@@ -2002,6 +2212,8 @@ What I learned: `usePathname()` как зависимость `useEffect` — п
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 107
@@ -2017,6 +2229,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `form.reset()` очищает все значения формы — нужно вызывать при навигации между шагами multi-step формы, чтобы не переносить данные между шагами.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2044,6 +2258,8 @@ What I learned: Таймер обратного отсчёта OTP — `useEffec
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 109
@@ -2064,6 +2280,8 @@ What I learned: Hover-эффект "заливка цветом рамки" — 
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 110
@@ -2079,6 +2297,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `items-baseline` выравнивает по базовой линии текста — подходит когда тексты разного размера и нужно выровнять по буквам. `items-center` выравнивает по центру — лучше когда нужно совпадение с соседними flex-элементами (nav links).
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2096,6 +2316,8 @@ What I learned: Tailwind `md` = 768px, `lg` = 1024px — замена одног
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 112
@@ -2111,6 +2333,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `min-h-[36px]` на inline-flex ссылках задавал избыточную высоту — уменьшение до `min-h-[20px]` исправило футер без потери кликабельности
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2128,6 +2352,8 @@ What I learned: outline-кнопка требует контрастного ц�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 114
@@ -2143,6 +2369,8 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: `bg-white` и `bg-slate-50` на `<main>` / `<section>` перекрывают глобальный фон — оба нужно убирать чтобы страницы и секции наследовали единый фон. `bg-slate-50` (#f8fafc) выглядит как белый на фоне slate-100 (#f1f5f9). Карточки и элементы формы должны оставаться белыми для контраста.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2160,6 +2388,8 @@ What I learned: AuthGuard('jwt') при отсутствии заголовка 
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 116
@@ -2175,6 +2405,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Использование только `pending` в recalculateSchedule создаёт скрытую финансовую дыру — платеж не покрывает просроченный пункт, и заём может закрыться неоплаченным. Нужно включать `overdue` наравне с `pending`.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2192,6 +2424,8 @@ What I learned: AuthGuard('jwt').canActivate() возвращает union-тип
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 118
@@ -2208,6 +2442,8 @@ What I learned: ValidationPipe с forbidNonWhitelisted + whitelist отклон�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 119
@@ -2223,6 +2459,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Unicode-стрелка ← может криво рендериться — SVG arrow через inline-flex надёжнее. min-h-screen внутри main с flex-1 даёт перекос центра — min-h-full решает. class-validator принимает русские сообщения через { message: '...' }. line-clamp работает только с overflow:hidden + display:-webkit-box — Tailwind делает это автоматически. Для определения «длинного» текста достаточно порога длины строки без измерения DOM.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2245,6 +2483,8 @@ What I learned: Разделение имени на Имя/Фамилию че�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 121
@@ -2265,6 +2505,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: File upload как текст-ссылка — достаточно убрать bg/rounded-lg/padding, оставить текст + svg с indigo-600 цветом. Select с `appearance-none` полностью скрывает нативный индикатор — два stacked SVG-треугольника с fill дают визуальный эквивалент. `pointer-events-none` на контейнере с иконками пропускает клики на select под ними. `pr-8` даёт место для иконок внутри select.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2287,6 +2529,8 @@ What I learned: `useRef<ReturnType<typeof setTimeout>>()` требует нач�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 123
@@ -2304,6 +2548,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: На странице /login стоит `py-12` (48px сверху и снизу), а на /admin/login был только `pt-24` без нижнего отступа — карточка прижималась к футеру.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2326,6 +2572,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `resolveDisplayName` — runtime-решение без миграции БД, чинит прочерк для всех пользователей сразу (и старых, и новых). В Prisma можно вкладывать связанные сущности через select внутри select. Чтобы не отправлять лишние поля (application, applications) в ответ API, нужно явно пересобрать объект без них.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2350,6 +2598,8 @@ What I learned: `updateMany` без условий обновляет все з�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 126
@@ -2370,6 +2620,8 @@ What I learned: При пагинации локальный `unread` из `item
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 127
@@ -2387,6 +2639,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Footer был серверным компонентом — пришлось сделать его клиентским ради доступа к `usePathname`. Альтернатива — layout group в Next.js App Router, но текущее решение проще и не требует реструктуризации.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2410,6 +2664,8 @@ What I learned: scrollHeight не равен clientHeight при CSS line-clamp.
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 129
@@ -2426,6 +2682,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Badge на пункте «Уведомления» привязан к `item.href`, а не к позиции в массиве, поэтому перестановка не ломает счётчик.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2447,6 +2705,8 @@ What I learned: rAF может сработать до React commit. setTimeout 
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 131
@@ -2464,6 +2724,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Статус `in_progress` уже эмитится через `application.status.changed`, но listener создавал уведомление только для `approved` и `rejected`.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2485,6 +2747,8 @@ What I learned: В Tailwind v4 смена палитры делается чер
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 133
@@ -2504,6 +2768,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: `space-y-*` gap между элементами нужно перекрывать продолжением линии на `-2.5rem`, чтобы сегменты визуально соединялись.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2530,6 +2796,8 @@ What I learned: Для мгновенного обновления счётчи�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 135
@@ -2551,6 +2819,8 @@ What I learned: Когда кнопка зависит от отдельно з�
 
 Model used: big-pickle
 
+Provider used: OpenCode Zen
+
 Instrument used: OpenCode
 
 ## Request 136
@@ -2569,6 +2839,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Дата была справа в том же flex-ряду, сжимая текст сообщения. Отделение баннера с датой от текста даёт равные отступы.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2593,6 +2865,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: Треугольники в Select — два отдельных SVG элемента, достаточно поменять порядок. В ContactForm файл хранится как File, а не массив, поэтому кнопка удаления просто сбрасывает состояние в null.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2622,6 +2896,8 @@ Used as-is / edited manually / rejected: used as-is
 What I learned: signedIp/signedUserAgent хранятся в БД для аудита, но в UI админки их показ избыточен для MVP. При удалении статусной секции код существенно сократился. Build проходит успешно.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
 
@@ -2655,5 +2931,7 @@ Used as-is / edited manually / rejected: edited manually
 What I learned: Backend уже возвращает expiresAt в request-sign-otp, оставалось только извлечь его на фронте. codeForm.watch('code') можно использовать для реактивного отслеживания длины кода.
 
 Model used: big-pickle
+
+Provider used: OpenCode Zen
 
 Instrument used: OpenCode
