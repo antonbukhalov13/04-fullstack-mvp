@@ -2389,3 +2389,25 @@ What I learned: Footer был серверным компонентом — пр
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 128
+
+Goal: Переработать кнопку развернуть/свернуть — внизу карточки, с фоном, детект переполнения через scrollHeight
+
+Prompt: Кнопка должна быть в самом низу карточки с фоном (по стилистике проекта), работать когда сообщение реально не влезает (scrollHeight > clientHeight)
+
+Result:
+- `admin-contact-messages-list.tsx`:
+  - Добавлен `paraRefs` + `overflowIds` + `useEffect` с проверкой `scrollHeight > clientHeight`
+  - `line-clamp-3` применяется по порогу 150 символов (`exceedsThreshold`), чтобы clamp был на первом рендере
+  - Кнопка (`showButton`) показывается только по `overflowIds.has(m.id)` — реальное переполнение
+  - Карточка переструктурирована: контент в `px-4 py-3`, кнопка отдельно внизу с `border-t`
+  - Кнопка: `w-full`, `border-t border-slate-200`, центрированный текст с ▲/▼, `hover:bg-indigo-50 active:bg-indigo-100`, `text-indigo-600`
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: scrollHeight не равен clientHeight при CSS line-clamp. Проблема: без clamp нет overflow, без overflow нет clamp — фикс: clamp по порогу, кнопка по измерению.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
