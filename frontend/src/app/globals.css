@@ -10,6 +10,16 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-indigo-50: #F4F2FF;
+  --color-indigo-100: #E8E4FE;
+  --color-indigo-200: #D0C7FB;
+  --color-indigo-300: #B4A4F7;
+  --color-indigo-400: #9885F2;
+  --color-indigo-500: #7B68EE;
+  --color-indigo-600: #624FD2;
+  --color-indigo-700: #4B3BB6;
+  --color-indigo-800: #352899;
+  --color-indigo-900: #221A78;
 }
 
 html {
