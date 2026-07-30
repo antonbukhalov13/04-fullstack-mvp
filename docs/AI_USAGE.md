@@ -2351,3 +2351,23 @@ What I learned: `updateMany` без условий обновляет все з�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 126
+
+Goal: Исправить синхронизацию unread badge + серый кружок при 0 + кнопка по серверному счётчику
+
+Prompt: Кружок должен быть серым при 0 непрочитанных (а не скрываться); кнопка «Отметить все» должна ориентироваться на серверный unreadCount, а не на текущую страницу (иначе при пагинации бледнеет, хотя есть непрочитанные на других страницах)
+
+Result:
+- `admin-sidebar.tsx` — badge показывается всегда, `bg-slate-300 text-slate-500` при count === 0
+- `dashboard-sidebar.tsx` — badge показывается всегда, `bg-slate-300 text-slate-500` при count === 0
+- `admin-notifications-list.tsx` — добавлен `totalUnread` (GET /admin/notifications/unread-count), кнопка и guard по нему
+- `notifications-list.tsx` — добавлен `totalUnread` (GET /users/me/notifications/unread-count), кнопка и guard по нему
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: При пагинации локальный `unread` из `items` ошибочен — нужно использовать серверный `unread-count` для UI-состояния кнопки.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
