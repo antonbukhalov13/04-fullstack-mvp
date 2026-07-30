@@ -2448,3 +2448,21 @@ What I learned: rAF может сработать до React commit. setTimeout 
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 131
+
+Goal: Добавить уведомление при статусе заявки «В обработке»
+
+Prompt: Добавить уведомление «Заявка взята в обработку» при смене статуса заявки на `in_progress`
+
+Result:
+- `notifications.service.ts`:
+  - В `onApplicationStatusChanged` добавлен `in_progress` → `'Заявка взята в обработку'`
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Статус `in_progress` уже эмитится через `application.status.changed`, но listener создавал уведомление только для `approved` и `rejected`.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
