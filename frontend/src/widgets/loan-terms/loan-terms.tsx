@@ -14,19 +14,25 @@ export function LoanTerms() {
         </h2>
 
         <div className="relative mt-12 mx-auto max-w-3xl">
-          {/* Central vertical line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-indigo-200 -translate-x-1/2" />
-
           <div className="space-y-10">
             {items.map((item, i) => {
               const isLeft = i % 2 === 0;
               return (
-                <div key={item.label} className="relative min-h-[72px]">
-                  {/* Dot on center line */}
+                <div key={item.label} className="relative min-h-[72px] flex items-center">
+                  {/* Vertical line segment */}
+                  <div
+                    className="absolute left-1/2 w-px bg-indigo-200 -translate-x-1/2"
+                    style={{
+                      top: i === 0 ? '50%' : '-2.5rem',
+                      bottom: i === items.length - 1 ? '50%' : '0',
+                    }}
+                  />
+
+                  {/* Dot */}
                   <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-3.5 h-3.5 rounded-full bg-indigo-600 ring-4 ring-slate-50" />
 
                   {isLeft ? (
-                    <div className="flex items-center">
+                    <div className="flex items-center w-full">
                       <div className="w-[calc(50%-1.5rem)] text-right pr-2">
                         <dt className="text-sm text-slate-500">{item.label}</dt>
                         <dd className="mt-1 text-lg font-semibold text-slate-900">{item.value}</dd>
@@ -35,7 +41,7 @@ export function LoanTerms() {
                       <div className="flex-1" />
                     </div>
                   ) : (
-                    <div className="flex items-center">
+                    <div className="flex items-center w-full">
                       <div className="flex-1" />
                       <div className="w-6 h-px bg-indigo-200 shrink-0" />
                       <div className="w-[calc(50%-1.5rem)] pl-2">
