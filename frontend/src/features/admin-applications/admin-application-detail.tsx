@@ -260,7 +260,7 @@ export function AdminApplicationDetail() {
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none bg-white"
+                  className="min-w-0 max-w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none bg-white"
                 >
                   <option value="">Выберите статус</option>
                   {app.status === 'new' && <option value="in_progress">В обработке</option>}

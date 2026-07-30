@@ -80,7 +80,7 @@ export function DashboardSidebar() {
       {/* Hamburger — mobile only */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-5 left-5 z-50 lg:hidden flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg active:scale-95 transition-transform"
+        className="fixed bottom-5 left-5 z-[70] lg:hidden flex items-center justify-center w-12 h-12 rounded-full bg-indigo-600 text-white shadow-lg active:scale-95 transition-transform"
         aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
       >
         {open ? (
@@ -97,7 +97,7 @@ export function DashboardSidebar() {
       {/* Overlay backdrop — mobile only */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-[55] bg-black/40 lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
@@ -106,7 +106,7 @@ export function DashboardSidebar() {
       <aside
         className={[
           'w-56 shrink-0 border-r border-slate-200 bg-slate-50 min-h-full',
-          'fixed inset-y-0 left-0 z-40 transition-transform duration-200 ease-in-out',
+          'fixed inset-y-0 left-0 z-[60] transition-transform duration-200 ease-in-out',
           'flex flex-col',
           open ? 'translate-x-0' : '-translate-x-full',
           'lg:relative lg:translate-x-0 lg:transition-none',
