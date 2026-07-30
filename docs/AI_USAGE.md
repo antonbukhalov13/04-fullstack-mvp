@@ -2411,3 +2411,20 @@ What I learned: scrollHeight не равен clientHeight при CSS line-clamp.
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 129
+
+Goal: Переместить «Уведомления» после «Сообщения» в админ-сайдбаре
+
+Prompt: Переставить порядок вкладок в админ-панели: «Уведомления» после «Сообщения»
+
+Result:
+- `admin-sidebar.tsx` — `navItems` переупорядочен: «Сообщения» перед «Уведомлениями»
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Badge на пункте «Уведомления» привязан к `item.href`, а не к позиции в массиве, поэтому перестановка не ломает счётчик.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
