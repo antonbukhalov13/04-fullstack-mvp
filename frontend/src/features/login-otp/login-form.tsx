@@ -233,7 +233,7 @@ export function LoginForm() {
               >
                 Назад
               </Button>
-              <Button type="submit" disabled={submitState === 'submitting'}>
+              <Button type="submit" disabled={codeForm.watch('code')?.length !== 6 || submitState === 'submitting'}>
                 {submitState === 'submitting' ? 'Проверка...' : 'Войти'}
               </Button>
             </div>

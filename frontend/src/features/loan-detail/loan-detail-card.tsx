@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiRequest, ApiError } from '@/shared/api';
@@ -54,6 +54,29 @@ function dailyRatePercent(r: number) {
   return (r * 100).toFixed(1) + '%';
 }
 
+const RESEND_COOLDOWN_SEC = 60;
+
+function useCountdown(expiresAt: Date | null) {
+  const [remaining, setRemaining] = useState<number>(0);
+
+  useEffect(() => {
+    if (!expiresAt) { setRemaining(0); return; }
+
+    const tick = () => {
+      const diff = Math.max(0, Math.floor((expiresAt.getTime() - Date.now()) / 1000));
+      setRemaining(diff);
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [expiresAt]);
+
+  const min = String(Math.floor(remaining / 60)).padStart(2, '0');
+  const sec = String(remaining % 60).padStart(2, '0');
+  return { remaining, formatted: `${min}:${sec}`, expired: remaining <= 0 };
+}
+
 export function LoanDetailCard() {
   const params = useParams();
   const loanId = (params?.id ?? '') as string;
@@ -67,6 +90,11 @@ export function LoanDetailCard() {
   const [otpCode, setOtpCode] = useState('');
   const [signError, setSignError] = useState<string | null>(null);
   const [signLoading, setSignLoading] = useState(false);
+  const [expiresAt, setExpiresAt] = useState<Date | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const { formatted, expired } = useCountdown(expiresAt);
 
   // Contract viewer
   const [showContract, setShowContract] = useState(false);
@@ -77,6 +105,25 @@ export function LoanDetailCard() {
       return () => { document.body.style.overflow = ''; };
     }
   }, [showContract]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+      return;
+    }
+    cooldownRef.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          if (cooldownRef.current) clearInterval(cooldownRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
+  }, [resendCooldown]);
 
   // Payment request form
   const [payAmount, setPayAmount] = useState('');
@@ -122,11 +169,13 @@ export function LoanDetailCard() {
     setSignLoading(true);
     setSignError(null);
     try {
-      const res = await apiRequest<{ message: string; mockOtp: string }>(
+      const res = await apiRequest<{ message: string; mockOtp: string; expiresAt: string }>(
         `/loans/${loanId}/request-sign-otp`,
         { method: 'POST' },
       );
       setMockOtp(res.mockOtp);
+      setExpiresAt(new Date(res.expiresAt));
+      setResendCooldown(RESEND_COOLDOWN_SEC);
       setSignState('otp_sent');
     } catch (err) {
       if (err instanceof ApiError) {
@@ -139,6 +188,11 @@ export function LoanDetailCard() {
     } finally {
       setSignLoading(false);
     }
+  };
+
+  const resendOtp = async () => {
+    await requestOtp();
+    setOtpCode('');
   };
 
   const confirmSign = async () => {
@@ -221,8 +275,9 @@ export function LoanDetailCard() {
 
   return (
     <div className="space-y-6">
-      <Link href="/dashboard/loans" className="text-sm text-indigo-600 hover:underline">
-        ← Мои займы
+      <Link href="/dashboard/loans" className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline">
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+        Мои займы
       </Link>
 
       {/* Карточка займа */}
@@ -290,6 +345,14 @@ export function LoanDetailCard() {
                     Mock-код для тестирования: <span className="font-mono font-bold">{mockOtp}</span>
                   </p>
                 )}
+                {!expired ? (
+                  <p className="text-xs text-slate-500">
+                    Код действителен ещё{' '}
+                    <span className="font-medium text-slate-700">{formatted}</span>
+                  </p>
+                ) : (
+                  <p className="text-xs text-red-600">Код истёк</p>
+                )}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                   <input
                     type="text"
@@ -297,7 +360,7 @@ export function LoanDetailCard() {
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                     placeholder="Введите 6-значный код"
-                    className="w-full sm:w-44 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="w-full sm:w-44 rounded-lg border border-slate-300 px-3 py-2.5 text-sm min-h-[44px] focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   />
                   <Button
                     onClick={confirmSign}
@@ -306,6 +369,18 @@ export function LoanDetailCard() {
                   >
                     {signLoading ? <Spinner size="sm" className="mr-2" /> : null}
                     Подтвердить
+                  </Button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    disabled={resendCooldown > 0}
+                    onClick={resendOtp}
+                  >
+                    {resendCooldown > 0
+                      ? `Отправить код повторно (${resendCooldown} сек)`
+                      : 'Отправить код повторно'}
                   </Button>
                 </div>
               </div>
@@ -452,7 +527,7 @@ export function LoanDetailCard() {
                 type="text"
                 value={payRef}
                 onChange={(e) => setPayRef(e.target.value)}
-                placeholder="Например: перевод с карты"
+                placeholder="Например: перевод с карты за 1-ый день"
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
               />
             </div>
