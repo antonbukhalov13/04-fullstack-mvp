@@ -199,7 +199,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
             Номер заявки: <span className="font-mono">{successId}</span>
           </p>
         )}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+        <div className="flex flex-col items-center gap-4 pt-2">
           <button
             onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
             className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-500 hover:text-slate-700"

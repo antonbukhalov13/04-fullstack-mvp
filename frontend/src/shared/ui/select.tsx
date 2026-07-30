@@ -39,10 +39,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </select>
           <div className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 flex flex-col">
             <svg className="h-2.5 w-2.5 text-slate-400" viewBox="0 0 10 6" fill="currentColor">
-              <path d="M0 0l5 6 5-6z" />
+              <path d="M0 6l5-6 5 6z" />
             </svg>
             <svg className="h-2.5 w-2.5 text-slate-400" viewBox="0 0 10 6" fill="currentColor">
-              <path d="M0 6l5-6 5 6z" />
+              <path d="M0 0l5 6 5-6z" />
             </svg>
           </div>
         </div>

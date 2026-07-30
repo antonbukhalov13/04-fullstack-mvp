@@ -152,7 +152,16 @@ export function ContactForm() {
           <span className="text-sm text-slate-700">Прикрепление файла</span>
         </div>
         {file && (
-          <p className="mt-1 text-xs text-slate-500">{file.name}</p>
+          <div className="mt-1 flex items-center justify-between">
+            <span className="text-xs text-slate-500 truncate">{file.name}</span>
+            <button
+              type="button"
+              onClick={() => setFile(null)}
+              className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px]"
+            >
+              Удалить
+            </button>
+          </div>
         )}
       </div>
 
