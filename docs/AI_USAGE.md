@@ -2328,3 +2328,26 @@ What I learned: `resolveDisplayName` — runtime-решение без мигр�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 125
+
+Goal: Backend-эндпоинты unread-count и mark-all-as-read + кружок с числом в сайдбарах + кнопки «Отметить все»
+
+Prompt: Добавить backend-эндпоинты: GET unread-count (user), GET unread-count (admin), PATCH read-all (user), PATCH read-all (admin). На фронте: кружок с числом непрочитанных уведомлений рядом с пунктом «Уведомления» в обоих сайдбарах; кнопка «Отметить все» в списках уведомлений; dispatch события `notification-read` при markAsRead/markAllAsRead для обновления счётчика.
+
+Result:
+- `notifications.service.ts` — добавлены `countUnread(userId)`, `countUnreadAdmin()`, `markAllAsRead(userId)`, `markAllAsReadAdmin()`
+- `notifications.controller.ts` — `GET unread-count`, `PATCH read-all` (user, под JwtAuthGuard)
+- `admin-notifications.controller.ts` — `GET unread-count`, `PATCH read-all` (admin, под AdminJwtAuthGuard + RolesGuard)
+- `admin-sidebar.tsx` — polling unread-count (30s), listener события `notification-read`, badge (bg-indigo-600, rounded-full) на пункте «Уведомления»
+- `dashboard-sidebar.tsx` — заменён one-shot fetch на polling + listener; badge bg-red-500 → bg-indigo-600
+- `admin-notifications-list.tsx` — кнопка «Отметить все» (всегда видна, bg-indigo-100 при 0) + dispatch `notification-read`
+- `notifications-list.tsx` — кнопка «Отметить все» (всегда видна, bg-indigo-100 при 0) + dispatch `notification-read`
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: `updateMany` без условий обновляет все записи. CustomEvent + addEventListener — простой способ оповестить другие компоненты без глобального состояния.
+
+Model used: big-pickle
+
+Instrument used: OpenCode

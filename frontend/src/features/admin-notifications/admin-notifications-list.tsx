@@ -83,9 +83,20 @@ export function AdminNotificationsList() {
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
     try {
       await apiRequest(`/admin/notifications/${id}/read`, { method: 'PATCH', admin: true });
+      window.dispatchEvent(new CustomEvent('notification-read'));
     } catch {
       setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: false } : n)));
     }
+  };
+
+  const markAllAsRead = async () => {
+    const u = items.filter((n) => !n.isRead).length;
+    if (u === 0) return;
+    try {
+      await apiRequest('/admin/notifications/read-all', { method: 'PATCH', admin: true });
+      setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      window.dispatchEvent(new CustomEvent('notification-read'));
+    } catch { /* ignore */ }
   };
 
   if (loading) {
@@ -116,11 +127,22 @@ export function AdminNotificationsList() {
 
   return (
     <div>
-      {unread > 0 && (
-        <p className="mb-3 text-sm text-slate-500">
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-sm text-slate-500">
           Непрочитанных: <span className="font-medium text-slate-700">{unread}</span>
         </p>
-      )}
+        <button
+          onClick={unread > 0 ? markAllAsRead : undefined}
+          className={[
+            'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+            unread > 0
+              ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer'
+              : 'bg-indigo-100 text-indigo-400 cursor-default',
+          ].join(' ')}
+        >
+          Отметить все
+        </button>
+      </div>
       <div className="space-y-2">
         {items.map((n) => (
           <div

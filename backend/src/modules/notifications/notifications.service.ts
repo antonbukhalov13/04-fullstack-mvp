@@ -41,6 +41,21 @@ export class NotificationsService {
     return { success: true };
   }
 
+  async countUnread(userId: string) {
+    const count = await this.prisma.notification.count({
+      where: { userId, isRead: false },
+    });
+    return { count };
+  }
+
+  async markAllAsRead(userId: string) {
+    await this.prisma.notification.updateMany({
+      where: { userId, isRead: false },
+      data: { isRead: true },
+    });
+    return { success: true };
+  }
+
   async findAllAdmin(take: number, skip: number) {
     const where = {};
     const [items, total] = await Promise.all([
@@ -93,6 +108,21 @@ export class NotificationsService {
     }
     await this.prisma.notification.update({
       where: { id },
+      data: { isRead: true },
+    });
+    return { success: true };
+  }
+
+  async countUnreadAdmin() {
+    const count = await this.prisma.notification.count({
+      where: { isRead: false },
+    });
+    return { count };
+  }
+
+  async markAllAsReadAdmin() {
+    await this.prisma.notification.updateMany({
+      where: { isRead: false },
       data: { isRead: true },
     });
     return { success: true };

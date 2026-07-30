@@ -26,6 +26,7 @@ export function AdminSidebar() {
   const [admin, setAdmin] = useState<AdminUser | null>(null);
   const [authorized, setAuthorized] = useState(false);
   const [open, setOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const token = getAdminAuthToken() ?? localStorage.getItem('admin_token');
@@ -46,6 +47,32 @@ export function AdminSidebar() {
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!authorized) return;
+    const fetchCount = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+        const token = getAdminAuthToken();
+        if (!token) return;
+        const res = await fetch(`${baseUrl}/admin/notifications/unread-count`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUnreadCount(data.count ?? 0);
+        }
+      } catch { /* ignore */ }
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    const handleRead = () => fetchCount();
+    window.addEventListener('notification-read', handleRead);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('notification-read', handleRead);
+    };
+  }, [authorized]);
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
@@ -114,13 +141,18 @@ export function AdminSidebar() {
                   key={item.href}
                   href={item.href}
                   className={[
-                    'block rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                    'flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                     active
                       ? 'bg-indigo-50 text-indigo-700'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
                   ].join(' ')}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  {item.href === '/admin/notifications' && unreadCount > 0 && (
+                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-indigo-600 text-white text-xs font-bold">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                 </Link>
               );
             })}

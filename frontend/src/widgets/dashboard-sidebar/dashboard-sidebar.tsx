@@ -30,17 +30,28 @@ export function DashboardSidebar() {
 
   useEffect(() => {
     if (!authorized) return;
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-    fetch(`${baseUrl}/users/me/notifications`, {
-      headers: { Authorization: `Bearer ${getAuthToken()}` },
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setUnreadCount(data.filter((n: { isRead?: boolean }) => !n.isRead).length);
+    const fetchCount = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+        const token = getAuthToken();
+        if (!token) return;
+        const res = await fetch(`${baseUrl}/users/me/notifications/unread-count`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUnreadCount(data.count ?? 0);
         }
-      })
-      .catch(() => {});
+      } catch { /* ignore */ }
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    const handleRead = () => fetchCount();
+    window.addEventListener('notification-read', handleRead);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('notification-read', handleRead);
+    };
   }, [authorized]);
 
   useEffect(() => {
@@ -110,7 +121,7 @@ export function DashboardSidebar() {
                 >
                   <span>{item.label}</span>
                   {showBadge && (
-                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-xs font-bold">
+                    <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-indigo-600 text-white text-xs font-bold">
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}

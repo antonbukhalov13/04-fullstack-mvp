@@ -10,6 +10,11 @@ import { Roles } from '../../common/decorators/roles.decorator';
 export class AdminNotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
+  @Get('unread-count')
+  async countUnreadAdmin() {
+    return this.notificationsService.countUnreadAdmin();
+  }
+
   @Get()
   async findAllAdmin(
     @Query('limit') limit?: number,
@@ -18,6 +23,12 @@ export class AdminNotificationsController {
     const take = Math.min(Number(limit) || 20, 100);
     const skip = Number(offset) || 0;
     return this.notificationsService.findAllAdmin(take, skip);
+  }
+
+  @Patch('read-all')
+  @HttpCode(HttpStatus.OK)
+  async markAllAsReadAdmin() {
+    return this.notificationsService.markAllAsReadAdmin();
   }
 
   @Patch(':id/read')

@@ -9,6 +9,11 @@ import type { CurrentUserPayload } from '../../common/decorators/current-user.de
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
+  @Get('unread-count')
+  async countUnread(@CurrentUser() user: CurrentUserPayload) {
+    return this.notificationsService.countUnread(user.id);
+  }
+
   @Get()
   async findAll(
     @CurrentUser() user: CurrentUserPayload,
@@ -18,6 +23,12 @@ export class NotificationsController {
     const take = Math.min(Number(limit) || 20, 100);
     const skip = Number(offset) || 0;
     return this.notificationsService.findByUser(user.id, take, skip);
+  }
+
+  @Patch('read-all')
+  @HttpCode(HttpStatus.OK)
+  async markAllAsRead(@CurrentUser() user: CurrentUserPayload) {
+    return this.notificationsService.markAllAsRead(user.id);
   }
 
   @Patch(':id/read')
