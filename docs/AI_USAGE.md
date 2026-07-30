@@ -2531,3 +2531,24 @@ What I learned: Для мгновенного обновления счётчи�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 135
+
+Goal: Кнопка «Отметить все» становится неактивной, только если нажать на неё, а не при отметке всех уведомлений по одному
+
+Prompt: Когда я отмечаю все непрочитанные уведомления нажатием на них, и когда их число становится 0 - кнопка Отметить все должна становится неактивной, а не только после нажатия на нее
+
+Result:
+- `features/my-notifications/notifications-list.tsx`:
+  - Удалён `totalUnread` state и второй useEffect с fetch `/unread-count`
+  - Кнопка «Отметить все» теперь использует `unread` (вычисляется из локального `items`) вместо `totalUnread`
+- `features/admin-notifications/admin-notifications-list.tsx`:
+  - Аналогичные изменения
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Когда кнопка зависит от отдельно загруженного `totalUnread`, она не реагирует на локальные изменения `items`. Достаточно использовать вычисляемое значение.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
