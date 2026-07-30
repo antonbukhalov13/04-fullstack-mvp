@@ -2466,3 +2466,23 @@ What I learned: Статус `in_progress` уже эмитится через `a
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 132
+
+Goal: Сменить основной цвет проекта с Indigo (#4F46E5) на #7B68EE
+
+Prompt: Сделать вместо основного цвета проекта Indigo (RGB: 79, 70, 229) новый цвет HEX: #7B68EE / RGB: 123, 104, 238. Изменить цвет логотипа и favicon
+
+Result:
+- `globals.css`:
+  - В `@theme inline` добавлены `--color-indigo-50…900` с новой палитрой на основе #7B68EE
+- `favicon.svg`:
+  - `fill` изменён с `#4f46e5` на `#7B68EE`
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: В Tailwind v4 смена палитры делается через `--color-indigo-*` в `@theme` — все `indigo-*` классы подхватываются автоматически.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
