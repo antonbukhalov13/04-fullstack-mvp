@@ -51,7 +51,6 @@ export function AdminNotificationsList() {
   const [items, setItems] = useState<AdminNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalUnread, setTotalUnread] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -80,17 +79,6 @@ export function AdminNotificationsList() {
     return () => { cancelled = true; };
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await apiRequest<{ count: number }>('/admin/notifications/unread-count', { admin: true });
-        if (!cancelled) setTotalUnread(res.count ?? 0);
-      } catch { /* ignore */ }
-    })();
-    return () => { cancelled = true; };
-  }, []);
-
   const markAsRead = async (id: string) => {
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
     try {
@@ -102,11 +90,9 @@ export function AdminNotificationsList() {
   };
 
   const markAllAsRead = async () => {
-    if (totalUnread === 0) return;
     try {
       await apiRequest('/admin/notifications/read-all', { method: 'PATCH', admin: true });
       setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
-      setTotalUnread(0);
       window.dispatchEvent(new CustomEvent('notification-read'));
     } catch { /* ignore */ }
   };
@@ -144,10 +130,10 @@ export function AdminNotificationsList() {
           Непрочитанных: <span className="font-medium text-slate-700">{unread}</span>
         </p>
         <button
-          onClick={totalUnread > 0 ? markAllAsRead : undefined}
+          onClick={unread > 0 ? markAllAsRead : undefined}
           className={[
             'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
-            totalUnread > 0
+            unread > 0
               ? 'bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer'
               : 'bg-indigo-100 text-indigo-400 cursor-default',
           ].join(' ')}
