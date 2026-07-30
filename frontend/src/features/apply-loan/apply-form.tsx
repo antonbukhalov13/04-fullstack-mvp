@@ -355,7 +355,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
                       <button
                         type="button"
                         onClick={() => removeFile(f.id)}
-                        className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px]"
+                        className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px] transition-colors"
                       >
                         Удалить
                       </button>

@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError } from '@/shared/api';
-import { StatusBadge, Spinner } from '@/shared/ui';
+import { StatusBadge, Spinner, SearchInput } from '@/shared/ui';
 import { Button } from '@/shared/ui/button';
 import { Pagination } from '@/shared/ui/pagination';
 import { LoadingOverlay } from '@/shared/ui/loading-overlay';
@@ -130,13 +130,11 @@ export function AdminLoansList() {
     <LoadingOverlay loading={loading} hasData={items.length > 0}>
     <div>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
-        <input
-          type="text"
+        <SearchInput
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={setSearch}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           placeholder="Поиск по имени, телефону..."
-          className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
         />
         <select
           value={statusFilter}

@@ -139,7 +139,7 @@ export function PaymentRequestsList() {
         <select
           value={statusFilter}
           onChange={(e) => handleStatusChange(e.target.value)}
-          className="min-w-0 max-w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none bg-white"
+          className="min-w-0 max-w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm min-h-[44px] focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none bg-white"
         >
           {statusOptions.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>

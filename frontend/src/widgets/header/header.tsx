@@ -8,7 +8,7 @@ import { getAuthToken } from '@/shared/api';
 const navItems = [
   { href: '/how-it-works', label: 'Как это работает' },
   { href: '/business', label: 'Для бизнеса' },
-  { href: '/faq', label: 'FAQ' },
+  { href: '/faq', label: 'Часто задаваемые вопросы' },
 ];
 
 export function Header() {
@@ -66,7 +66,7 @@ export function Header() {
 
           <button
             type="button"
-            className="lg:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 active:bg-slate-200 min-h-[44px] min-w-[44px]"
+            className="lg:hidden inline-flex items-center justify-center rounded-lg p-3 text-slate-600 hover:bg-slate-100 active:bg-slate-200 min-h-[44px] min-w-[44px] transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Меню"
           >
@@ -90,7 +90,7 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="block rounded-lg px-3 py-3 text-sm text-slate-600 hover:bg-slate-100 min-h-[44px]"
+                className="block rounded-lg px-3 py-3 text-sm text-slate-600 hover:bg-slate-100 min-h-[44px] transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 {item.label}
@@ -106,7 +106,7 @@ export function Header() {
             {isLoggedIn ? (
               <Link
                 href="/dashboard/applications"
-                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 min-h-[44px]"
+                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 min-h-[44px] transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Кабинет
@@ -114,7 +114,7 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 min-h-[44px]"
+                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 min-h-[44px] transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 Войти

@@ -1,5 +1,6 @@
 export { Button } from './button';
 export { Input } from './input';
+export { SearchInput } from './search-input';
 export { Select } from './select';
 export { Textarea } from './textarea';
 export { Checkbox } from './checkbox';

@@ -100,12 +100,14 @@ export function ContactForm() {
         <p className="text-green-800 font-medium">
           Сообщение отправлено. Мы свяжемся с вами в ближайшее время.
         </p>
-        <button
-          onClick={() => setSubmitState('idle')}
-          className="mt-4 text-sm font-semibold text-slate-500 hover:text-slate-700 inline-flex items-center min-h-[44px]"
-        >
-          Отправить ещё
-        </button>
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={() => setSubmitState('idle')}
+            className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-500 hover:text-slate-700"
+          >
+            Отправить ещё
+          </button>
+        </div>
       </div>
     );
   }
@@ -157,7 +159,7 @@ export function ContactForm() {
             <button
               type="button"
               onClick={() => setFile(null)}
-              className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px]"
+              className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px] transition-colors"
             >
               Удалить
             </button>
