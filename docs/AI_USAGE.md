@@ -2486,3 +2486,23 @@ What I learned: В Tailwind v4 смена палитры делается чер
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 133
+
+Goal: Исправить вертикальное выравнивание точек и горизонтальных линий в timeline секции «Основные условия»
+
+Prompt: В секции Основные условия — горизонтальные линии у вертикального timeline выходят не из фиолетовых точек, как нужно, а выше, что визуально некрасиво
+
+Result:
+- `loan-terms.tsx`:
+  - Убран сплошной центральный вертикальный `div` с `top-0 bottom-0`
+  - Каждый item получил `flex items-center` и собственный сегмент вертикальной линии
+  - Первый item: линия от `50%` до низа; последний: от верха до `50%`; промежуточные: на всю высоту, вытягиваясь на `-2.5rem` вверх в gap
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `space-y-*` gap между элементами нужно перекрывать продолжением линии на `-2.5rem`, чтобы сегменты визуально соединялись.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
