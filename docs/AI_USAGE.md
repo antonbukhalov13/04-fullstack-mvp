@@ -2428,3 +2428,23 @@ What I learned: Badge на пункте «Уведомления» привяз�
 Model used: big-pickle
 
 Instrument used: OpenCode
+
+## Request 130
+
+Goal: Добавить scrollTo наверх при смене страницы пагинации
+
+Prompt: При нажатии «Назад»/«Далее» в пагинации страница должна скроллиться вверх
+
+Result:
+- `pagination.tsx`:
+  - Добавлен `'use client'`
+  - Добавлены `handlePrev` / `handleNext` с `setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100)`
+  - Отказ от rAF — setTimeout надёжнее для ожидания React-рендера
+
+Used as-is / edited manually / rejected: edited manually
+
+What I learned: rAF может сработать до React commit. setTimeout 100ms — более надёжная задержка для scrollTo после обновления DOM.
+
+Model used: big-pickle
+
+Instrument used: OpenCode
