@@ -3075,3 +3075,35 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 145
+
+Goal: Валидация сессий фронтенда: центральная обработка 401, endpooint'ы `/auth/me` и `/admin-auth/me`, фикс scroll-предупреждения Next 16 и центрирование формы входа в админ-панель
+
+Prompt: После проверки README на клоне найдены UX-баги: после `docker compose down -v` и новой БД в браузере остаются протухшие JWT, из-за чего шапка показывает «Кабинет» вместо «Войти», `/dashboard` отдаёт «Пользователь не найден», а `/admin` — страницу «Unauthorized» вместо формы входа. Реализовать план: центральная обработка 401/403 в api-клиенте с чисткой сессии и событием, probe-эндпоинты текущего пользователя/администратора, проверка роли админа с сервера. Дополнительно: убрать предупреждение Next 16 `missing-data-scroll-behavior` (скролл смягчается на время навигаций, так как страницы используют якоря) и центрировать форму входа в админ-панель по вертикали.
+
+Result:
+
+- Backend:
+  - `backend/src/modules/auth/auth.controller.ts` — добавлен `GET /auth/me` → `{ id, phone, name }` (без `async`, чтобы не срабатывал `require-await`).
+  - `backend/src/modules/admin-auth/admin-auth.controller.ts` — добавлен `GET /admin-auth/me` → `{ id, login, role }`.
+  - `CurrentUserPayload` импортируется через `import type` в обоих контроллерах (иначе TS1272), тип перенесён в `current-user.decorator.ts`.
+- Frontend:
+  - `frontend/src/shared/api/api-client.ts` — центральная обработка: `AUTH_UNAUTHORIZED_EVENT`, `clearAuthSession('user' | 'admin')`; при 401/403, если токен был и не задан `skipAuthRedirect` — чистка сессии, событие и редирект. `clearAuthSession` и `AUTH_UNAUTHORIZED_EVENT` экспортированы из `frontend/src/shared/api/index.ts`.
+  - `login-form.tsx` и `admin-login-form.tsx` — `skipAuthRedirect: true` для запросов `/auth/verify-otp` и `/admin-auth/login`, чтобы неуспешный логин не сбрасывал UI.
+  - `frontend/src/widgets/header/header.tsx` — при наличии токена probe `api.get('/auth/me')`: 200 → «Кабинет», 401 → «Войти»; подписка на `AUTH_UNAUTHORIZED_EVENT`; внутри вызывается `setAuthToken`.
+  - `frontend/src/widgets/dashboard-sidebar/dashboard-sidebar.tsx` — unread-count переведён на `api.get('/users/me/notifications/unread-count')`, подписка на событие → `router.replace('/login')`.
+  - `frontend/src/widgets/admin-sidebar/admin-sidebar.tsx` — probe `api.get('/admin-auth/me', { admin: true })`: 401 → `router.replace('/admin/login')`; роль берётся с сервера и обновляет `localStorage['admin_user']`; подписка на событие → редирект.
+  - `frontend/src/app/layout.tsx` — `<html data-scroll-behavior="smooth">` (глушит `missing-data-scroll-behavior` в Next 16).
+  - `frontend/src/app/admin/(auth)/login/page.tsx` — центрирование формы входа: `min-h-full` → `min-h-screen` (родитель `<main class="flex-1">` не имел высоты, и карточка оказывалась выше центра экрана).
+- Проверено: backend и frontend `npm run build` проходят; в SSR-HTML присутствует `data-scroll-behavior="smooth"`; smoke-тест временным backend на порту 3002 (`PORT=3002 node dist/src/main.js`) + `docker compose up -d` + `migrate deploy` + seed — `/auth/me`, `/admin-auth/me` и остальные эндпоинты отвечают; окружение после теста очищено `docker compose down -v`. Клон на `~/Desktop/04-fullstack-mvp` (старый закоммиченный код) в тесте пользователя показывал предупреждение о scroll-behavior — это ожидаемо, фикс попадёт в клон после коммита и пуша.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `min-h-full` центрирует относительно высоты родительского flex-элемента, а не вьюпорта — когда родитель сжимается по контенту, карточка уходит выше центра; для центровки относительно экрана нужно `min-h-screen`. Проверка сессий на фронтенде не должна делать `api.get` в SSR-контексте — probe'ы идут только при наличии токена в браузере.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
