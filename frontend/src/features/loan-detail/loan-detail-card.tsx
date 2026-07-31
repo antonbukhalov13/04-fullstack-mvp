@@ -527,7 +527,7 @@ export function LoanDetailCard() {
                 type="text"
                 value={payRef}
                 onChange={(e) => setPayRef(e.target.value)}
-                placeholder="Например: перевод с карты за 1-ый день"
+                placeholder="Например: Платёж по графику за 1-ый день"
                 className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm min-h-[44px] focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
               />
             </div>
