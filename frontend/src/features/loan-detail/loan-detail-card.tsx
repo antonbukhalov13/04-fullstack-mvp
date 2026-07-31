@@ -419,7 +419,7 @@ export function LoanDetailCard() {
 
       {/* Contract modal */}
       {showContract && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowContract(false)}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" onClick={() => setShowContract(false)}>
           <div className="relative max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-4 sm:p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setShowContract(false)}
