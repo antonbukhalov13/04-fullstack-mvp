@@ -26,14 +26,14 @@ export class RolesGuard implements CanActivate {
     const user = request.user as AdminJwtPayload;
 
     if (!user || !user.role) {
-      throw new ForbiddenException('No role found');
+      throw new ForbiddenException('Роль не найдена');
     }
 
     const hasRole = requiredRoles.includes(user.role);
 
     if (!hasRole) {
       throw new ForbiddenException(
-        `Role '${user.role}' is not authorized for this action`,
+        `Роль '${user.role}' не имеет прав для этого действия`,
       );
     }
 

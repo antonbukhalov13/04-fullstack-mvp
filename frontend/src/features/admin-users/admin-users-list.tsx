@@ -42,6 +42,7 @@ function fmtDate(iso: string) {
 export function AdminUsersList() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [currentAdminId, setCurrentAdminId] = useState<string | null>(null);
+  const [currentRole, setCurrentRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,15 +77,22 @@ export function AdminUsersList() {
   };
 
   useEffect(() => {
-    fetchUsers();
     const raw = localStorage.getItem('admin_user');
     if (raw) {
       try {
         const admin = JSON.parse(raw) as CurrentAdmin;
         setCurrentAdminId(admin.id);
+        setCurrentRole(admin.role);
+        if (admin.role === 'admin') {
+          fetchUsers();
+        } else {
+          setLoading(false);
+        }
       } catch {
-        /* ignore */
+        setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -165,6 +173,14 @@ export function AdminUsersList() {
       setDeletingId(null);
     }
   };
+
+  if (currentRole !== null && currentRole !== 'admin') {
+    return (
+      <div className="py-20 text-center text-sm text-slate-500">
+        Раздел доступен только администратору.
+      </div>
+    );
+  }
 
   if (loading && users.length === 0) {
     return <div className="flex items-center justify-center py-20"><Spinner size="lg" /></div>;
