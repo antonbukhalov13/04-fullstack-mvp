@@ -2998,3 +2998,30 @@ What I learned: Крестик очистки в `manual-payment-form.tsx` не�
 Model used: Claude Sonnet 5
 
 Instrument used: Claude.ai
+
+## Request 142
+
+Goal: Добавить в админ-панель раздел управления учётными записями и ролями
+
+Prompt: Добавить в админ-панель раздел управления учётными записями и ролями: администратор с ролью admin должен видеть список сотрудников (кто admin, кто operator), создавать новых, менять им роль и пароль, а также удалять. Доступ к разделу должен быть только у admin — оператору возможность управлять учётными записями недоступна.
+
+Result:
+
+- `backend/src/modules/admin-users/` — новый модуль: `admin-users.controller.ts`, `admin-users.service.ts`, `dto/create-admin-user.dto.ts`, `dto/update-admin-user.dto.ts`, `admin-users.module.ts`. Эндпоинты `GET /admin-users`, `POST /admin-users`, `PATCH /admin-users/:id`, `DELETE /admin-users/:id` под `AdminJwtAuthGuard` + `RolesGuard` + `@Roles('admin')` — operator получает 403.
+- Создание: проверка уникальности логина (409 «Логин уже занят»), пароль хешируется `bcrypt` (как в seed/login), ответ без `passwordHash`. Обновление: смена роли и/или пароля. Удаление и понижение последнего оставшегося admin блокируется (409), удаление/понижение собственной роли — 403 («Нельзя удалить свою учётную запись», «Нельзя изменить свою роль»).
+- Действия логируются в `AuditLog` через существующий `AuditLogService` (`entityType: 'admin_user'`, `actorType: 'admin'`); `AdminUsersModule` импортирует `AuditLogModule`.
+- `backend/src/app.module.ts` — зарегистрирован `AdminUsersModule`.
+- `frontend/src/features/admin-users/` — `admin-users-list.tsx` + `index.ts`: таблица (логин, роль-селект, дата создания, действия), форма «Добавить администратора» (логин/пароль/роль), смена роли select'ом в строке, смена пароля инлайн-формой, удаление с `window.confirm`. Собственная строка подсвечена «это вы», роль/удаление для себя заблокированы и в UI.
+- `frontend/src/app/admin/(dashboard)/users/page.tsx` — страница «Администраторы».
+- `frontend/src/widgets/admin-sidebar/admin-sidebar.tsx` — пункт меню «Администраторы» (`roles: ['admin']`), operator пункт не видит.
+- Проверено живыми запросами против работающего backend+Postgres: create 201, дубликат логина 409, понижение себя 403, удаление себя 403, смена роли/пароля 200, удаление 200, operator 403, невалидный DTO 400; записи аудита создаются. Backend `npm run build` и frontend `npm run build` проходят.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: роль в JWT-стратегии админки перечитывается из БД на каждый запрос, поэтому смена роли/удаление аккаунта применяется сразу без инвалидации токена.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
