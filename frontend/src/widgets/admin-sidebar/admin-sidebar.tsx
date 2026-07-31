@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { getAdminAuthToken, setAdminAuthToken } from '@/shared/api';
+import { api, getAdminAuthToken, setAdminAuthToken, AUTH_UNAUTHORIZED_EVENT } from '@/shared/api';
 import { NOTIFICATION_CHANGE_EVENT } from '@/shared/lib/notification-events';
 
 interface AdminUser {
@@ -37,13 +37,29 @@ export function AdminSidebar() {
       return;
     }
     setAdminAuthToken(token);
-    const raw = localStorage.getItem('admin_user');
-    if (raw) {
-      try {
-        setAdmin(JSON.parse(raw));
-      } catch { /* ignore */ }
-    }
-    setAuthorized(true);
+    let cancelled = false;
+    api
+      .get<{ id: string; login: string; role: string }>('/admin-auth/me', { admin: true })
+      .then((me) => {
+        if (cancelled) return;
+        setAdmin(me);
+        localStorage.setItem('admin_user', JSON.stringify(me));
+        setAuthorized(true);
+      })
+      .catch(() => {
+        if (!cancelled) router.replace('/admin/login');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      router.replace('/admin/login');
+    };
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
   }, [router]);
 
   useEffect(() => {

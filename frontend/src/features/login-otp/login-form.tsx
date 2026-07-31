@@ -133,6 +133,7 @@ export function LoginForm() {
       const res = await api.post<{ accessToken: string; user: { id: string; phone: string; name: string | null } }>(
         '/auth/verify-otp',
         { phone, code: data.code },
+        { skipAuthRedirect: true },
       );
 
       localStorage.setItem('token', res.accessToken);

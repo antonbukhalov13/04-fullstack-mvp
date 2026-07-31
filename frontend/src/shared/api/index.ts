@@ -1,4 +1,4 @@
-export { api, apiRequest, ApiError, setAuthToken, getAuthToken, setAdminAuthToken, getAdminAuthToken } from './api-client';
+export { api, apiRequest, ApiError, setAuthToken, getAuthToken, setAdminAuthToken, getAdminAuthToken, clearAuthSession, AUTH_UNAUTHORIZED_EVENT } from './api-client';
 export type {
   User,
   AdminUser,

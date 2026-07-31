@@ -27,6 +27,7 @@ export function AdminLoginForm() {
       const res = await apiRequest<AdminLoginResponse>('/admin-auth/login', {
         method: 'POST',
         body: { login: login.trim(), password: password.trim() },
+        skipAuthRedirect: true,
       });
       setAdminAuthToken(res.accessToken);
       localStorage.setItem('admin_token', res.accessToken);

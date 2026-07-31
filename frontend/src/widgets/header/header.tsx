@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { getAuthToken } from '@/shared/api';
+import { api, getAuthToken, setAuthToken, AUTH_UNAUTHORIZED_EVENT } from '@/shared/api';
 
 const navItems = [
   { href: '/how-it-works', label: 'Как это работает' },
@@ -19,8 +19,31 @@ export function Header() {
   if (pathname?.startsWith('/admin')) return null;
 
   useEffect(() => {
-    setIsLoggedIn(!!(getAuthToken() ?? localStorage.getItem('token')));
+    let cancelled = false;
+    const token = getAuthToken() ?? localStorage.getItem('token');
+    if (!token) {
+      setIsLoggedIn(false);
+      return;
+    }
+    setAuthToken(token);
+    api
+      .get('/auth/me')
+      .then(() => {
+        if (!cancelled) setIsLoggedIn(true);
+      })
+      .catch(() => {
+        if (!cancelled) setIsLoggedIn(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [pathname]);
+
+  useEffect(() => {
+    const handleUnauthorized = () => setIsLoggedIn(false);
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-slate-50 border-b border-slate-200">

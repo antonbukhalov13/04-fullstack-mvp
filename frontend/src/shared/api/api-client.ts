@@ -9,6 +9,8 @@ export class ApiError extends Error {
   }
 }
 
+export const AUTH_UNAUTHORIZED_EVENT = 'auth:unauthorized';
+
 let authToken: string | null = null;
 let adminAuthToken: string | null = null;
 
@@ -28,12 +30,26 @@ export function getAdminAuthToken(): string | null {
   return adminAuthToken;
 }
 
+export function clearAuthSession(scope: 'user' | 'admin') {
+  if (scope === 'admin') {
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_user');
+    setAdminAuthToken(null);
+  } else {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setAuthToken(null);
+  }
+  window.dispatchEvent(new Event(AUTH_UNAUTHORIZED_EVENT));
+}
+
 interface RequestOptions extends Omit<RequestInit, 'method' | 'body'> {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   body?: unknown;
   params?: Record<string, string | number | boolean | undefined | null>;
   token?: string | null;
   admin?: boolean;
+  skipAuthRedirect?: boolean;
 }
 
 function buildUrl(path: string, params?: Record<string, string | number | boolean | undefined | null>): string {
@@ -63,9 +79,10 @@ function buildHeaders(token?: string | null, admin?: boolean): Record<string, st
 }
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { method = 'GET', body, params, token, admin, headers: extraHeaders, ...rest } = options;
+  const { method = 'GET', body, params, token, admin, skipAuthRedirect, headers: extraHeaders, ...rest } = options;
 
   const url = buildUrl(path, params);
+  const effectiveToken = token ?? (admin ? adminAuthToken : authToken);
   const headers: Record<string, string> = {
     ...buildHeaders(token, admin),
     ...(extraHeaders as Record<string, string>),
@@ -88,6 +105,9 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
       errorBody = await response.json();
     } catch {
       errorBody = await response.text();
+    }
+    if (!skipAuthRedirect && effectiveToken && (response.status === 401 || response.status === 403)) {
+      clearAuthSession(admin ? 'admin' : 'user');
     }
     throw new ApiError(response.status, errorBody);
   }

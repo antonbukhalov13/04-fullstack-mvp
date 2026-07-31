@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { getAuthToken, setAuthToken } from '@/shared/api';
+import { api, getAuthToken, setAuthToken, AUTH_UNAUTHORIZED_EVENT } from '@/shared/api';
 import { NOTIFICATION_CHANGE_EVENT } from '@/shared/lib/notification-events';
 
 const navItems = [
@@ -30,19 +30,20 @@ export function DashboardSidebar() {
   }, [router]);
 
   useEffect(() => {
+    const handleUnauthorized = () => {
+      setAuthToken('');
+      router.replace('/login');
+    };
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+    return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+  }, [router]);
+
+  useEffect(() => {
     if (!authorized) return;
     const fetchCount = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
-        const token = getAuthToken();
-        if (!token) return;
-        const res = await fetch(`${baseUrl}/users/me/notifications/unread-count`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUnreadCount(data.count ?? 0);
-        }
+        const res = await api.get<{ count: number }>('/users/me/notifications/unread-count');
+        setUnreadCount(res.count ?? 0);
       } catch { /* ignore */ }
     };
     fetchCount();
