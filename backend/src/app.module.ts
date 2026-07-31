@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { FilesModule } from './modules/files/files.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AdminAuthModule } from './modules/admin-auth/admin-auth.module';
+import { AdminUsersModule } from './modules/admin-users/admin-users.module';
 import { CalculatorModule } from './modules/calculator/calculator.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { LoansModule } from './modules/loans/loans.module';
@@ -35,6 +36,7 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
     FilesModule,
     AuthModule,
     AdminAuthModule,
+    AdminUsersModule,
     CalculatorModule,
     ApplicationsModule,
     LoansModule,

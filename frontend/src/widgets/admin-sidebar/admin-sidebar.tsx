@@ -19,6 +19,7 @@ const navItems = [
   { href: '/admin/payments', label: 'Платежи', roles: ['admin', 'operator'] },
   { href: '/admin/contact-messages', label: 'Сообщения', roles: ['admin', 'operator'] },
   { href: '/admin/notifications', label: 'Уведомления', roles: ['admin', 'operator'] },
+  { href: '/admin/users', label: 'Администраторы', roles: ['admin'] },
 ];
 
 export function AdminSidebar() {
