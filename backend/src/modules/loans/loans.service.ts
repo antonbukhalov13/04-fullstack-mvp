@@ -631,7 +631,9 @@ export class LoansService {
 
     for (let i = 0; i < n; i++) {
       const dueDate = new Date(startDate);
-      dueDate.setDate(dueDate.getDate() + i);
+      // Первый платёж — на следующий день после подписания (i+1), чтобы займ
+      // не становился «просроченным» в день подписания
+      dueDate.setDate(dueDate.getDate() + i + 1);
 
       // Last payment gets the remainder to avoid rounding error
       const itemAmount =

@@ -41,7 +41,8 @@ function buildSchedule(
   const items: ScheduleItemInput[] = [];
   for (let i = 0; i < termDays; i++) {
     const dueDate = new Date(signedAt);
-    dueDate.setDate(dueDate.getDate() + i);
+    // Первый платёж — на следующий день после подписания (как в runtime)
+    dueDate.setDate(dueDate.getDate() + i + 1);
     items.push({
       loanId,
       dueDate,
