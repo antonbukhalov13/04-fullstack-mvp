@@ -1,46 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OverdueService } from '../overdue/overdue.service';
 import { resolveDisplayName } from '../../common/utils/applicant-name';
 
 @Injectable()
 export class ClientsService {
   constructor(
     private prisma: PrismaService,
-    private eventEmitter: EventEmitter2,
+    private overdueService: OverdueService,
   ) {}
 
-  async checkOverduePayments() {
-    const now = new Date();
-
-    // Атомарно обновляем pending → overdue и получаем только что обновлённые ID
-    const updated = await this.prisma.$queryRaw<{ id: string }[]>`
-      UPDATE "PaymentScheduleItem"
-      SET status = 'overdue'
-      WHERE status = 'pending' AND "dueDate" < ${now}
-      RETURNING id
-    `;
-
-    if (updated.length === 0) return 0;
-
-    const overdueItems = await this.prisma.paymentScheduleItem.findMany({
-      where: { id: { in: updated.map((r) => r.id) } },
-      include: { loan: true },
-    });
-
-    for (const item of overdueItems) {
-      this.eventEmitter.emit('payment.overdue', {
-        loanId: item.loanId,
-        userId: item.loan.userId,
-        scheduleItemId: item.id,
-      });
-    }
-
-    return overdueItems.length;
-  }
-
   async findAll(search?: string, take?: number, skip?: number) {
-    await this.checkOverduePayments();
+    await this.overdueService.checkOverduePayments();
 
     const where = search
       ? {
@@ -95,7 +66,7 @@ export class ClientsService {
   }
 
   async findOne(id: string) {
-    await this.checkOverduePayments();
+    await this.overdueService.checkOverduePayments();
 
     const user = await this.prisma.user.findUnique({
       where: { id },

@@ -11,6 +11,7 @@ import { QueryAdminLoansDto } from './dto/query-admin-loans.dto';
 import { UpdateLoanStatusDto } from './dto/update-loan-status.dto';
 import { MarkScheduleItemPaidDto } from './dto/mark-schedule-item-paid.dto';
 import { PaymentsService } from '../payments/payments.service';
+import { OverdueService } from '../overdue/overdue.service';
 import { resolveDisplayName } from '../../common/utils/applicant-name';
 
 const INACTIVE_STATUSES = ['pending_signature', 'closed'] as const;
@@ -25,9 +26,11 @@ export class LoansService {
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
     private paymentsService: PaymentsService,
+    private overdueService: OverdueService,
   ) {}
 
   async findByUserId(userId: string, take: number, skip: number) {
+    await this.overdueService.checkOverduePayments();
     const where = { userId };
     const [loans, total] = await Promise.all([
       this.prisma.loan.findMany({
@@ -81,6 +84,7 @@ export class LoansService {
   }
 
   async findAllOverdueItemsAdmin(take: number, skip: number) {
+    await this.overdueService.checkOverduePayments();
     const where = { status: 'overdue' as const };
     const [items, total] = await Promise.all([
       this.prisma.paymentScheduleItem.findMany({
@@ -132,6 +136,7 @@ export class LoansService {
   }
 
   async findAllAdmin(query: QueryAdminLoansDto, take: number, skip: number) {
+    await this.overdueService.checkOverduePayments();
     const where: any = {};
 
     if (query.status) {
@@ -205,6 +210,7 @@ export class LoansService {
   }
 
   async findOneAdmin(loanId: string) {
+    await this.overdueService.checkOverduePayments();
     const loan = await this.prisma.loan.findUnique({
       where: { id: loanId },
       select: {
@@ -380,6 +386,7 @@ export class LoansService {
   }
 
   async findOneForUser(loanId: string, userId: string) {
+    await this.overdueService.checkOverduePayments();
     const loan = await this.prisma.loan.findUnique({
       where: { id: loanId },
       select: {

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
@@ -18,6 +19,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ContactMessagesModule } from './modules/contact-messages/contact-messages.module';
 import { ClientsModule } from './modules/clients/clients.module';
+import { OverdueModule } from './modules/overdue/overdue.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 
 @Module({
@@ -32,6 +34,8 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
       limit: 60,
     }]),
     EventEmitterModule.forRoot(),
+    // Cron-задачи: проверка просрочек платежей раз в минуту
+    ScheduleModule.forRoot(),
     PrismaModule,
     FilesModule,
     AuthModule,
@@ -45,6 +49,7 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
     NotificationsModule,
     ContactMessagesModule,
     ClientsModule,
+    OverdueModule,
     AuditLogModule,
   ],
   controllers: [AppController],
