@@ -289,10 +289,17 @@ export class LoansService {
 
   async updateStatusAdmin(loanId: string, dto: UpdateLoanStatusDto) {
     const updated = await this.prisma.$transaction(async (tx) => {
-      const loan = await tx.loan.findUnique({ where: { id: loanId } });
+      const loan = await tx.loan.findUnique({
+        where: { id: loanId },
+        include: { scheduleItems: true },
+      });
       if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
 
       this.validateLoanStatusTransition(loan.status, dto.status);
+
+      if (dto.status === 'closed') {
+        this.assertLoanFullyRepaid(loan);
+      }
 
       return tx.loan.update({
         where: { id: loanId },
@@ -343,12 +350,17 @@ export class LoansService {
   }
 
   async closeLoanAdmin(loanId: string) {
-    const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
+    const loan = await this.prisma.loan.findUnique({
+      where: { id: loanId },
+      include: { scheduleItems: true },
+    });
     if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
 
     if (loan.status === 'closed') {
       throw new BadRequestException('Loan is already closed');
     }
+
+    this.assertLoanFullyRepaid(loan);
 
     const updated = await this.prisma.loan.update({
       where: { id: loanId },
@@ -627,13 +639,36 @@ export class LoansService {
     return items;
   }
 
+  private assertLoanFullyRepaid(loan: {
+    scheduleItems: { amount: number; paidAmount: number }[];
+  }) {
+    if (loan.scheduleItems.length === 0) {
+      throw new BadRequestException(
+        'Нельзя закрыть займ без сформированного графика платежей',
+      );
+    }
+
+    const remaining = loan.scheduleItems.reduce(
+      (sum, item) => sum + (item.amount - item.paidAmount),
+      0,
+    );
+    const rounded = Math.round(remaining * 100) / 100;
+
+    if (rounded > 0) {
+      throw new BadRequestException(
+        `Нельзя закрыть займ с неоплаченным остатком ${rounded} EUR`,
+      );
+    }
+  }
+
   private validateLoanStatusTransition(currentStatus: string, newStatus: string) {
     const validTransitions: Record<string, string[]> = {
-      pending_signature: ['active'],
+      // Admin cannot activate a loan — it is only activated by the user via OTP
+      pending_signature: [],
       active: ['closed'],
       closed: [],
       overdue: ['closed'],
-      default: ['active', 'closed'],
+      default: ['closed'],
     };
 
     const allowed = validTransitions[currentStatus] ?? [];
