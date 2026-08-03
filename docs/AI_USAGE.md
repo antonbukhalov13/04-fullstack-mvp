@@ -3269,3 +3269,29 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 152
+
+Goal: Проверка просрочек по расписанию — cron раз в минуту + при запросах займов
+
+Prompt: Просрочки (`PaymentScheduleItem.status: pending → overdue`) сейчас определяются только при открытии списка клиентов (clients.service.findAll/findOne). Добавить @nestjs/schedule: cron раз в минуту вызывает `checkOverduePayments`; проверка также должна срабатывать при запросах займов. Вынести `checkOverduePayments` (атомарный UPDATE…RETURNING + emit `payment.overdue`) в отдельный сервис, чтобы не было круговых зависимостей, и использовать его и в clients, и в loans. Собрать и проверить: просроченный элемент становится overdue при запросе займов и по таймеру без запросов, создаётся уведомление.
+
+Result:
+
+- Добавлена зависимость `@nestjs/schedule` (v6, совместима с NestJS 11).
+- Новый модуль `backend/src/modules/overdue/` (`overdue.module.ts` + `overdue.service.ts`): `checkOverduePayments()` перенесён сюда из clients.service (атомарный `UPDATE … WHERE status='pending' AND "dueDate" < now RETURNING id` + emit `payment.overdue` на каждый обновлённый элемент); `@Cron(CronExpression.EVERY_MINUTE)` → `handleCron()` с try/catch и логом ошибки (сбой крона не роняет процесс).
+- `backend/src/app.module.ts` — добавлены `ScheduleModule.forRoot()` и `OverdueModule`.
+- `backend/src/modules/clients/clients.service.ts` — собственная копия `checkOverduePayments` удалена, `findAll`/`findOne` вызывают `overdueService.checkOverduePayments()`.
+- `backend/src/modules/loans/loans.service.ts` — `findByUserId`, `findOneForUser`, `findAllAdmin`, `findOneAdmin`, `findAllOverdueItemsAdmin` начинаются с `overdueService.checkOverduePayments()` (статусы свежие при любом просмотре займов).
+- Модули clients/loans импортируют `OverdueModule` (циклических зависимостей нет, `PrismaModule` глобален).
+- Проверено на живом API (порт 3001, после рестарта backend): (1) GET /loans/me с просроченным элементом графика → элемент стал `overdue`, создано уведомление `payment.overdue`; (2) второй элемент выставлен `pending` + `dueDate` в прошлое, 70 секунд без каких-либо запросов → на 60-й секунде (00-я секунда минуты) элемент стал `overdue` и создано уведомление — cron работает. Тестовые займ/заявка/график/уведомления удалены. `npm run build` backend проходит.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: вынос повторяемого кода (проверка просрочек) в отдельный модуль с cron — чистое решение без круговых зависимостей; идемпотентность UPDATE…RETURNING делает вызов на каждый запрос безопасным (новые события только для реально перешедших pending→overdue). После `prisma migrate reset`/ре-сида тестовые id пользователей меняются — сверяться с текущей БД, а не с памятью.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
