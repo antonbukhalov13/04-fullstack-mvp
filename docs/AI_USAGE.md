@@ -3245,3 +3245,27 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 151
+
+Goal: Исключить создание нескольких займов по одной заявке при конкурентном одобрении
+
+Prompt: При параллельном одобрении одной заявки двумя операторами `updateStatus` в applications.service.ts создаёт займ вне транзакционной проверки — оба запроса читают `loans.length === 0` до коммита и создают по займу. Сделать `Loan.applicationId` уникальным (+миграция, Prisma Client перегенерировать) и перенести проверку существующего займа внутрь транзакции, обработав конфликт уникальности P2002 как ConflictException. Связь Application.loans → Loan (была один-ко-многим) становится один-к-одному: поменять в схеме `Application.loans Loan[]` на `Application.loan Loan?` и поправить все `include: { loans: true }` (applications.service.ts findOne/updateStatus, clients.service.ts) на `loan: true`. Ошибки этого метода перевести на русский («Заявка с id N не найдена», «Нельзя одобрить отклонённую заявку», «Для этой заявки уже существует займ», «Недопустимый переход статуса: из X в Y»). Собрать backend и frontend, проверить на живом API: конкурентные одобрения и повторное одобрение.
+
+Result:
+
+- `backend/prisma/schema.prisma` — `Loan.applicationId` получил `@unique`; связь `Application.loans Loan[]` заменена на `Application.loan Loan?` (заявка ↔ займ теперь один-к-одному).
+- `backend/prisma/migrations/20260803130000_loan_application_unique/migration.sql` — `ALTER TABLE "Loan" ADD CONSTRAINT "Loan_applicationId_key" UNIQUE ("applicationId")`; применена через `prisma migrate deploy` (в non-interactive окружении `migrate dev` не работает, SQL сгенерирован через `prisma migrate diff --from-config-datasource --to-schema`), Prisma Client перегенерирован.
+- `backend/src/modules/applications/applications.service.ts` — `updateStatus`: проверка существующего займа (`tx.loan.findUnique({ where: { applicationId } })` → ConflictException «Для этой заявки уже существует займ») перенесена внутрь `$transaction` перед созданием займа; блок `try/catch` перехватывает `Prisma.PrismaClientKnownRequestError` с кодом `P2002` (гонка на уровне БД) и превращает в тот же 409; проверка «нельзя одобрить отклонённую заявку» оставлена до транзакции. `findOne` и `updateStatus` используют `include: { loan: true }`. Сообщения переведены на русский: «Заявка с id N не найдена», «Недопустимый переход статуса: из X в Y».
+- `backend/src/modules/clients/clients.service.ts` — в `findOne` include заявок заменён `loans: true` → `loan: true`.
+- Проверено на живом API (порт 3001): (1) обычное одобрение создаёт займ; (2) 10 параллельных PATCH approved на одной заявке → ровно один займ (остальные получили 400 «Недопустимый переход статуса»), без 500-х и дублей; (3) заявка в `in_progress` с уже привязанным займом → 409 «Для этой заявки уже существует займ», транзакция откатилась (статус заявки остался `in_progress`). Тестовые заявки/займы удалены, исходная заявка `fae2d68d…` возвращена в `new`. `npm run build` backend и frontend проходят.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: проверка «нет ли уже займа» вне транзакции бесполезна при конкурентном доступе — единственная реальная защита это уникальный индекс на `applicationId` в БД; внутритранзакционная проверка даёт чистую ошибку, а P2002 — страховка для самого узкого окна гонки. `prisma migrate dev` в non-interactive shell не работает, выручает связка `migrate diff` + ручной SQL + `migrate deploy`. `psql -t -A` с INSERT…RETURNING захватывает в stdout тег «INSERT 0 1» — использовать `-q`.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
