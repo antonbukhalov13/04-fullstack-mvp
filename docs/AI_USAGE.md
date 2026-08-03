@@ -3107,3 +3107,28 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 146
+
+Goal: Привязать OTP подписания займа к конкретному займу, чтобы код, запрошенный для одного займа, нельзя было применить к другому
+
+Prompt: Критическая ошибка безопасности в подписании займа: OTP с purpose `sign_loan` не привязан к конкретному займу — код, запрошенный для одного `pending_signature` займа, можно применить к другому займу того же пользователя. Исправить: добавить поле `loanId` в модель `OtpCode` (связь с `Loan`), сохранять его при запросе OTP подписания и учитывать в фильтре при подтверждении, чтобы код действовал только для того займа, для которого был запрошен. Применить миграцию и проверить сборку backend.
+
+Result:
+
+- `backend/prisma/schema.prisma` — добавлено поле `OtpCode.loanId String?` со связью `loan Loan?` и индексом `@@index([loanId])`; в модели `Loan` добавлена обратная связь `otpCodes OtpCode[]`.
+- Миграция `backend/prisma/migrations/20260803090603_add_otp_loan_binding` создана и применена (`npx prisma migrate dev`), Prisma Client перегенерирован (`npx prisma generate`).
+- `backend/src/modules/loans/loans.service.ts`:
+  - `requestSignOtp` — при инвалидации старых неиспользованных OTP фильтр дополнен `loanId`; создаваемый OTP сохраняет `loanId` займа, для которого запрошен код.
+  - `confirmSign` — поиск валидного OTP теперь включает `loanId`, поэтому код одного займа не может подписать другой.
+- Проверено: `npm run build` backend проходит без ошибок.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: связка «код подтверждения ↔ бизнес-сущность» должна фиксироваться на этапе создания OTP и проверяться на этапе применения — иначе один код можно переиспользовать для другого объекта того же владельца. После миграции схемы нужно отдельно выполнять `prisma generate`, иначе клиент Prisma не увидит новое поле (migrate dev в этой конфигурации не всегда его перегенерирует).
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
