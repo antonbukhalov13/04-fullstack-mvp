@@ -113,8 +113,8 @@ model Application {
   companyEmail       String?
   companyPhone       String?
 
-  user  User   @relation(fields: [userId], references: [id])
-  loans Loan[]
+  user User   @relation(fields: [userId], references: [id])
+  loan Loan?
 
   @@index([userId])
   @@index([status])
@@ -122,7 +122,7 @@ model Application {
 
 model Loan {
   id              String    @id @default(uuid())
-  applicationId   String
+  applicationId String   @unique
   userId          String
   amount          Float
   dailyRate       Float

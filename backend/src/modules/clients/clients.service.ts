@@ -102,7 +102,7 @@ export class ClientsService {
       include: {
         applications: {
           orderBy: { createdAt: 'desc' },
-          include: { loans: true },
+          include: { loan: true },
         },
         loans: {
           include: {

@@ -5,6 +5,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { QueryApplicationsDto } from './dto/query-applications.dto';
@@ -189,12 +190,12 @@ export class ApplicationsService {
             name: true,
           },
         },
-        loans: true,
+        loan: true,
       },
     });
 
     if (!application) {
-      throw new NotFoundException(`Application with id ${id} not found`);
+      throw new NotFoundException(`Заявка с id ${id} не найдена`);
     }
 
     return application;
@@ -203,52 +204,67 @@ export class ApplicationsService {
   async updateStatus(id: string, dto: UpdateStatusDto) {
     const application = await this.prisma.application.findUnique({
       where: { id },
-      include: { loans: true },
+      include: { loan: true },
     });
 
     if (!application) {
-      throw new NotFoundException(`Application with id ${id} not found`);
+      throw new NotFoundException(`Заявка с id ${id} не найдена`);
     }
 
     // Validate status transition
     this.validateStatusTransition(application.status, dto.status);
 
     // Check for conflicts
-    if (dto.status === 'approved') {
-      if (application.status === 'rejected') {
-        throw new ConflictException('Cannot approve a rejected application');
-      }
-      if (application.loans.length > 0) {
-        throw new ConflictException('Loan already exists for this application');
-      }
+    if (dto.status === 'approved' && application.status === 'rejected') {
+      throw new ConflictException('Нельзя одобрить отклонённую заявку');
     }
 
-    const result = await this.prisma.$transaction(async (tx) => {
-      const updatedApplication = await tx.application.update({
-        where: { id },
-        data: {
-          status: dto.status as any,
-          comment: dto.comment || application.comment,
-        },
-      });
-
-      // Create loan when approved
-      let loan: any = null;
-      if (dto.status === 'approved') {
-        loan = await tx.loan.create({
+    let result: { updatedApplication: any; loan: any } | null = null;
+    try {
+      result = await this.prisma.$transaction(async (tx) => {
+        const updatedApplication = await tx.application.update({
+          where: { id },
           data: {
-            applicationId: application.id,
-            userId: application.userId,
-            amount: application.amount,
-            dailyRate: 0.008,
-            termDays: application.termDays,
-            status: 'pending_signature',
+            status: dto.status as any,
+            comment: dto.comment || application.comment,
           },
         });
-      }
 
-      return { updatedApplication, loan };
-    });
+        // Create loan when approved (checked inside the transaction to
+        // prevent duplicate loans under concurrent approvals)
+        let loan: any = null;
+        if (dto.status === 'approved') {
+          const existingLoan = await tx.loan.findUnique({
+            where: { applicationId: application.id },
+          });
+          if (existingLoan) {
+            throw new ConflictException('Для этой заявки уже существует займ');
+          }
+
+          loan = await tx.loan.create({
+            data: {
+              applicationId: application.id,
+              userId: application.userId,
+              amount: application.amount,
+              dailyRate: 0.008,
+              termDays: application.termDays,
+              status: 'pending_signature',
+            },
+          });
+        }
+
+        return { updatedApplication, loan };
+      });
+    } catch (error) {
+      // Unique constraint violation (applicationId) from a concurrent approval
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new ConflictException('Для этой заявки уже существует займ');
+      }
+      throw error;
+    }
 
     // Emit application.status.changed event (outside transaction)
     this.eventEmitter.emit('application.status.changed', {
@@ -280,7 +296,7 @@ export class ApplicationsService {
     });
 
     if (!application) {
-      throw new NotFoundException(`Application with id ${id} not found`);
+      throw new NotFoundException(`Заявка с id ${id} не найдена`);
     }
 
     const updatedApplication = await this.prisma.application.update({
@@ -346,7 +362,7 @@ export class ApplicationsService {
 
     if (!validTransitions[currentStatus]?.includes(newStatus)) {
       throw new BadRequestException(
-        `Cannot transition from '${currentStatus}' to '${newStatus}'`,
+        `Недопустимый переход статуса: из '${currentStatus}' в '${newStatus}'`,
       );
     }
   }
