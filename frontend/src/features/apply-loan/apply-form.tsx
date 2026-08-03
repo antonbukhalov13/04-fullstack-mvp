@@ -6,7 +6,6 @@ import {
   object,
   pipe,
   string,
-  minLength,
   number,
   optional,
   check,
@@ -14,7 +13,7 @@ import {
 } from 'valibot';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import Link from 'next/link';
-import { api, ApiError, getAuthToken } from '@/shared/api';
+import { api, ApiError, getAuthToken, setAuthToken } from '@/shared/api';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/button';
@@ -29,7 +28,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const formSchema = object({
   applicantType: string(),
-  phone: pipe(string(), minLength(1, 'Обязательное поле')),
+  phone: optional(string()),
   firstName: optional(string()),
   lastName: optional(string()),
   email: optional(pipe(string(), check((v) => v === '' || EMAIL_REGEX.test(v), 'Некорректный email'))),
@@ -60,8 +59,12 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
   const [successId, setSuccessId] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    const token = getAuthToken() ?? localStorage.getItem('token');
+    if (token) setAuthToken(token);
+    setIsAuthenticated(Boolean(token));
     window.scrollTo(0, 0);
   }, []);
 
@@ -124,7 +127,9 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
     const vals = getValues();
     let valid = true;
 
-    if (!vals.phone?.trim()) { setError('phone', { message: 'Обязательное поле' }); valid = false; }
+    if (!isAuthenticated) {
+      if (!vals.phone?.trim()) { setError('phone', { message: 'Обязательное поле' }); valid = false; }
+    }
     if (!vals.amount || vals.amount <= 0) { setError('amount', { message: 'Введите сумму' }); valid = false; }
     else if (vals.amount < limits.amount.min || vals.amount > limits.amount.max) {
       setError('amount', { message: `От ${limits.amount.min.toLocaleString()} до ${limits.amount.max.toLocaleString()} EUR` }); valid = false;
@@ -154,11 +159,15 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
     try {
       const payload: Record<string, unknown> = {
         applicantType,
-        phone: data.phone,
         amount: data.amount,
         termDays: data.termDays,
         fileAttachmentIds: uploadedFiles.map((f) => f.id),
       };
+
+      // Авторизованный пользователь идентифицируется по токену — телефон из формы не нужен
+      if (!isAuthenticated) {
+        payload.phone = data.phone;
+      }
 
       if (applicantType === 'individual') {
         payload.firstName = data.firstName;
@@ -233,13 +242,19 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
             <option value="business">Бизнес</option>
           </Select>
 
-          <Input
-            label="Телефон *"
-            type="tel"
-            placeholder="+353..."
-            {...register('phone')}
-            error={errors.phone?.message}
-          />
+          {isAuthenticated ? (
+            <div className="rounded-lg bg-indigo-50 p-4 text-sm text-slate-700">
+              Заявка будет подана от вашего аккаунта — телефон подставляется автоматически.
+            </div>
+          ) : (
+            <Input
+              label="Телефон *"
+              type="tel"
+              placeholder="+353..."
+              {...register('phone')}
+              error={errors.phone?.message}
+            />
+          )}
 
           {applicantType === 'individual' ? (
             <>

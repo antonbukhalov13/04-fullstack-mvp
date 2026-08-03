@@ -7,6 +7,7 @@ import {
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import type { CurrentUserPayload } from '../../common/decorators/current-user.decorator';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { QueryApplicationsDto } from './dto/query-applications.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
@@ -33,21 +34,36 @@ export class ApplicationsService {
     private eventEmitter: EventEmitter2,
   ) {}
 
-  async create(dto: CreateApplicationDto) {
+  async create(dto: CreateApplicationDto, currentUser?: CurrentUserPayload) {
     this.validateApplication(dto);
-
-    // Find or create user
-    let user = await this.prisma.user.findUnique({
-      where: { phone: dto.phone },
-    });
 
     const userName = dto.applicantType === 'individual'
       ? [dto.firstName, dto.lastName].filter(Boolean).join(' ')
       : dto.companyName;
 
+    // Авторизованный пользователь определяется по токену — телефон из формы не
+    // учитывается, чтобы нельзя было подать заявку от имени другого пользователя
+    let user: { id: string; phone: string; name: string | null } | null = null;
+
+    if (currentUser) {
+      user = await this.prisma.user.findUnique({
+        where: { id: currentUser.id },
+      });
+      if (!user) {
+        throw new NotFoundException('Пользователь не найден');
+      }
+    } else {
+      if (!dto.phone) {
+        throw new BadRequestException('Телефон обязателен для неавторизованного пользователя');
+      }
+      user = await this.prisma.user.findUnique({
+        where: { phone: dto.phone },
+      });
+    }
+
     if (!user) {
       user = await this.prisma.user.create({
-        data: { phone: dto.phone, name: userName || null },
+        data: { phone: dto.phone!, name: userName || null },
       });
     } else if (!user.name && userName) {
       user = await this.prisma.user.update({

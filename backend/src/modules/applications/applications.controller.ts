@@ -18,17 +18,24 @@ import { UpdateStatusDto } from './dto/update-status.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { AdminJwtAuthGuard } from '../../common/guards/admin-jwt-auth.guard';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../../common/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import type { CurrentUserPayload } from '../../common/decorators/current-user.decorator';
 
 @Controller('applications')
 export class ApplicationsController {
   constructor(private readonly applicationsService: ApplicationsService) {}
 
   @Post()
+  @UseGuards(OptionalJwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() dto: CreateApplicationDto) {
-    return this.applicationsService.create(dto);
+  async create(
+    @Body() dto: CreateApplicationDto,
+    @CurrentUser() user: CurrentUserPayload | undefined,
+  ) {
+    return this.applicationsService.create(dto, user);
   }
 
   @Get('me')

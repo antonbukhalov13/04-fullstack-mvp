@@ -19,12 +19,12 @@ export class CreateApplicationDto {
   @IsIn(['individual', 'business'])
   applicantType: 'individual' | 'business';
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @Matches(/^\+?[1-9]\d{1,14}$/, {
     message: 'Invalid phone number format',
   })
-  phone: string;
+  phone?: string;
 
   @IsNumber()
   @Min(0)
