@@ -243,24 +243,79 @@ export class PaymentsService {
 
     let remaining = paymentAmount;
 
-    for (const item of pendingItems) {
-      if (remaining <= 0) break;
-
+    // 1) Погашаем просроченные платежи (уже наступившие) по порядку
+    let index = 0;
+    while (index < pendingItems.length && pendingItems[index].status === 'overdue' && remaining > 0) {
+      const item = pendingItems[index];
       const itemRemaining = item.amount - item.paidAmount;
-      if (itemRemaining <= 0) continue;
 
-      if (remaining >= itemRemaining) {
+      if (itemRemaining > 0) {
+        if (remaining >= itemRemaining) {
+          remaining -= itemRemaining;
+          await tx.paymentScheduleItem.update({
+            where: { id: item.id },
+            data: { paidAmount: item.amount, status: 'paid' },
+          });
+        } else {
+          await tx.paymentScheduleItem.update({
+            where: { id: item.id },
+            data: { paidAmount: Math.round((item.paidAmount + remaining) * 100) / 100 },
+          });
+          remaining = 0;
+        }
+      }
+      index++;
+    }
+
+    // 2) Покрываем ближайший (текущий) платёж
+    if (remaining > 0 && index < pendingItems.length) {
+      const item = pendingItems[index];
+      const itemRemaining = item.amount - item.paidAmount;
+
+      if (remaining < itemRemaining) {
+        await tx.paymentScheduleItem.update({
+          where: { id: item.id },
+          data: { paidAmount: Math.round((item.paidAmount + remaining) * 100) / 100 },
+        });
+        remaining = 0;
+      } else {
         remaining -= itemRemaining;
         await tx.paymentScheduleItem.update({
           where: { id: item.id },
           data: { paidAmount: item.amount, status: 'paid' },
         });
+      }
+      index++;
+    }
+
+    // 3) Излишек уменьшает последние элементы графика (даты не меняются)
+    for (let j = pendingItems.length - 1; j >= index && remaining > 0; j--) {
+      const tail = pendingItems[j];
+      const tailRemaining = tail.amount - tail.paidAmount;
+      if (tailRemaining <= 0) continue;
+
+      if (remaining >= tailRemaining) {
+        remaining -= tailRemaining;
+        await tx.paymentScheduleItem.update({
+          where: { id: tail.id },
+          data: { paidAmount: tail.amount, status: 'paid' },
+        });
       } else {
         await tx.paymentScheduleItem.update({
-          where: { id: item.id },
-          data: { paidAmount: item.paidAmount + remaining },
+          where: { id: tail.id },
+          data: { amount: Math.round((tail.amount - remaining) * 100) / 100 },
         });
         remaining = 0;
+      }
+    }
+
+    // 4) Платёж покрыл весь график — закрываем займ
+    if (remaining > 0) {
+      for (const item of pendingItems) {
+        await tx.paymentScheduleItem.update({
+          where: { id: item.id },
+          data: { paidAmount: item.amount, status: 'paid' },
+        });
       }
     }
 
