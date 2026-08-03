@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { object, pipe, string, minLength, email, type InferOutput } from 'valibot';
+import { object, pipe, string, minLength, email, check, type InferOutput } from 'valibot';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import { api, getAuthToken } from '@/shared/api';
+import { isValidPhone, PHONE_ERROR } from '@/shared/lib/phone';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { Button } from '@/shared/ui/button';
@@ -13,7 +14,7 @@ import type { ContactMessage } from '@/shared/api/types';
 const schema = object({
   name: pipe(string(), minLength(1, 'Обязательное поле')),
   email: pipe(string(), minLength(1, 'Обязательное поле'), email('Некорректный email')),
-  phone: pipe(string(), minLength(1, 'Обязательное поле')),
+  phone: pipe(string(), check((v) => isValidPhone(v), PHONE_ERROR)),
   message: pipe(string(), minLength(1, 'Обязательное поле')),
 });
 

@@ -4,7 +4,7 @@ export class RequestOtpDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^\+?[1-9]\d{1,14}$/, {
-    message: 'Invalid phone number format',
+    message: 'Введите действительный номер телефона',
   })
   phone: string;
 }

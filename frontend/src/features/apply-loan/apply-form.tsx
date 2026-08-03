@@ -19,6 +19,7 @@ import { Select } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 import { INDIVIDUAL_LIMITS, calculateAnnuity } from '@/shared/lib/calculator';
+import { isValidPhone, PHONE_ERROR } from '@/shared/lib/phone';
 
 const BUSINESS_LIMITS = { amount: { min: 30000, max: 500000 }, term: { min: 30, max: 365 } };
 
@@ -128,7 +129,9 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
     let valid = true;
 
     if (!isAuthenticated) {
-      if (!vals.phone?.trim()) { setError('phone', { message: 'Обязательное поле' }); valid = false; }
+      if (!isValidPhone(vals.phone?.trim() ?? '')) {
+        setError('phone', { message: PHONE_ERROR }); valid = false;
+      }
     }
     if (!vals.amount || vals.amount <= 0) { setError('amount', { message: 'Введите сумму' }); valid = false; }
     else if (vals.amount < limits.amount.min || vals.amount > limits.amount.max) {

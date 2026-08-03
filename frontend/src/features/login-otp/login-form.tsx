@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { object, pipe, string, minLength, type InferOutput } from 'valibot';
+import { object, pipe, string, minLength, check, type InferOutput } from 'valibot';
 import { valibotResolver } from '@hookform/resolvers/valibot';
 import { api, ApiError, setAuthToken } from '@/shared/api';
+import { isValidPhone, PHONE_ERROR } from '@/shared/lib/phone';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
@@ -13,7 +14,7 @@ import { Card, CardContent } from '@/shared/ui/card';
 type Step = 'phone' | 'code';
 
 const phoneSchema = object({
-  phone: pipe(string(), minLength(1, 'Обязательное поле')),
+  phone: pipe(string(), check((v) => isValidPhone(v), PHONE_ERROR)),
 });
 
 const codeSchema = object({
