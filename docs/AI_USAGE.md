@@ -3342,3 +3342,28 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 155
+
+Goal: Русские сообщения об ошибке телефона в формах и DTO вместо «Invalid phone number format» / «Обязательное поле»
+
+Prompt: При вводе номера телефона в формах, если символов больше 15, backend возвращал «Invalid phone number format» на английском; в формах при пустом поле показывалось «Обязательное поле». Заменить на «Введите действительный номер телефона» в backend DTO (create-application, request-otp, verify-otp) и на клиенте (apply-form, login-form) с проверкой формата/длины на клиенте.
+
+Result:
+
+- `backend/src/modules/auth/dto/request-otp.dto.ts`, `verify-otp.dto.ts`, `backend/src/modules/applications/dto/create-application.dto.ts` — message у `@Matches(/^\+?[1-9]\d{1,14}$/)` заменён на «Введите действительный номер телефона».
+- `frontend/src/shared/lib/phone.ts` — новый общий хелпер: `PHONE_REGEX` (тот же regex, что на backend), `PHONE_ERROR` («Введите действительный номер телефона»), `isValidPhone()`.
+- `frontend/src/features/login-otp/login-form.tsx` — `phoneSchema`: `minLength(1, 'Обязательное поле')` → `check((v) => isValidPhone(v), PHONE_ERROR)` (пусто и неверный формат → одна русская ошибка).
+- `frontend/src/features/apply-loan/apply-form.tsx` — ручная проверка в `handleFormSubmit`: `!vals.phone?.trim()` → `!isValidPhone(...)` с `PHONE_ERROR`.
+- `frontend/src/widgets/contact-form/contact-form.tsx` — единообразие в форме обратной связи: `phone` из `minLength(1, 'Обязательное поле')` переведён на `check((v) => isValidPhone(v), PHONE_ERROR)`.
+- Проверено на живом API (порт 3001): request-otp / verify-otp / applications (аноним) с номером >15 символов → 400 «Введите действительный номер телефона»; валидный номер → 200 OTP. `npm run build` backend и frontend проходят.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: class-validator message можно задавать на русском прямо в декораторе `@Matches`. Общий хелпер `PHONE_REGEX`/`isValidPhone` в shared/lib держит клиент и сервер на одном формате номера (до 15 цифр + опциональный +); его же применили в contact-form для единообразия всех форм с телефоном.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
