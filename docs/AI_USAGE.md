@@ -3219,3 +3219,29 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 150
+
+Goal: Разделить статус «прочитано» для админа и пользователя (Notification.isReadByAdmin) и починить расчёт остатка/оплачено по графику после переплаты
+
+Prompt: Три связанные проблемы. (1) прочтение уведомлений в админке (`markAsReadAdmin`, `countUnreadAdmin`, `markAllAsReadAdmin`, список `findAllAdmin`) использует тот же флаг `isRead`, что и пользователь — админ, открыв «Уведомления», сбрасывает пользователю непрочитанные. Добавить в модель `Notification` поле `isReadByAdmin` (+миграция), перевести админ-API и `admin-notifications-list.tsx` на него, оставив пользовательские методы на `isRead`. (2) После пересчёта графика при переплате (уменьшение `amount` последних элементов) эндпоинт деталей займа считает `totalPaid` из таблицы `Payment`, а `totalRepay` из `amount` графика — суммы расходятся, у закрытого займа «Остаток» показывает ненулевое значение (25.65). Считать `totalPaid`/`remaining` из графика (`paidAmount`), тогда у закрытого займа остаток будет 0. (3) Ошибки в `payments.service.ts` на английском (`Payment amount (879.16) exceeds remaining balance (853.51)`, `Loan must be active`, `Schedule item ... not found`) перевести на русский. Собрать backend и frontend, проверить на живом API.
+
+Result:
+
+- `backend/prisma/schema.prisma` — в модель `Notification` добавлено `isReadByAdmin Boolean @default(false)` + индекс `@@index([isReadByAdmin])`; миграция `20260803100128_add_is_read_by_admin` создана и применена, Prisma Client перегенерирован.
+- `backend/src/modules/notifications/notifications.service.ts` — админ-методы переведены на `isReadByAdmin`: `findAllAdmin` (select и payload), `markAsReadAdmin`, `countUnreadAdmin`, `markAllAsReadAdmin`; пользовательские `markAsRead`/`countUnread`/`markAllAsRead`/`findByUser` остались на `isRead`.
+- `frontend/src/features/admin-notifications/admin-notifications-list.tsx` — интерфейс и логика переведены с `isRead` на `isReadByAdmin` (бейдж в `admin-sidebar` уже ходит на `/admin/notifications/unread-count`, который теперь считает `isReadByAdmin`).
+- `backend/src/modules/loans/loans.service.ts` — `findOneAdmin`: `totalPaid` теперь `SUM(schedule.paidAmount)`, а не `SUM(payments.amount)`; `remaining = totalRepay − totalPaid` по графику; в выборку графика добавлен `paidAmount` и возвращается в payload. У закрытого займа остаток = 0.
+- `backend/src/modules/payments/payments.service.ts` — ошибки на русском: «Займ с id N не найден», «Займ должен быть активным», «Сумма платежа (N) превышает остаток задолженности (M)», «Элемент графика с id N не найден», «Сумма платежа (N) превышает остаток по элементу (M)».
+- Проверено на живом backend (порт 3001): у закрытого займа `8b0b4d87…` → `totalRepay 1116.79`, `totalPaid 1116.79`, `remaining 0`; пометка уведомления админом меняет только `isReadByAdmin` (isRead остаётся `false`); `read-all` переводит `isReadByAdmin` в true, `isRead` не трогается; счётчики непрочитанных разведены. `npm run build` backend и frontend проходят.
+- Побочное следствие: найденный ранее англоязычный ответ «Payment amount (879.16) exceeds remaining balance (853.51)» возникал из-за расхождения «Остатка» в UI (879.16) с реальным остатком по графику (853.51) — после фикса расчёт единый, ошибка переведена на русский.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: статус «прочитано» — это две разные сущности (пользователь и админ), их нельзя мешать в одном флаге. Агрегирующие суммы займа должны считаться из одного источника истины (график платежей), иначе пересчёт графика с уменьшением `amount` расходится с суммой фактических `Payment`-записей, и у закрытого займа остаётся ненулевой «Остаток».
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
