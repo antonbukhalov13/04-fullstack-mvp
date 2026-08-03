@@ -144,11 +144,11 @@ export class PaymentsService {
     });
 
     if (!loan) {
-      throw new NotFoundException(`Loan with id ${loanId} not found`);
+      throw new NotFoundException(`Займ с id ${loanId} не найден`);
     }
 
     if (loan.status !== 'active') {
-      throw new BadRequestException('Loan must be active');
+      throw new BadRequestException('Займ должен быть активным');
     }
 
     const pendingItems = await this.prisma.paymentScheduleItem.findMany({
@@ -162,7 +162,7 @@ export class PaymentsService {
 
     if (dto.amount > rounded) {
       throw new BadRequestException(
-        `Payment amount (${dto.amount}) exceeds remaining balance (${rounded})`,
+        `Сумма платежа (${dto.amount}) превышает остаток задолженности (${rounded})`,
       );
     }
 
@@ -201,17 +201,17 @@ export class PaymentsService {
     adminId: string,
   ) {
     const loan = await this.prisma.loan.findUnique({ where: { id: loanId } });
-    if (!loan) throw new NotFoundException(`Loan with id ${loanId} not found`);
-    if (loan.status !== 'active') throw new BadRequestException('Loan must be active');
+    if (!loan) throw new NotFoundException(`Займ с id ${loanId} не найден`);
+    if (loan.status !== 'active') throw new BadRequestException('Займ должен быть активным');
 
     const item = await this.prisma.paymentScheduleItem.findFirst({
       where: { id: itemId, loanId },
     });
-    if (!item) throw new NotFoundException(`Schedule item with id ${itemId} not found`);
+    if (!item) throw new NotFoundException(`Элемент графика с id ${itemId} не найден`);
 
     const remaining = Math.round((item.amount - item.paidAmount) * 100) / 100;
     if (amount > remaining) {
-      throw new BadRequestException(`Payment amount (${amount}) exceeds remaining for this item (${remaining})`);
+      throw new BadRequestException(`Сумма платежа (${amount}) превышает остаток по элементу (${remaining})`);
     }
 
     const payment = await this.prisma.$transaction(async (tx) => {

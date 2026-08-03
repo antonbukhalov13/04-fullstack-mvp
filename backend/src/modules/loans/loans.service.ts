@@ -224,7 +224,7 @@ export class LoansService {
           select: { firstName: true, lastName: true, companyName: true },
         },
         scheduleItems: {
-          select: { id: true, dueDate: true, amount: true, status: true },
+          select: { id: true, dueDate: true, amount: true, paidAmount: true, status: true },
           orderBy: { dueDate: 'asc' },
         },
         paymentRequests: {
@@ -243,7 +243,10 @@ export class LoansService {
     }
 
     const totalRepay = loan.scheduleItems.reduce((sum, s) => sum + s.amount, 0);
-    const totalPaid = loan.payments.reduce((sum, p) => sum + p.amount, 0);
+    const totalPaid = loan.scheduleItems.reduce(
+      (sum, s) => sum + s.paidAmount,
+      0,
+    );
     const nextPending = loan.scheduleItems.find((s) => s.status === 'pending');
 
     return {
@@ -267,6 +270,7 @@ export class LoansService {
         id: s.id,
         dueDate: s.dueDate,
         amount: s.amount,
+        paidAmount: s.paidAmount,
         status: s.status,
       })),
       nextPayment: nextPending

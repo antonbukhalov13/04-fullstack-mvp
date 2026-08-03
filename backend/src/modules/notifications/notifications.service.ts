@@ -68,7 +68,7 @@ export class NotificationsService {
           id: true,
           type: true,
           message: true,
-          isRead: true,
+          isReadByAdmin: true,
           createdAt: true,
           user: {
             select: {
@@ -108,22 +108,22 @@ export class NotificationsService {
     }
     await this.prisma.notification.update({
       where: { id },
-      data: { isRead: true },
+      data: { isReadByAdmin: true },
     });
     return { success: true };
   }
 
   async countUnreadAdmin() {
     const count = await this.prisma.notification.count({
-      where: { isRead: false },
+      where: { isReadByAdmin: false },
     });
     return { count };
   }
 
   async markAllAsReadAdmin() {
     await this.prisma.notification.updateMany({
-      where: { isRead: false },
-      data: { isRead: true },
+      where: { isReadByAdmin: false },
+      data: { isReadByAdmin: true },
     });
     return { success: true };
   }

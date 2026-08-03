@@ -8,7 +8,7 @@ interface AdminNotification {
   id: string;
   type: string;
   message: string;
-  isRead: boolean;
+  isReadByAdmin: boolean;
   createdAt: string;
   user: { id: string; name: string | null; phone: string };
 }
@@ -31,8 +31,8 @@ function typeIcon(type: string) {
   return '○';
 }
 
-function typeColor(type: string, isRead: boolean) {
-  if (isRead) return 'text-slate-400';
+function typeColor(type: string, isReadByAdmin: boolean) {
+  if (isReadByAdmin) return 'text-slate-400';
   if (type.includes('approved') || type.includes('signed') || type.includes('recorded') || type.includes('closed'))
     return 'text-green-500';
   if (type.includes('rejected') || type.includes('overdue')) return 'text-red-500';
@@ -80,19 +80,19 @@ export function AdminNotificationsList() {
   }, []);
 
   const markAsRead = async (id: string) => {
-    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
+    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isReadByAdmin: true } : n)));
     try {
       await apiRequest(`/admin/notifications/${id}/read`, { method: 'PATCH', admin: true });
       window.dispatchEvent(new CustomEvent('notification-read'));
     } catch {
-      setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: false } : n)));
+      setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isReadByAdmin: false } : n)));
     }
   };
 
   const markAllAsRead = async () => {
     try {
       await apiRequest('/admin/notifications/read-all', { method: 'PATCH', admin: true });
-      setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setItems((prev) => prev.map((n) => ({ ...n, isReadByAdmin: true })));
       window.dispatchEvent(new CustomEvent('notification-read'));
     } catch { /* ignore */ }
   };
@@ -121,7 +121,7 @@ export function AdminNotificationsList() {
     );
   }
 
-  const unread = items.filter((n) => !n.isRead).length;
+  const unread = items.filter((n) => !n.isReadByAdmin).length;
 
   return (
     <div>
@@ -145,15 +145,15 @@ export function AdminNotificationsList() {
         {items.map((n) => (
           <div
             key={n.id}
-            onClick={() => !n.isRead && markAsRead(n.id)}
+            onClick={() => !n.isReadByAdmin && markAsRead(n.id)}
             className={[
               'flex items-start gap-3 rounded-lg border px-4 py-3 text-sm transition-colors',
-              n.isRead
+              n.isReadByAdmin
                 ? 'border-slate-200 bg-white text-slate-500'
                 : 'border-indigo-200 bg-indigo-50/50 text-slate-900 cursor-pointer hover:bg-indigo-50',
             ].join(' ')}
           >
-            <span className={`mt-0.5 text-base ${typeColor(n.type, n.isRead)}`}>
+            <span className={`mt-0.5 text-base ${typeColor(n.type, n.isReadByAdmin)}`}>
               {typeIcon(n.type)}
             </span>
             <div className="flex-1 min-w-0">
@@ -165,10 +165,10 @@ export function AdminNotificationsList() {
                   {n.user.name ?? '—'} · {n.user.phone}
                 </span>
               </div>
-              <p className={[!n.isRead ? 'font-medium' : ''].join(' ')}>{n.message}</p>
+              <p className={[!n.isReadByAdmin ? 'font-medium' : ''].join(' ')}>{n.message}</p>
               <p className="mt-0.5 text-xs text-slate-400">{fmtDate(n.createdAt)}</p>
             </div>
-            {!n.isRead && (
+            {!n.isReadByAdmin && (
               <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
             )}
           </div>
