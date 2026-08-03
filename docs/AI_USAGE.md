@@ -3295,3 +3295,25 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 153
+
+Goal: Первый платёж графика — на следующий день после подписания, убрать «просрочку через 10 минут»
+
+Prompt: При генерации посуточного графика платежей первый элемент получает `dueDate` = `signedAt` (i начинается с 0). Из-за этого первый платёж становится просроченным уже в день подписания: cron/проверка просрочек помечает элемент overdue, как только `dueDate < now` (буквально на следующей минуте — «просрочка через 10 минут»). Сдвинуть все элементы на один день вперёд: `dueDate = signedAt + (i + 1)`. Проверить на живом API: подписать займ через OTP и убедиться, что первый элемент графика — завтрашний день.
+
+Result:
+
+- `backend/src/modules/loans/loans.service.ts` — `generatePaymentSchedule`: `dueDate.setDate(dueDate.getDate() + i + 1)` вместо `+ i`; добавлен комментарий о причине.
+- Других мест генерации графика в коде нет (grep подтвердил), `recalculateSchedule` в payments.service даты не меняет — правка одна.
+- Проверено на живом API (порт 3001): займ `6e991155…` (pending_signature, Мария Иванова +1987654321) подписан через `request-sign-otp` + `confirm-sign` (OTP привязан к займу), статус стал `active`, сгенерирован график из 60 элементов; первый `dueDate` = подписание + 1 день (2026-08-04 10:34 при signedAt 2026-08-03 10:34), последующие — ежедневно. `npm run build` backend проходит.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: «просрочка через 10 минут» возникала из-за сдвига на 0 дней у первого платежа — проверка просрочек (cron + при запросах) немедленно помечает элемент, чей `dueDate` уже прошёл. Единый сдвиг `i+1` в генерации решает проблему для всех новых графиков; старые seed-графики остаются как есть.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
