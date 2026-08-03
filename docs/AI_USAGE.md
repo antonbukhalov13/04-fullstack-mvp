@@ -3317,3 +3317,28 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 154
+
+Goal: Подача заявки через токен — авторизованный пользователь не вводит телефон
+
+Prompt: `POST /applications` принимал `phone` из тела и по нему искал/создавал пользователя — заявку можно было подать от имени любого человека, просто подставив чужой номер. Добавить `OptionalJwtAuthGuard`: при наличии валидного токена `userId`/`phone` берутся из токена (телефон из тела игнорировать, чтобы нельзя было подменить пользователя), аноним продолжает работать по `phone` из тела.
+
+Result:
+
+- `backend/src/modules/applications/dto/create-application.dto.ts` — `phone` стал `@IsOptional()`; формат `@Matches(/^\+?[1-9]\d{1,14}$/)` проверяется только когда поле передано.
+- `backend/src/modules/applications/applications.controller.ts` — `POST /applications` получил `@UseGuards(OptionalJwtAuthGuard)` и `@CurrentUser()`; сигнатура `create(dto, user?)`.
+- `backend/src/modules/applications/applications.service.ts` — `create(dto, currentUser?)`: при авторизации пользователь берётся по `currentUser.id` (тело-`phone` полностью игнорируется, NotFoundException если пользователь не найден); аноним — find-or-create по `dto.phone` (BadRequestException «Телефон обязателен для неавторизованного пользователя»).
+- `frontend/src/features/apply-loan/apply-form.tsx` — на клиенте определяется токен (`getAuthToken() ?? localStorage['token']`, `setAuthToken`); при авторизации поле «Телефон *» заменяется плашкой «заявка будет подана от вашего аккаунта», `phone` исключается из payload, обязательность проверяется только для анонима; убран неиспользуемый `minLength`.
+- Проверено на живом API (порт 3001): аноним с телефоном → 201; авторизованный (Иван +1234567890) без `phone` → 201; авторизованный с чужим `phone` в теле → 201, но заявка привязана к Ивану (проверка в БД: оба `userId` → +1234567890). Тестовые данные удалены. `npm run build` backend и frontend проходят.
+- Попутно: зависший `nest start --watch` (не реагировал на изменения, сервер держал старый код) перезапущен через `nohup npm run start:dev` (лог /tmp/opencode/backend.log).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `@IsOptional()` в class-validator отключает остальные валидаторы для отсутствующего поля — достаточно сделать `phone` optional, чтобы не дублировать `@IsString()`/`@IsNotEmpty()` условно. OptionalJwtAuthGuard уже был в проекте (анониму кладёт `request.user = null`) — потребовалось только аккуратно прокинуть `CurrentUser` в сервис, не трогая другие endpoints. Важно: если бы сервис продолжал читать `dto.phone` даже при авторизации, подмена пользователя осталась бы возможной — телефон из токена должен полностью перекрывать тело.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
