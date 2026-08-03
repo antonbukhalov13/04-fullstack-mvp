@@ -3132,3 +3132,32 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 147
+
+Goal: Запретить админу активировать займ без OTP и закрывать займ без проверки полного погашения графика
+
+Prompt: Критическая ошибка прав доступа: администратор через `updateStatusAdmin` и `closeLoanAdmin` может перевести займ из `pending_signature` в `active` без OTP-подписания пользователя, а также закрыть займ, не убедившись, что весь график платежей погашен. Исправить backend-логику: убрать переход `pending_signature → active` из допустимых статусных переходов (активация — только через OTP-подписание пользователем), а закрытие займа (и через смену статуса, и через отдельный endpoint закрытия) разрешать только при наличии сформированного графика и нулевом остатке задолженности. Проверить сборку и поведение эндпоинтов на живом backend.
+
+Result:
+
+- `backend/src/modules/loans/loans.service.ts`:
+  - `validateLoanStatusTransition` — переходы приведены к безопасному виду: `pending_signature: []` (активация только пользователем через OTP), `active/overdue/default: ['closed']`; убрана возможность `pending_signature → active` и `default → active`.
+  - Добавлен приватный `assertLoanFullyRepaid` — бросает `BadRequestException` на русском: «Нельзя закрыть займ без сформированного графика платежей», если график пуст, и «Нельзя закрыть займ с неоплаченным остатком N EUR», если суммарный остаток больше нуля.
+  - `updateStatusAdmin` — займ читается с `scheduleItems`; при переводе в `closed` вызывается `assertLoanFullyRepaid`.
+  - `closeLoanAdmin` — займ читается с `scheduleItems`; перед закрытием вызывается `assertLoanFullyRepaid`.
+- Проверено на живом backend (порт 3001):
+  - `PATCH /loans/:id/status` `pending_signature → active` → 400 «Cannot transition loan from "pending_signature" to "active". Allowed: none».
+  - `POST /loans/:id/close` для `pending_signature` → 400 «Нельзя закрыть займ без сформированного графика платежей».
+  - `POST /loans/:id/close` для активного займа с неоплаченным графиком (остаток 1053.51) → 400 «Нельзя закрыть займ с неоплаченным остатком 1053.51 EUR».
+  - `npm run build` backend проходит.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: статусные переходы нужно проверять не только на «разрешено ли» между двумя статусами, но и на бизнес-условия перехода (для `closed` — наличие и погашенность графика). Единый приватный помощник для проверки условия позволяет не дублировать логику между сменой статуса и отдельным endpoint закрытия. UI админки уже не предлагал активацию, так что фронтенд не требовал правок.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
