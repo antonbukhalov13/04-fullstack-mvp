@@ -27,11 +27,13 @@ export class PaymentsService {
     });
 
     if (!paymentRequest) {
-      throw new NotFoundException(`Payment request with id ${paymentRequestId} not found`);
+      throw new NotFoundException(
+        `Заявка на оплату с id ${paymentRequestId} не найдена`,
+      );
     }
 
     if (paymentRequest.loan.status !== 'active') {
-      throw new BadRequestException('Loan must be active');
+      throw new BadRequestException('Займ должен быть активным');
     }
 
     let payment: { id: string; amount: number } | null = null;
@@ -45,7 +47,25 @@ export class PaymentsService {
           });
 
           if (!fresh || fresh.status !== 'pending') {
-            throw new BadRequestException('Payment request is no longer pending');
+            throw new BadRequestException('Заявка на оплату уже обработана');
+          }
+
+          const pendingItems = await tx.paymentScheduleItem.findMany({
+            where: {
+              loanId: paymentRequest.loanId,
+              status: { in: ['pending', 'overdue'] },
+            },
+          });
+          const remaining = pendingItems.reduce(
+            (sum, item) => sum + (item.amount - item.paidAmount),
+            0,
+          );
+          const rounded = Math.round(remaining * 100) / 100;
+
+          if (paymentRequest.amount > rounded) {
+            throw new BadRequestException(
+              `Сумма платежа (${paymentRequest.amount}) превышает остаток задолженности (${rounded})`,
+            );
           }
 
           const created = await tx.payment.create({
@@ -70,7 +90,7 @@ export class PaymentsService {
         payment = { id: result.created.id, amount: result.created.amount };
       } catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-          throw new BadRequestException('Payment request has already been processed');
+          throw new BadRequestException('Заявка на оплату уже была обработана');
         }
         throw err;
       }
@@ -88,10 +108,14 @@ export class PaymentsService {
         userId: paymentRequest.userId,
       });
     } else {
-      await this.prisma.paymentRequest.update({
-        where: { id: paymentRequestId },
+      const updated = await this.prisma.paymentRequest.updateMany({
+        where: { id: paymentRequestId, status: 'pending' },
         data: { status: dto.status },
       });
+
+      if (updated.count === 0) {
+        throw new BadRequestException('Заявка на оплату уже обработана');
+      }
 
       this.eventEmitter.emit('payment-request.status.changed', {
         paymentRequestId: paymentRequest.id,
