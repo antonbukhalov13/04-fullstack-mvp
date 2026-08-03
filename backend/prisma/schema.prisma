@@ -72,9 +72,13 @@ model OtpCode {
   createdAt DateTime   @default(now())
 
   user User? @relation(fields: [userId], references: [id])
+  loan Loan? @relation(fields: [loanId], references: [id])
+
+  loanId String?
 
   @@index([phone, purpose])
   @@index([userId])
+  @@index([loanId])
 }
 
 model AdminUser {
@@ -131,6 +135,7 @@ model Loan {
 
   application Application    @relation(fields: [applicationId], references: [id])
   user        User           @relation(fields: [userId], references: [id])
+  otpCodes    OtpCode[]
 
   scheduleItems   PaymentScheduleItem[]
   paymentRequests PaymentRequest[]

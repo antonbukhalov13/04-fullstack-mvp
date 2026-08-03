@@ -456,6 +456,7 @@ export class LoansService {
     await this.prisma.otpCode.updateMany({
       where: {
         userId,
+        loanId,
         purpose: 'sign_loan',
         usedAt: null,
       },
@@ -473,13 +474,14 @@ export class LoansService {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + OTP_EXPIRY_MINUTES);
 
-    // Create OTP record
+    // Create OTP record bound to the specific loan being signed
     await this.prisma.otpCode.create({
       data: {
         userId,
         phone: user.phone,
         code,
         purpose: 'sign_loan',
+        loanId,
         expiresAt,
       },
     });
@@ -522,6 +524,7 @@ export class LoansService {
           userId,
           code: dto.code,
           purpose: 'sign_loan',
+          loanId,
           usedAt: null,
           expiresAt: { gt: signedAt },
         },
