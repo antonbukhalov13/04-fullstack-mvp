@@ -47,7 +47,7 @@ export function FaqPreview() {
           {questions.map((item) => (
             <div
               key={item.question}
-              className="rounded-xl border border-slate-800 bg-white/5 p-5"
+              className="rounded-xl border border-slate-800 bg-white/5 p-5 transition-colors duration-300 hover:border-indigo-600"
             >
               <h3 className="text-base font-semibold text-slate-50">
                 {item.question}
