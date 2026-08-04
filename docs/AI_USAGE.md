@@ -3645,3 +3645,40 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 168
+
+Goal: Финальная визуальная гамма лендинга и страниц входа: единая тёмная/светлая схема, тёмный /apply, анимации появления страниц, декоративные вертикальные и горизонтальные линии, градиенты и финальный баланс цветов линий между секциями
+
+Prompt: По чек-листу исправлений ментора и уточнениям пользователя: тёмные фоны у hero, калькулятора и ряда секций с разнообразием оттенков; тёмные страницы входа как у Главного экрана; login переделать по образцу admin login; стилизовать /apply в том же стиле; разные направления плавного появления для /apply и страниц входа (не снизу вверх); вертикальные фиолетовые линии на светлых секциях с чередованием сторон и отступом от края; градиент-фон для «Как всё происходит» и «Часто задаваемые вопросы»; горизонтальные фиолетовые линии под заголовками «Основные условия» и «Когда деньги нужны сейчас» на всю длину заголовка (для «О компании» и «Для бизнеса» линии убраны); серые линии-разделители между секциями «Для бизнеса»/«Работаем прозрачно и в рамках закона» и «Вы заранее знаете все условия»/«О компании»; вертикальные линии светлых секций «Вы заранее знаете все условия», «Работаем прозрачно и в рамках закона», «Безопасность клиентов», «Контактная информация» — фиолетовые, толщина тонкая; у «О компании» и «Для бизнеса» — фиолетовые широкие; главные рамки форм apply/login/admin-login и секции «Кредитный калькулятор» — фиолетовые (основной цвет проекта).
+
+Result:
+
+- `frontend/src/widgets/hero/hero.tsx` — фон `bg-slate-950` + два радиальных градиент-оверлея (фиолетовый `rgba(123,104,238,0.28)` сверху-справа, тёмно-индиго `rgba(49,46,129,0.45)` снизу-слева) + белая сетка `opacity-[0.05]` 64px — восстановлен оригинальный «градиент» из stash.
+- Тёмные секции `bg-slate-900`: `calculator.tsx`, `credit-history.tsx`, `contact-section.tsx`; `how-it-works.tsx` и `faq-preview.tsx` — `bg-gradient-to-br from-slate-800 to-slate-900` (градиент вместо сплошного), номерки шагов `bg-indigo-500/10 text-indigo-400`, карточки FAQ `border-slate-800 bg-white/5`.
+- Светлые секции `bg-slate-100`: `when-money-needed.tsx`, `transparent-terms.tsx`, `trust-block.tsx`, `client-safety.tsx`, `contact-details.tsx`; `about-company.tsx` — `bg-slate-50`; `for-business.tsx` — `bg-[#f1f5f9]`.
+- `frontend/src/shared/ui/input.tsx`, `textarea.tsx` — добавлен проп `dark` (поле `bg-slate-900/70 border-slate-700 text-slate-100`, label `text-slate-300`, ошибка `text-red-400`); `select.tsx` — добавлен проп `dark` по той же схеме.
+- `frontend/src/widgets/contact-form/contact-form.tsx` — тёмный вариант: поля `dark`, success `bg-green-500/10 border-green-500/30 text-green-300`, согласие `text-slate-300`.
+- `frontend/src/app/login/page.tsx` — переделан как admin login: `flex min-h-[calc(100vh-4rem)] items-center justify-center`, оверлеи как на hero, карточка `w-full max-w-sm rounded-lg border border-indigo-600 bg-slate-900/70 p-6`; контент в `<ScrollReveal direction="right">`.
+- `frontend/src/features/login-otp/login-form.tsx` — убрана обёртка `Card`/`CardContent`, рендерит только формы; поля `Input dark`, dev-блок OTP `bg-amber-500/10 text-amber-300`.
+- `frontend/src/app/admin/(auth)/login/page.tsx` — фон `bg-slate-950` + оверлеи как на hero, карточка `rounded-lg border border-indigo-600 bg-slate-900/70`; контент в `<ScrollReveal direction="left">`; `admin-login-form.tsx` — поля `Input dark`.
+- `frontend/src/app/apply/page.tsx` — тёмный как login/main: `bg-slate-950` + оверлеи, карточка `rounded-xl border border-indigo-600 bg-slate-900/70 p-6 sm:p-8`, контент в `<ScrollReveal direction="left">`; `apply-form.tsx` — убрана обёртка `Card`, все поля `dark`, индиго-блоки `bg-indigo-500/10 border-indigo-500/30 text-indigo-200`, ошибки `text-red-400`, success `bg-green-500/10 text-green-300`.
+- `frontend/src/widgets/calculator/calculator.tsx` — рамка калькулятора `rounded-2xl border border-slate-800 bg-slate-950/60` → `border border-indigo-600` (главная рамка форм/калькулятора в основном фиолетовом цвете проекта).
+- `frontend/src/shared/ui/scroll-reveal.tsx` — проп `direction: 'up' | 'left' | 'right'` (default `up`): скрытое состояние с соответствующим translate, видимое `translate-x-0 translate-y-0 opacity-100`.
+- Вертикальные линии светлых секций — фиолетовые тонкие `w-px bg-indigo-600`: `transparent-terms.tsx` — слева, `trust-block.tsx` — справа, `client-safety.tsx` — слева, `contact-details.tsx` — справа: `<div aria-hidden className="pointer-events-none absolute inset-y-8 left-6 w-px bg-indigo-600" />` (правые — `right-6`), отступ от края 24px, секции получили `relative`.
+- Вертикальные линии у контент-колонок — фиолетовые широкие `border-l-4 border-indigo-600`: `about-company.tsx`, `for-business.tsx`.
+- Горизонтальная линия-акцент `h-[3px] rounded-full bg-indigo-600` на всю длину заголовка (заголовок и линия в обёртке `w-fit`): `when-money-needed.tsx` — под «Когда деньги нужны сейчас». Для «Основные условия», «О компании» и «Для бизнеса» горизонтальные линии убраны (заголовки возвращены без обёртки `w-fit`).
+- Серые линии-разделители между секциями на главной `frontend/src/app/page.tsx`: `<div aria-hidden className="h-px w-full bg-slate-300" />` между `TransparentTerms`/`AboutCompany` и между `ForBusiness`/`TrustBlock`.
+- `frontend/src/app/globals.css` — незаполненная часть трека range-слайдера `#e2e8f0` → `#334155` (слайдер теперь только в тёмном калькуляторе).
+
+Итоговая схема ритма фонов: light ↔ dark чередование; тёмные — `slate-900`/`slate-950` (hero с градиент-оверлеями, how-it-works/faq-preview — `from-slate-800 to-slate-900`); светлые — `slate-100` (и `slate-50`/`#f1f5f9` для «О компании»/«Для бизнеса»).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: единый визуальный язык тёмных секций — `bg-slate-900`/`bg-slate-950` + карточки `bg-slate-900/70` или `bg-white/5` с `border-slate-800`, заголовки `text-white`/`text-slate-50`, текст `text-slate-300`/`text-slate-400`; проп `dark` у Input/Textarea/Select переиспользуется на всех тёмных страницах; логин-страницы строятся одинаково — центрированная карточка `max-w-sm`; для разных анимаций появления достаточно расширить ScrollReveal пропом `direction` (скрытое — соответствующий translate, видимое — `translate-x-0 translate-y-0 opacity-100`); декоративные линии — абсолютный `div` с `pointer-events-none` внутри `relative`-секции; там, где линия привязана к колонке контента, её делают бордером (`border-l`) — толщину и цвет меняют без перестройки вёрстки; линию на всю длину заголовка проще всего получить, поместив заголовок и `div`-линию в обёртку `w-fit` (`w-fit mx-auto` для центрированного заголовка); линию-разделитель между секциями проще вставить отдельным `div` `h-px w-full` в композицию страницы между виджетами, чем трогать сами секции.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
