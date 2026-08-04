@@ -3708,3 +3708,29 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 170
+
+Goal: Сделать /login таким же как /admin/login (без хедера и футера, логотип и форма по центру экрана, логотип-ссылка на главную выше карточки) и выровнять ширины кнопок в формах входа и заявки
+
+Prompt: Сделать login точно таким же как admin/login: при входе в кабинет убрать хедер и футер, расположить форму входа по центру экрана; добавить логотип (клик по логотипу возвращает на главную, как в хедере). Кнопка «Получить код» — на всю ширину поля Телефон, «Отправить код повторно» — на всю ширину, «Назад» и «Войти» — пополам всей ширины и одинаковые; «Отправить заявку» в /apply — на всю ширину. Пример — https://fin-ultima.com/account/auth.
+
+Result:
+
+- `frontend/src/widgets/header/header.tsx` и `frontend/src/widgets/footer/footer.tsx` — скрываются и на `/login`: `if (pathname?.startsWith('/admin') || pathname === '/login') return null;`.
+- `frontend/src/app/login/page.tsx` — `min-h-[calc(100vh-4rem)]` → `min-h-screen` (колонка «логотип + карточка» по центру экрана, как admin login); над карточкой добавлен логотип-ссылка на `/` в горизонтальной раскладке как в хедере (иконка слева, текст справа колонкой: «LumenBridge» белый + «Finance» indigo-400, тёмная адаптация цветов хедера). Клик-обработчик со scroll-to-top не переносился: в server component нельзя передавать onClick в `<Link>`, а на странице входа переход на главную и так открывает её сверху. Оверлеи и светлая карточка не менялись.
+- Промежуточные варианты с точным выравниванием верха карточки под admin/login (`-mt-[58px]` / `-mt-[98px]`) отменены по решению пользователя — оставлено простое центрирование колонки на весь экран.
+- Логотип обёрнут в `<ScrollReveal direction="right">` — появляется справа налево так же, как карточка формы.
+- `frontend/src/features/login-otp/login-form.tsx` — «Получить код» → `className="w-full"`; «Отправить код повторно» → `className="w-full"`; «Назад» и «Войти» → каждому `className="flex-1"` в `flex gap-3` (пополам, равной ширины).
+- `frontend/src/features/apply-loan/apply-form.tsx` — «Отправить заявку» → `className="w-full"`.
+- Подзаголовки карточек входа сделаны заметнее: `text-slate-500` → `text-slate-700` в `frontend/src/app/admin/(auth)/login/page.tsx` («Войдите для управления системой») и `frontend/src/app/login/page.tsx` («Войдите, чтобы управлять заявками и отслеживать статус займа»).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `min-h-[calc(100vh-4rem)]` нужен только когда над формой есть хедер; если хедер/футер скрыты через проверку pathname в самих компонентах, достаточно `min-h-screen` для центрирования на весь экран. В server component нельзя передавать обработчик onClick в клиентский `<Link>` при статической генерации — либо выносить в client-компонент, либо обходиться без onClick (переход на главную и так загружает страницу сверху). Ширины кнопок формы задаются через `w-full`/`flex-1` в className Button.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
