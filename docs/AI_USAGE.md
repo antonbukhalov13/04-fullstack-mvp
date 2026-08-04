@@ -3766,3 +3766,19 @@ What I learned: h-px (1px) — не всегда надёжная высота �
 Model used: Claude Sonnet 5
 
 Instrument used: Claude.ai
+
+## Request 173
+
+Goal: Применить фирменный градиентный фон hero-секции к секциям «Как всё происходит» и «Часто задаваемые вопросы»
+
+Prompt: Сделай такой же градиент фон для секций Как всё происходит и Часто задаваемые вопросы как у секции hero (Получите деньги тогда, когда это действительно нужно)
+
+Result: frontend/src/widgets/how-it-works/how-it-works.tsx и frontend/src/widgets/faq-preview/faq-preview.tsx — фон секции заменён с bg-gradient-to-br from-slate-800 to-slate-900 на схему из hero.tsx: relative overflow-hidden bg-slate-950 + два pointer-events-none absolute inset-0 радиальных градиента (rgba(123,104,238,0.28) сверху-справа, rgba(49,46,129,0.45) снизу-слева) + оверлей с сеточным паттерном (opacity-[0.05], линии 1px, шаг 64px). Контент-обёртка получила relative, чтобы оставаться поверх декоративных слоёв. Текст, заголовки и карточки внутри секций не изменены.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Оба виджета — server components без хуков, поэтому фон hero (чисто декоративные абсолютно позиционированные div'ы без JS) переносится один в один без адаптации под клиентский компонент.
+
+Model used: Claude Sonnet 5
+
+Instrument used: Claude.ai
