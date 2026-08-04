@@ -35,7 +35,7 @@ export default function Home() {
       <ScrollReveal>
         <TransparentTerms />
       </ScrollReveal>
-      <div aria-hidden className="h-px w-full bg-slate-300" />
+      <div aria-hidden className="h-[2px] w-full shrink-0 bg-slate-300" />
       <ScrollReveal>
         <AboutCompany />
       </ScrollReveal>
@@ -45,7 +45,7 @@ export default function Home() {
       <ScrollReveal>
         <ForBusiness />
       </ScrollReveal>
-      <div aria-hidden className="h-px w-full bg-slate-300" />
+      <div aria-hidden className="h-[2px] w-full shrink-0 bg-slate-300" />
       <ScrollReveal>
         <TrustBlock />
       </ScrollReveal>
