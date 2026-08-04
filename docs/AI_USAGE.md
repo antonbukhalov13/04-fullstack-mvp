@@ -3512,3 +3512,29 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 162
+
+Goal: Редизайн остальных секций лендинга — двухколоночные заголовки, единые отступы, левое выравнивание текстов
+
+Prompt: Переработать секции главной в едином стиле с уже сделанным редизайном: `about-company`, `client-safety`, `contact-details`, `contact-section`, `credit-history`, `faq-preview`, `for-business`, `how-it-works`, `trust-block`, `when-money-needed` — увеличенные вертикальные отступы (`py-24 sm:py-28`), контейнер `max-w-[100rem]`, заголовки без центрирования, у части секций — layout с боковым лейблом (`lg:grid-cols-12` + `border-l-4`); фон всех секций — `#f1f5f9` (без белого и градиентов, тёмные/градиентные варианты вернутся финальным этапом).
+
+Result:
+
+- `about-company` — двухколоночная сетка: лейбл «О компании» (`text-indigo-600 uppercase tracking-wider`) + заголовок слева, текст иконок справа с `border-l-4 border-indigo-600`.
+- `client-safety`, `credit-history`, `trust-block` — карточки на `bg-slate-50`, заголовки слева/по центру без изменений текста, иконки `text-green-600`/`text-indigo-600`.
+- `for-business` — двухколоночный layout (лейбл «Для бизнеса» + список преимуществ с `border-l-4`), предупреждение `bg-amber-50` и CTA «Оставить заявку» сохранены.
+- `how-it-works`, `when-money-needed` — шаги/карточки без центрирования (заголовки и списки слева).
+- `contact-section`, `faq-preview`, `for-business` — исходные `bg-white`/градиент заменены на `bg-[#f1f5f9]`, чтобы не было белых полос на странице.
+- `contact-details` — hover ссылок `hover:text-slate-700` → `hover:text-slate-900`.
+- Восстановлены завершающие переносы строк в `about-company`, `for-business`, `how-it-works`, `when-money-needed`.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: при пакетном редизайне секций важно отдельно проверить явные `bg-white`/градиенты — они создают полосы на странице с единым фоном `#f1f5f9`; градиенты секций логично собирать на финальном этапе одним проходом.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
