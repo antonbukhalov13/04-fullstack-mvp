@@ -172,7 +172,7 @@ export function LoginForm() {
               <p className="text-sm text-red-600">{errorMessage}</p>
             )}
 
-            <Button type="submit" disabled={submitState === 'submitting'}>
+            <Button type="submit" className="w-full" disabled={submitState === 'submitting'}>
               {submitState === 'submitting' ? 'Отправка...' : 'Получить код'}
             </Button>
           </form>
@@ -210,6 +210,7 @@ export function LoginForm() {
             <Button
               type="button"
               variant="secondary"
+              className="w-full"
               disabled={resendCooldown > 0}
               onClick={onResend}
             >
@@ -222,6 +223,7 @@ export function LoginForm() {
               <Button
                 type="button"
                 variant="secondary"
+                className="flex-1"
                 onClick={() => {
                   setStep('phone');
                   setMockOtp('');
@@ -233,7 +235,11 @@ export function LoginForm() {
               >
                 Назад
               </Button>
-              <Button type="submit" disabled={codeForm.watch('code')?.length !== 6 || submitState === 'submitting'}>
+              <Button
+                type="submit"
+                className="flex-1"
+                disabled={codeForm.watch('code')?.length !== 6 || submitState === 'submitting'}
+              >
                 {submitState === 'submitting' ? 'Проверка...' : 'Войти'}
               </Button>
             </div>

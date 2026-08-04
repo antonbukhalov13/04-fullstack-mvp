@@ -386,7 +386,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
       )}
 
       <div className={applicantType === 'individual' ? 'pt-2' : ''}>
-        <Button type="submit" disabled={submitState === 'submitting' || isUploading}>
+        <Button type="submit" className="w-full" disabled={submitState === 'submitting' || isUploading}>
           {submitState === 'submitting' ? 'Отправка...' : 'Отправить заявку'}
         </Button>
       </div>

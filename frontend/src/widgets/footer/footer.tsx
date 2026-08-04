@@ -40,7 +40,7 @@ const columns: { title: string; links: FooterLink[] }[] = [
 
 export function Footer() {
   const pathname = usePathname();
-  if (pathname?.startsWith('/admin')) return null;
+  if (pathname?.startsWith('/admin') || pathname === '/login') return null;
 
   const handleSectionClick = (e: React.MouseEvent, hash: string) => {
     if (pathname !== '/') return;

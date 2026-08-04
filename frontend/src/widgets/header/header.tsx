@@ -16,8 +16,6 @@ export function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
 
-  if (pathname?.startsWith('/admin')) return null;
-
   useEffect(() => {
     let cancelled = false;
     const token = getAuthToken() ?? localStorage.getItem('token');
@@ -44,6 +42,8 @@ export function Header() {
     window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
     return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
   }, []);
+
+  if (pathname?.startsWith('/admin') || pathname === '/login') return null;
 
   const authHref = isLoggedIn ? '/dashboard/applications' : '/login';
   const authLabel = isLoggedIn ? 'Кабинет' : 'Войти';
