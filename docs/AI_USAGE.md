@@ -3414,3 +3414,27 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 158
+
+Goal: Футер — логотип-бренд, индикаторы для ссылок на секции главной, центрированные якорные ссылки
+
+Prompt: Обновить `frontend/src/widgets/footer/footer.tsx`: логотип как в шапке (favicon + LumenBridge/Finance), ссылки на секции главной (`/#about`, `/#contact`, `/#contact-details`) помечать индикатором, на главной скроллить к секции через `scrollIntoView` с `block: 'center'`, мелкие правки размеров и отступов.
+
+Result:
+
+- `frontend/src/widgets/footer/footer.tsx`:
+  - Логотип — `<img src="/favicon.svg">` + «LumenBridge» / «Finance» (uppercase, tracking-wider, text-[10px]).
+  - Ссылки на якоря главной (`/#about`, `/#contact`, `/#contact-details`) получили тип `FooterLink.section?: boolean`; на главной клик не перезагружает страницу, а вызывает `scrollIntoView({ behavior: 'smooth', block: 'center' })` (на других страницах — обычный переход).
+  - Сетка колонок — `grid-cols-2 sm:grid-cols-4`; размеры текста унифицированы на `text-[13px]`.
+  - Блок контактов (адрес, телефон, email) и колонка «Направления» остались, отступы/центрирование нижней строки сохранены.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: для якорных ссылок в футере стоит отдельно обрабатывать клик только когда пользователь уже на главной (`pathname === '/'`), иначе с других страниц переход работает как обычный роут с hash.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
