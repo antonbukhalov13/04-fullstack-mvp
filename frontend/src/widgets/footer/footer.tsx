@@ -3,11 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const columns = [
+type FooterLink = {
+  href: string;
+  label: string;
+  section?: boolean;
+};
+
+const columns: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Компания',
     links: [
-      { href: '/#about', label: 'О компании' },
+      { href: '/#about', label: 'О компании', section: true },
       { href: '/how-it-works', label: 'Как это работает' },
       { href: '/business', label: 'Для бизнеса' },
     ],
@@ -16,8 +22,8 @@ const columns = [
     title: 'Поддержка',
     links: [
       { href: '/faq', label: 'Часто задаваемые вопросы' },
-      { href: '/#contact', label: 'Обратная связь' },
-      { href: '/#contact-details', label: 'Контакты' },
+      { href: '/#contact', label: 'Обратная связь', section: true },
+      { href: '/#contact-details', label: 'Контакты', section: true },
     ],
   },
   {
@@ -36,25 +42,44 @@ export function Footer() {
   const pathname = usePathname();
   if (pathname?.startsWith('/admin')) return null;
 
+  const handleSectionClick = (e: React.MouseEvent, hash: string) => {
+    if (pathname !== '/') return;
+    e.preventDefault();
+    document
+      .querySelector(hash)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
   return (
     <footer className="border-t-2 border-slate-300 bg-slate-50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 sm:gap-x-8">
+      <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-4 sm:gap-x-8">
           <div>
-            <Link href="/" className="text-lg font-bold text-indigo-600">
-              LumenBridge
+            <Link href="/" className="flex items-start gap-2">
+              <img src="/favicon.svg" alt="" className="h-8 w-8 mt-0.5" />
+              <span className="flex flex-col leading-none">
+                <span className="text-base font-bold text-indigo-600">LumenBridge</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                  Finance
+                </span>
+              </span>
             </Link>
           </div>
 
           {columns.map((col) => (
             <div key={col.title}>
-              <h3 className="text-sm font-semibold text-slate-900">{col.title}</h3>
+              <h3 className="text-[13px] font-semibold text-slate-900">{col.title}</h3>
               <ul className="mt-3 space-y-2">
                 {col.links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-slate-500 hover:text-slate-700 transition-colors inline-flex items-center min-h-[20px]"
+                      onClick={
+                        link.section
+                          ? (e) => handleSectionClick(e, link.href.slice(link.href.indexOf('#')))
+                          : undefined
+                      }
+                      className="inline-flex items-center gap-1.5 text-[13px] text-slate-500 transition-colors hover:text-slate-700 min-h-[20px]"
                     >
                       {link.label}
                     </Link>
@@ -66,7 +91,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-slate-200 pt-8">
-          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-sm text-slate-500">
+          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-3 text-[13px] text-slate-500">
             <div className="flex items-center gap-2">
               <svg className="h-4 w-4 shrink-0 text-slate-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
