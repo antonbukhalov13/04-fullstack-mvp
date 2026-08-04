@@ -3623,3 +3623,25 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 167
+
+Goal: На странице /apply форма не обрезается и не «прыгает» при переключении типа заявителя
+
+Prompt: В `frontend/src/app/apply/page.tsx` низ формы уходил за экран, а попытка центрирования через `flex justify-center` приводила к скачку: короткая форма «Физ лицо» центрировалась и опускалась, длинная «Бизнес» росла и прижималась к верху. Сделать одинаковый верхний отступ для обоих типов и уменьшить вертикальные отступы формы.
+
+Result:
+
+- `frontend/src/app/apply/page.tsx` — секция `mx-auto w-full max-w-2xl px-4 pt-10 pb-16` без flex-центрирования: верхний отступ фиксирован и одинаков для «Физ лицо» и «Бизнес», форма при переключении типа не скачет, высокая форма прокручивается.
+- `frontend/src/features/apply-loan/apply-form.tsx` — `<form>` `space-y-6` → `space-y-4` (меньше вертикальные отступы между полями).
+- `frontend/src/features/apply-loan/apply-form.tsx` — кнопка «Отправить заявку» обёрнута в `<div className={applicantType === 'individual' ? 'pt-2' : ''}>`: для «Физ лицо» увеличен отступ между последним полем и кнопкой (1rem + 0.5rem), для «Бизнес» оставлен стандартный (1rem).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `justify-center` с `min-h` центрирует только когда контент короче контейнера — на динамической форме это вызывает «прыжок»; фиксированный верхний отступ без центрирования даёт стабильную вёрстку. Дополнительный отступ перед кнопкой надёжнее задавать на обёртке через `pt`, а не на самой кнопке (`space-y` может перебить `mt`).
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
