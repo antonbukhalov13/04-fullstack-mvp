@@ -1,122 +1,130 @@
 'use client';
 
-import { useForm, type SubmitHandler } from 'react-hook-form';
-import { object, pipe, number, minValue, maxValue, type InferOutput } from 'valibot';
-import { valibotResolver } from '@hookform/resolvers/valibot';
+import { useState } from 'react';
+import Link from 'next/link';
 import { calculateAnnuity, INDIVIDUAL_LIMITS } from '@/shared/lib/calculator';
-import { Input } from '@/shared/ui/input';
-
-const schema = object({
-  amount: pipe(
-    number(),
-    minValue(INDIVIDUAL_LIMITS.amount.min),
-    maxValue(INDIVIDUAL_LIMITS.amount.max),
-  ),
-  termDays: pipe(
-    number(),
-    minValue(INDIVIDUAL_LIMITS.term.min),
-    maxValue(INDIVIDUAL_LIMITS.term.max),
-  ),
-});
-
-type FormValues = InferOutput<typeof schema>;
 
 export function Calculator() {
-  const {
-    register,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: valibotResolver(schema),
-    defaultValues: {
-      amount: 1000,
-      termDays: 30,
-    },
-  });
+  const [amount, setAmount] = useState(1000);
+  const [termDays, setTermDays] = useState(30);
 
-  const amount = watch('amount');
-  const termDays = watch('termDays');
+  const result = calculateAnnuity(amount, termDays);
 
-  const isValid =
-    amount >= INDIVIDUAL_LIMITS.amount.min &&
-    amount <= INDIVIDUAL_LIMITS.amount.max &&
-    termDays >= INDIVIDUAL_LIMITS.term.min &&
-    termDays <= INDIVIDUAL_LIMITS.term.max;
+  const amountPct =
+    ((amount - INDIVIDUAL_LIMITS.amount.min) /
+      (INDIVIDUAL_LIMITS.amount.max - INDIVIDUAL_LIMITS.amount.min)) *
+    100;
+  const termPct =
+    ((termDays - INDIVIDUAL_LIMITS.term.min) /
+      (INDIVIDUAL_LIMITS.term.max - INDIVIDUAL_LIMITS.term.min)) *
+    100;
 
-  const result = isValid ? calculateAnnuity(amount, termDays) : null;
-
-  const onSubmit: SubmitHandler<FormValues> = () => {
-    window.location.href = '/apply';
-  };
+  const rangeStyle = (pct: number) =>
+    ({ '--range-fill': `${pct}%` }) as React.CSSProperties;
 
   return (
-    <section id="calculator" className="py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+    <section
+      id="calculator"
+      className="scroll-mt-24 bg-[#f1f5f9] py-24 sm:py-28"
+    >
+      <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
             Кредитный калькулятор
           </h2>
-          <p className="mt-3 text-slate-500">
+          <p className="mt-3 text-slate-600">
             Рассчитайте условия займа за несколько секунд — выберите сумму и срок,
             чтобы сразу увидеть итоговую сумму к возврату. Все условия отображаются
             до оформления займа.
           </p>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mx-auto mt-10 max-w-lg space-y-6"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Сумма (EUR)"
-              type="number"
-              step={100}
-              {...register('amount', { valueAsNumber: true })}
-              error={errors.amount?.message}
-            />
-            <Input
-              label="Срок (дней)"
-              type="number"
-              step={1}
-              {...register('termDays', { valueAsNumber: true })}
-              error={errors.termDays?.message}
-            />
+        <div className="mx-auto mt-10 max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="space-y-8">
+            <div>
+              <div className="flex items-baseline justify-between gap-4">
+                <label htmlFor="calc-amount" className="text-sm font-medium text-slate-600">
+                  Сумма (EUR)
+                </label>
+                <span className="text-lg font-bold text-indigo-600">
+                  {amount.toLocaleString('ru-RU')} EUR
+                </span>
+              </div>
+              <input
+                id="calc-amount"
+                type="range"
+                min={INDIVIDUAL_LIMITS.amount.min}
+                max={INDIVIDUAL_LIMITS.amount.max}
+                step={500}
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
+                style={rangeStyle(amountPct)}
+                className="mt-3 w-full cursor-pointer"
+              />
+              <div className="mt-1 flex justify-between text-xs text-slate-500">
+                <span>{INDIVIDUAL_LIMITS.amount.min.toLocaleString('ru-RU')} EUR</span>
+                <span>{INDIVIDUAL_LIMITS.amount.max.toLocaleString('ru-RU')} EUR</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-baseline justify-between gap-4">
+                <label htmlFor="calc-term" className="text-sm font-medium text-slate-600">
+                  Срок (дней)
+                </label>
+                <span className="text-lg font-bold text-indigo-600">
+                  {termDays} дн.
+                </span>
+              </div>
+              <input
+                id="calc-term"
+                type="range"
+                min={INDIVIDUAL_LIMITS.term.min}
+                max={INDIVIDUAL_LIMITS.term.max}
+                step={1}
+                value={termDays}
+                onChange={(e) => setTermDays(Number(e.target.value))}
+                style={rangeStyle(termPct)}
+                className="mt-3 w-full cursor-pointer"
+              />
+              <div className="mt-1 flex justify-between text-xs text-slate-500">
+                <span>{INDIVIDUAL_LIMITS.term.min} дн.</span>
+                <span>{INDIVIDUAL_LIMITS.term.max} дн.</span>
+              </div>
+            </div>
           </div>
 
-          <p className="text-xs text-slate-400 text-center">
-            От {INDIVIDUAL_LIMITS.amount.min.toLocaleString('ru-RU')} до{' '}
-            {INDIVIDUAL_LIMITS.amount.max.toLocaleString('ru-RU')} EUR &middot; от{' '}
-            {INDIVIDUAL_LIMITS.term.min} до {INDIVIDUAL_LIMITS.term.max} дней
-          </p>
-
-          {result && (
-            <div className="rounded-xl bg-indigo-50 p-6 text-center">
-              <p className="text-sm text-slate-500">Ежемесячный платёж</p>
-              <p className="mt-1 text-3xl font-bold text-indigo-600">
-                {result.payment.toLocaleString('ru-RU', {
+          <div className="mt-8 rounded-xl border border-indigo-200 bg-indigo-50 p-6 text-center">
+            <p className="text-sm text-slate-500">Ежемесячный платёж</p>
+            <p className="mt-1 text-3xl font-bold text-indigo-600">
+              {result.payment.toLocaleString('ru-RU', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2 })}{' '}
+              EUR
+            </p>
+            <p className="mt-3 text-sm text-slate-500">
+              Общая сумма к возврату:{' '}
+              <span className="font-medium text-slate-700">
+                {result.total.toLocaleString('ru-RU', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2 })}{' '}
                 EUR
-              </p>
-              <p className="mt-3 text-sm text-slate-500">
-                Общая сумма к возврату:{' '}
-                <span className="font-medium text-slate-700">
-                  {result.total.toLocaleString('ru-RU', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2 })}{' '}
-                  EUR
-                </span>
-              </p>
-            </div>
-          )}
+              </span>
+            </p>
+          </div>
 
-          <p className="text-xs text-slate-400 text-center">
+          <Link
+            href="/apply"
+            className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-100 transition-colors hover:bg-indigo-700"
+          >
+            Получить займ
+          </Link>
+
+          <p className="mt-4 text-center text-xs text-slate-500">
             Расчёт носит ознакомительный характер. Итоговые условия зависят от
             результатов проверки клиента.
           </p>
-        </form>
+        </div>
       </div>
     </section>
   );
