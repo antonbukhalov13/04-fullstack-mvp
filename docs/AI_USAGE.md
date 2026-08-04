@@ -3464,3 +3464,27 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 160
+
+Goal: Редизайн калькулятора — слайдеры вместо числовых полей, карточка результата, единая кнопка «Получить займ»
+
+Prompt: Переделать `frontend/src/widgets/calculator/calculator.tsx`: убрать react-hook-form/valibot, перейти на useState + два range-слайдера (сумма 500–50 000 EUR, срок 7–90 дней) с заливкой через CSS-переменную `--range-fill`, показать мгновенный расчёт и кнопку «Получить займ»; фон секции — `#f1f5f9`, тёмный вариант с карточкой вернётся финальным этапом редизайна.
+
+Result:
+
+- `frontend/src/widgets/calculator/calculator.tsx`:
+  - Форма с `useForm`/`valibotResolver` заменена на `useState` (`amount=1000`, `termDays=30`) и два `input type="range"` с `step={500}` / `step={1}`; заливка трека через `--range-fill` (% от min/max), стили слайдера из globals.css (`#624fd2`).
+  - Расчёт `calculateAnnuity(amount, termDays)` выполняется всегда; карточка результата: ежемесячный платёж и общая сумма к возврату, подписи диапазонов под слайдерами.
+  - Кнопка «Получить займ» (`bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100`) ведёт на `/apply`.
+  - Секция — `bg-[#f1f5f9]`, `scroll-mt-24` (для якоря из hero), карточка `bg-white border-slate-200`, заголовок/тексты `text-slate-900/600`, акценты `text-indigo-600`, блок результата `bg-indigo-50 border-indigo-200`; тёмный вариант (секция `bg-slate-900`, карточка `bg-white/5`) будет восстановлен на финальном этапе.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: слайдеры вместо number-полей убирают необходимость в валидации диапазонов (min/max заданы атрибутами), а заливку трека удобно задавать одной CSS-переменной `--range-fill`, переопределяемой из компонента.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
