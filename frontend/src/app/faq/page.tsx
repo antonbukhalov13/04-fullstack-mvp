@@ -81,11 +81,26 @@ const business = [
   },
 ];
 
-function AccordionItem({ q, a }: { q: string; a: string }) {
+function AccordionItem({
+  q,
+  a,
+  hoverColor = 'indigo',
+}: {
+  q: string;
+  a: string;
+  hoverColor?: 'indigo' | 'green';
+}) {
   const [open, setOpen] = useState(false);
 
+  const hoverClasses =
+    hoverColor === 'green'
+      ? 'hover:border-green-300 hover:bg-green-100'
+      : 'hover:border-indigo-300 hover:bg-indigo-100';
+
   return (
-    <div className="border border-slate-200 rounded-lg">
+    <div
+      className={`border border-slate-200 rounded-lg transition-colors duration-300 ${hoverClasses}`}
+    >
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
@@ -143,7 +158,7 @@ export default function FaqPage() {
             </h2>
             <div className="mt-4 space-y-3">
               {business.map((item) => (
-                <AccordionItem key={item.q} q={item.q} a={item.a} />
+                <AccordionItem key={item.q} q={item.q} a={item.a} hoverColor="green" />
               ))}
             </div>
 

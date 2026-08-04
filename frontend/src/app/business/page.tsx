@@ -101,7 +101,7 @@ export default function BusinessPage() {
               {conditions.map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-lg border border-slate-200 p-4"
+                  className="rounded-lg border border-slate-200 p-4 transition-colors duration-300 hover:border-indigo-300 hover:bg-indigo-100"
                 >
                   <dt className="text-xs text-slate-500">{item.label}</dt>
                   <dd className="mt-1 text-sm font-semibold text-slate-900">

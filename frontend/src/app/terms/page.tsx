@@ -14,8 +14,8 @@ export default function TermsPage() {
             <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
               Условия использования
             </h1>
-            <div className="mt-8 rounded-xl border border-slate-200 p-8">
-              <p className="text-sm text-slate-500">
+            <div className="mt-8 rounded-xl border border-slate-200 p-8 transition-colors duration-300 group hover:border-indigo-300 hover:bg-indigo-100">
+              <p className="text-sm text-slate-500 transition-colors duration-300 group-hover:text-indigo-600">
                 Документ в разработке
               </p>
             </div>
