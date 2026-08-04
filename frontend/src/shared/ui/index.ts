@@ -10,3 +10,4 @@ export { Spinner } from './spinner';
 export { EmptyState } from './empty-state';
 export { Pagination } from './pagination';
 export { LoadingOverlay } from './loading-overlay';
+export { ScrollReveal } from './scroll-reveal';
