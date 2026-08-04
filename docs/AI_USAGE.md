@@ -3830,3 +3830,23 @@ What I learned: Первая версия правки применила border
 Model used: Claude Sonnet 5
 
 Instrument used: Claude.ai
+
+## Request 177
+
+Goal: Добавить цветные hover-состояния карточкам на /business и /faq (по аналогии с Безопасность/Работаем прозрачно), а также фиолетовый hover блоку «Документ в разработке» на юридических страницах и фиолетовые кружки с цифрами в списках /privacy и /cookie-policy (по аналогии с /how-it-works)
+
+Prompt: на странице /business - цвет рамки и фона у карточек в секции Условия финансирования должны меняться на фиолетовый при наведении, точно также как карточки в секции Безопасность на главной странице
+на странице /faq - цвет рамки и фона у карточек в секциях Для физических лиц должны меняться на фиолетовый при наведении, точно также как карточки в секции Безопасность на главной странице
+на странице /faq - цвет рамки и фона у карточек в секциях Для бизнеса должны меняться на зеленый при наведении, точно также как карточки в секции Работаем прозрачно и в рамках закона на главной странице
+на страницах /terms, /credit-policy, /aml-kyc - цвет рамки, текста и фона Документ в разработке должны меняться на фиолетовый при наведении, точно также как карточки в секции Безопасность на главной странице, только еще добавляется изменение цвета текста на такой же как у рамки
+на страницах /privacy, /cookie-policy - добавить фиолетовые кружки с цифрами вместо обычных цифр главного списка (1. Контролёр персональных данных и тд), точно также как список Как проходит оформление займа на странице /how-it-works
+
+Result: frontend/src/app/business/page.tsx — карточки секции «Условия финансирования» получили transition-colors duration-300 hover:border-indigo-300 hover:bg-indigo-100 (те же классы, что в client-safety.tsx). frontend/src/app/faq/page.tsx — компонент AccordionItem получил проп hoverColor: карточки «Для физических лиц» используют дефолт hover:border-indigo-300 hover:bg-indigo-100 (как client-safety.tsx), карточки «Для бизнеса» — hoverColor="green" → hover:border-green-300 hover:bg-green-100 (как trust-block.tsx). frontend/src/app/terms/page.tsx, credit-policy/page.tsx, aml-kyc/page.tsx — блок «Документ в разработке» получил group hover:border-indigo-300 hover:bg-indigo-100 на контейнере и group-hover:text-indigo-600 на тексте, чтобы цвет текста синхронизировался с цветом рамки. frontend/src/app/privacy/page.tsx, cookie-policy/page.tsx — нумерованный список секций заменён на flex-блоки с кружком flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold вместо текстовых цифр «1.», «2.» и т.д. (по образцу круга в how-it-works.tsx, адаптированного под светлый фон страницы).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Паттерн hoverColor-пропа в AccordionItem (faq/page.tsx) позволяет переиспользовать один компонент для разноцветных секций вместо дублирования разметки. Для синхронного изменения цвета рамки и текста при наведении (Документ в разработке) удобнее вешать group на родителя и group-hover: на дочерний текст, а не заводить локальный React-стейт под hover. Круг-нумератор из how-it-works.tsx (тёмная секция, bg-indigo-500/10 text-indigo-400) при переносе на светлые страницы privacy/cookie-policy нужно было адаптировать под светлый фон — bg-indigo-100 text-indigo-700, иначе контраст терялся.
+
+Model used: Claude Sonnet 5
+
+Instrument used: Claude.ai
