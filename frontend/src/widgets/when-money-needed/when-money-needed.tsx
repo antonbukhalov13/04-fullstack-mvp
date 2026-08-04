@@ -36,7 +36,7 @@ export function WhenMoneyNeeded() {
           {cards.map((card) => (
             <div
               key={card.title}
-              className="rounded-xl border border-slate-200 p-6 bg-white"
+              className="rounded-xl border border-slate-200 p-6 bg-white transition-colors duration-300 hover:border-indigo-300 hover:bg-indigo-100"
             >
               <h3 className="text-base font-semibold text-slate-900">
                 {card.title}

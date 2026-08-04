@@ -17,7 +17,7 @@ export function TrustBlock() {
           {points.map((point) => (
             <div
               key={point}
-              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-5"
+              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-5 transition-colors duration-300 hover:border-green-300 hover:bg-green-100"
             >
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
                 <svg

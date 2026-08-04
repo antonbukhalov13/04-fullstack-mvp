@@ -43,7 +43,7 @@ export function ClientSafety() {
             {items.map((item, i) => (
               <div
                 key={i}
-                className="flex items-start gap-4 rounded-xl border border-slate-200 bg-slate-50 p-6"
+                className="flex items-start gap-4 rounded-xl border border-slate-200 bg-slate-50 p-6 transition-colors duration-300 hover:border-indigo-300 hover:bg-indigo-100"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
                   {item.icon}

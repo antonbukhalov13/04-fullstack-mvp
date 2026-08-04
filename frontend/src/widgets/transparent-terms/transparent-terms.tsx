@@ -34,7 +34,7 @@ export function TransparentTerms() {
           {points.map((point) => (
             <div
               key={point.title}
-              className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5"
+              className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5 transition-colors duration-300 hover:border-green-300 hover:bg-green-100"
             >
               <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-700">
                 <svg
