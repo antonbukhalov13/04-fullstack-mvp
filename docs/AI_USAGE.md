@@ -3850,3 +3850,19 @@ What I learned: Паттерн hoverColor-пропа в AccordionItem (faq/page.
 Model used: Claude Sonnet 5
 
 Instrument used: Claude.ai
+
+## Request 178
+
+Goal: Исправить баг — на странице /faq вкладка браузера показывала заголовок главной страницы вместо заголовка FAQ
+
+Prompt: На странице /faq заголовок вкладки браузера не меняется и остаётся таким же, как на главной странице.
+
+Result: Причина — frontend/src/app/faq/page.tsx был клиентским компонентом ('use client', useState для аккордеона), а в Next.js App Router экспортировать metadata можно только из серверного компонента; из-за этого страница не имела собственного title и наследовала дефолтный из layout.tsx («LumenBridge Finance — займы для частных лиц и бизнеса»). Файл разделён на два: frontend/src/app/faq/page.tsx стал серверным компонентом без 'use client', экспортирует export const metadata: Metadata = { title: 'Часто задаваемые вопросы' } (через шаблон layout.tsx превращается в «Часто задаваемые вопросы | LumenBridge Finance») и рендерит <FaqContent />. Весь прежний интерактивный код (данные individuals/business, компонент AccordionItem, useState, разметка) перенесён без изменений в новый frontend/src/app/faq/faq-content.tsx с 'use client' и экспортом export function FaqContent().
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: В App Router 'use client' на файле page.tsx блокирует экспорт metadata на уровне всего файла — Next.js не выдаёт ошибку сборки, а тихо наследует title из ближайшего родительского layout, из-за чего баг незаметен при беглой проверке (страница открывается и работает нормально, ломается только вкладка браузера). Стандартное решение — выносить интерактивную часть в отдельный клиентский компонент, оставляя page.tsx серверным ради metadata.
+
+Model used: Claude Sonnet 5
+
+Instrument used: Claude.ai
