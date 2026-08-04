@@ -5,7 +5,9 @@ import Link from 'next/link';
 export function Hero() {
   function handleScrollToCalculator(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
-    document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
+    document
+      .getElementById('calculator')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     window.history.replaceState(null, '', '/#calculator');
   }
 
