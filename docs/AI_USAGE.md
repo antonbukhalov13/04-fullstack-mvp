@@ -3814,3 +3814,19 @@ What I learned: Цвет hover-состояния карточек логичн�
 Model used: Claude Sonnet 5
 
 Instrument used: Claude.ai
+
+## Request 176
+
+Goal: Добавить фиолетовую рамку карточкам секции «Часто задаваемые вопросы» при наведении, в цвет рамки форм /login, /admin/login и /apply
+
+Prompt: Карточкам в секции Часто задаваемые вопросы добавить фиолетовую рамку такую же, как у формы login/admin-login/apply. Уточнение: рамка должна появляться только при наведении, а не отображаться постоянно.
+
+Result: frontend/src/widgets/faq-preview/faq-preview.tsx — карточки вопросов получили transition-colors duration-300 hover:border-indigo-600 поверх базовой border-slate-800 bg-white/5. В состоянии покоя рамка остаётся тёмной (border-slate-800), при наведении плавно переходит в border-indigo-600 — тот же цвет, что у карточек форм /login, /admin/login и /apply.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Первая версия правки применила border-indigo-600 как базовый цвет карточки — визуально совпало с формами входа, но не с исходным запросом (нужен был именно hover-эффект). Стоит уточнять «постоянный цвет» vs «цвет при наведении» сразу, если референс — статичный элемент (рамка формы), а просят применить его к интерактивной карточке.
+
+Model used: Claude Sonnet 5
+
+Instrument used: Claude.ai
