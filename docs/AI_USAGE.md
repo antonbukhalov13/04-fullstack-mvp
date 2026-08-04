@@ -3389,3 +3389,28 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 157
+
+Goal: Редизайн шапки — логотип с иконкой и подзаголовком, компактная навигация, единая ссылка «Войти/Кабинет»
+
+Prompt: Переделать `frontend/src/widgets/header/header.tsx`: логотип из иконки favicon.svg + надписи LumenBridge/Finance, убрать кнопку «Получить займ», «Войти/Кабинет» сделать единой текстовой ссылкой вне навигации (ведёт на `/login` или `/dashboard/applications` в зависимости от авторизации), выровнять размеры и отступы навигации.
+
+Result:
+
+- `frontend/src/widgets/header/header.tsx`:
+  - Логотип — `<img src="/favicon.svg">` + колонка «LumenBridge» / «Finance» (uppercase, tracking-wider, text-[11px]); клик по логотипу на главной — smooth-scroll вверх (`window.scrollTo` + `history.replaceState`).
+  - Убрана кнопка «Получить займ» из desktop и mobile; вместо двух кнопок «Войти»/«Кабинет» — одна текстовая ссылка `authHref`/`authLabel` (по `isLoggedIn`).
+  - Навигация и ссылка входа — `text-[13px]`, разделены вертикальным разделителем `h-5 w-px bg-slate-200`; контейнер расширен до `max-w-[100rem]`.
+  - Шапка — `bg-slate-50/90 backdrop-blur`; из мобильного меню убрана анимация `animate-in slide-in-from-top-2`.
+  - Завершающий перенос строки в файле потерян (последний символ — `}` без `\n`).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: вместо двух кнопок авторизации «Войти»/«Кабинет» одна ссылка с условным href/label проще и не дублирует логику в мобильном меню; логотип-бренд лучше собрать из существующего favicon, а не плодить новые ассеты.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
