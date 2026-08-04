@@ -3734,3 +3734,19 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 171
+
+Goal: Убрать декоративные вертикальные фиолетовые линии у краёв экрана в четырёх секциях главной страницы
+
+Prompt: Убрать вертикальные фиолетовые линии у краев экрана на главной странице у секций Вы заранее знаете все условия, Работаем прозрачно и в рамках закона, Безопасность клиентов, Контактная информация
+
+Result: Найдены и удалены декоративные <div aria-hidden className="pointer-events-none absolute inset-y-8 left/right-6 w-px bg-indigo-600" /> (введены в Request 168 как часть финальной визуальной схемы) в четырёх виджетах: frontend/src/widgets/transparent-terms/transparent-terms.tsx (слева), frontend/src/widgets/trust-block/trust-block.tsx (справа), frontend/src/widgets/client-safety/client-safety.tsx (слева), frontend/src/widgets/contact-details/contact-details.tsx (справа). Остальная разметка секций (заголовки, карточки, контейнеры) не тронута.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Линии были добавлены в Request 168 при внедрении финальной цветовой схемы (декоративные вертикальные линии на светлых секциях), но по факту оказались лишними для дизайна.
+
+Model used: Claude Sonnet 5
+
+Instrument used: Claude.ai
