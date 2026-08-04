@@ -7,13 +7,13 @@ const benefits = [
 
 export function CreditHistory() {
   return (
-    <section className="py-16">
+    <section className="py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
             Займ — это не только деньги сейчас
           </h2>
-          <p className="mt-6 text-base text-slate-600 leading-relaxed">
+          <p className="mt-6 text-base text-slate-500 leading-relaxed">
             Своевременное погашение займа помогает улучшить кредитный рейтинг и
             открывает доступ к более выгодным условиям в будущем.
           </p>
@@ -21,9 +21,9 @@ export function CreditHistory() {
             {benefits.map((benefit) => (
               <div
                 key={benefit}
-                className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-5 py-3"
+                className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-5 py-3"
               >
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-700">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
                   <svg
                     className="h-3 w-3"
                     fill="none"
@@ -45,7 +45,7 @@ export function CreditHistory() {
           <div className="mt-8">
             <Link
               href="/apply?type=individual"
-              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700"
             >
               Начать с небольшого займа
             </Link>

@@ -21,20 +21,20 @@ export function HowItWorks() {
   ];
 
   return (
-    <section className="py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
+    <section className="py-24 sm:py-28">
+      <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
           Как всё происходит
         </h2>
-        <p className="mt-3 text-center text-slate-500 max-w-2xl mx-auto">
+        <p className="mt-3 text-slate-500 max-w-2xl">
           Оформление займа занимает всего несколько минут и полностью проходит
           онлайн, без визитов в офис и сложных процедур.
         </p>
 
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map((step) => (
-            <div key={step.number} className="text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold">
+            <div key={step.number}>
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold">
                 {step.number}
               </div>
               <h3 className="mt-4 text-lg font-semibold text-slate-900">

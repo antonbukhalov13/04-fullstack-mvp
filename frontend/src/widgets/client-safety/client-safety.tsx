@@ -27,17 +27,23 @@ const items = [
 
 export function ClientSafety() {
   return (
-    <section className="py-16 sm:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
-            Безопасность клиентов
-          </h2>
-          <div className="mt-10 space-y-4">
+    <section className="py-24 sm:py-28">
+      <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <span className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
+              Безопасность
+            </span>
+            <h2 className="mt-3 text-2xl sm:text-3xl font-bold text-slate-900">
+              Безопасность клиентов
+            </h2>
+          </div>
+
+          <div className="lg:col-span-8 space-y-4">
             {items.map((item, i) => (
               <div
                 key={i}
-                className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-6"
+                className="flex items-start gap-4 rounded-xl border border-slate-200 bg-slate-50 p-6"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
                   {item.icon}

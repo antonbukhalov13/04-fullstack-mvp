@@ -1,6 +1,9 @@
 export function ContactDetails() {
   return (
-    <section id="contact-details" className="py-16 scroll-mt-24">
+    <section
+      id="contact-details"
+      className="scroll-mt-24 py-24 sm:py-28"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
@@ -37,7 +40,7 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <a href="https://maps.google.com/?q=18+Lower+Baggot+Street+Dublin+2+Ireland" target="_blank" rel="noopener noreferrer" className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
+              <a href="https://maps.google.com/?q=18+Lower+Baggot+Street+Dublin+2+Ireland" target="_blank" rel="noopener noreferrer" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
                 18 Lower Baggot Street, Dublin 2, Ireland
               </a>
             </div>
@@ -57,7 +60,7 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <a href="mailto:support@lumenbridge.example" className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
+              <a href="mailto:support@lumenbridge.example" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
                 support@lumenbridge.example
               </a>
             </div>
@@ -77,7 +80,7 @@ export function ContactDetails() {
                   />
                 </svg>
               </div>
-              <a href="tel:+35315318420" className="text-sm text-slate-500 hover:text-slate-700 transition-colors">
+              <a href="tel:+35315318420" className="text-sm text-slate-500 hover:text-slate-900 transition-colors">
                 +353 1 531 8420
               </a>
             </div>
