@@ -3488,3 +3488,27 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 161
+
+Goal: Секции «Основные условия» и «Вы заранее знаете все условия» — увеличенные вертикальные отступы и переработанная карточная сетка
+
+Prompt: В `frontend/src/widgets/loan-terms/loan-terms.tsx` увеличить вертикальные отступы секции (`py-16` → `py-24 sm:py-28`). В `frontend/src/widgets/transparent-terms/transparent-terms.tsx` переработать секцию: карточки в две колонки, акцентный заголовок; фон секции — `#f1f5f9`, тёмный градиентный вариант вернётся финальным этапом редизайна.
+
+Result:
+
+- `frontend/src/widgets/loan-terms/loan-terms.tsx` — секция получила `py-24 sm:py-28` (единые вертикальные отступы с остальными секциями лендинга).
+- `frontend/src/widgets/transparent-terms/transparent-terms.tsx`:
+  - Список точек из одной колонки (`max-w-3xl space-y-4`) переделан в сетку `grid-cols-1 sm:grid-cols-2 gap-4`.
+  - Секция — `bg-[#f1f5f9]` без радиальных оверлеев (временный вариант; `bg-slate-950` + оверлеи + сетка будут восстановлены на финальном этапе).
+  - Карточки `bg-white border-slate-200`, заголовок `text-slate-900`, описания `text-slate-600`, иконка-галочка `bg-green-100 text-green-700`.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: секция из 5 коротких пунктов хорошо ложится в сетку 2×2+1 с равными отступами; оверлеи-градиенты лучше хранить как блоки в самой секции, чтобы на финальном этапе вернуть их одним диффом.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
