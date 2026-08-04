@@ -30,52 +30,54 @@ Backend:
 ```
 backend/
   prisma/
-    schema.prisma               # модели: User, AdminUser, OtpCode, Application, Loan,
-                                 # PaymentScheduleItem, PaymentRequest, Payment, Notification,
-                                 # ContactMessage, FileAttachment, AuditLog
-    migrations/                 # история миграций
-    seed.ts                     # admin/operator + mock-данные для демонстрации
+    schema.prisma                 # модели: User, AdminUser, OtpCode, Application, Loan,
+                                  # PaymentScheduleItem, PaymentRequest, Payment, Notification,
+                                  # ContactMessage, FileAttachment, AuditLog
+    migrations/                   # история миграций
+    seed.ts                       # admin/operator + mock-данные для демонстрации
   src/
-    main.ts                     # bootstrap, CORS, ValidationPipe, порт 3001
-    app.module.ts               # корневой модуль
-    prisma/                     # PrismaService / PrismaModule
+    main.ts                       # bootstrap, CORS, ValidationPipe, порт 3001
+    app.module.ts                 # корневой модуль
+    prisma/                       # PrismaService / PrismaModule
     common/
-      guards/                   # JwtAuthGuard, AdminJwtAuthGuard, RolesGuard, OptionalJwtAuthGuard
-      decorators/               # @CurrentUser, @Roles
+      guards/                     # JwtAuthGuard, AdminJwtAuthGuard, RolesGuard, OptionalJwtAuthGuard
+      decorators/                 # @CurrentUser, @Roles
+      utils/                      # applicant-name.ts и прочие вспомогательные функции
     modules/
-      auth/                     # вход пользователя: mock SMS OTP (request/verify)
-      admin-auth/               # вход администратора/оператора по логину и паролю
-      admin-users/              # управление админ-аккаунтами и ролями (только admin)
-      calculator/               # аннуитетный расчёт условий займа
-      applications/             # заявки: создание, список, статус, комментарии оператора
-      loans/                    # займы: подписание через OTP, график, статусы, закрытие
-      payment-requests/         # заявки пользователя на оплату
-      payments/                 # решение по заявке на оплату, ручная фиксация платежа
-      notifications/            # уведомления пользователя и системные уведомления админки
-      contact-messages/         # форма обратной связи
-      clients/                  # карточка клиента для админ-панели
-      files/                    # загрузка/выдача файлов через MinIO (S3 API)
-      audit-log/                # журнал действий администраторов/операторов
-  docker-compose.yml            # postgres + minio для локального запуска
+      auth/                       # вход пользователя: mock SMS OTP (request/verify)
+      admin-auth/                 # вход администратора/оператора по логину и паролю
+      admin-users/                # управление админ-аккаунтами и ролями (только admin)
+      calculator/                 # аннуитетный расчёт условий займа
+      applications/               # заявки: создание, список, статус, комментарии оператора
+      loans/                      # займы: подписание через OTP, график, статусы, закрытие
+      payment-requests/           # заявки пользователя на оплату
+      payments/                   # решение по заявке на оплату, ручная фиксация платежа
+      overdue/                    # cron-проверка и пересчёт просроченных платежей
+      notifications/              # уведомления пользователя и системные уведомления админки
+      contact-messages/           # форма обратной связи
+      clients/                    # карточка клиента для админ-панели
+      files/                      # загрузка/выдача файлов через MinIO (S3 API)
+      audit-log/                  # журнал действий администраторов/операторов
+  docker-compose.yml              # postgres + minio для локального запуска
   package.json
 docs/
-  AGENTS.md                     # правила для агента
-  AI_USAGE.md                   # журнал AI-запросов
-  04-fullstack-client-content.md # исходный клиентский текст
-  04-fullstack-task-spec.md     # полное ТЗ и критерии приёмки
-  PROMPT_PLAN.md                # пошаговый план разработки
-  TASK.md                       # краткая сводка задачи
+  AGENTS.md                       # правила для агента
+  AI_USAGE.md                     # журнал AI-запросов
+  04-fullstack-client-content.md  # исходный клиентский текст
+  04-fullstack-task-spec.md       # полное ТЗ и критерии приёмки
+  PROMPT_PLAN.md                  # пошаговый план разработки
+  TASK.md                         # краткая сводка задачи
 frontend/
   src/
-    app/                        # публичные страницы, /login, /apply, /dashboard, /admin
-      dashboard/                # личный кабинет: заявки, займы, оплаты, уведомления
-      admin/                    # админ-панель: (auth) и (dashboard) сегменты
-    features/                   # apply-loan, login-otp, admin-login, admin-*-list и т.д.
-    widgets/                    # блоки лендинга, calculator, header/footer, sidebar-ы
+    app/                          # публичные страницы, /login, /apply, /dashboard, /admin
+      dashboard/                  # личный кабинет: заявки, займы, оплаты, уведомления
+      admin/                      # админ-панель: (auth) и (dashboard) сегменты
+    features/                     # apply-loan, login-otp, admin-login, admin-*-list и т.д.
+    widgets/                      # блоки лендинга, calculator, header/footer, sidebar-ы
     shared/
-      api/                      # api-client.ts — обёртка над fetch, токены пользователя/админа
-      ui/                       # переиспользуемые UI-компоненты
-      lib/calculator.ts         # клиентский расчёт для превью в калькуляторе
+      api/                        # api-client.ts — обёртка над fetch, токены пользователя/админа
+      ui/                         # переиспользуемые UI-компоненты
+      lib/                        # calculator.ts (клиентский расчёт для превью), notification-events.ts, phone.ts
   next.config.ts
   package.json
 ```
