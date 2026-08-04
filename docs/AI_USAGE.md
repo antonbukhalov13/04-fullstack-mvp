@@ -3682,3 +3682,29 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 169
+
+Goal: Сделать интерьер форм /apply, /login, /admin/login светлым (белым), как до введения тёмной темы, сохранив текущий тёмный фон страниц
+
+Prompt: Формы /apply, /login, /admin/login сделать светлыми внутри (белая карточка, светлые поля), а фон страниц оставить точно таким же как сейчас (bg-slate-950 с градиент-оверлеями и сеткой).
+
+Result:
+
+- `frontend/src/app/apply/page.tsx` — карточка формы `bg-slate-900/70` → `bg-white` (рамка `border-indigo-600` и фон страницы не тронуты; h1 и подзаголовок остались поверх тёмного фона вне карточки).
+- `frontend/src/app/login/page.tsx` — карточка `bg-slate-900/70` → `bg-white`; `h1` `text-white` → `text-slate-900`; подзаголовок `text-slate-400` → `text-slate-500`.
+- `frontend/src/app/admin/(auth)/login/page.tsx` — карточка `bg-slate-900/70` → `bg-white`; `h1` `text-white` → `text-slate-900`; подзаголовок `text-slate-400` → `text-slate-500`; подсказка о тестовых данных осталась `text-slate-500`.
+- `frontend/src/features/apply-loan/apply-form.tsx` — убран проп `dark` у всех `Input`/`Select`; индиго-блоки `border-indigo-500/30 bg-indigo-500/10 text-indigo-200` → `bg-indigo-50 text-slate-700`; success `bg-green-500/10 border-green-500/30 text-green-300` → `bg-green-50 border-green-200 text-green-800`; ошибки `text-red-400` → `text-red-600`; метка файла `text-indigo-400 hover:text-indigo-300` → `text-indigo-600 hover:text-indigo-500`; вспомогательный текст `text-slate-300`/`text-slate-400` → `text-slate-700`/`text-slate-500`; кнопка «Подать ещё одну заявку» `text-slate-400 hover:text-slate-200` → `text-slate-500 hover:text-slate-700`; «Удалить» `text-red-400` → `text-red-500 hover:text-red-700`.
+- `frontend/src/features/login-otp/login-form.tsx` — убран `dark` у обоих Input; тексты `text-slate-300` → `text-slate-500`, телефон `text-slate-100` → `text-slate-900`; mock-OTP блок `text-amber-300 bg-amber-500/10` → `text-amber-800 bg-amber-50`; таймер `text-slate-400` → `text-slate-500`, `text-slate-200` → `text-slate-700`; ошибки `text-red-400` → `text-red-600`.
+- `frontend/src/features/admin-login/admin-login-form.tsx` — убран `dark` у обоих Input; ошибка `text-red-400` → `text-red-600`.
+- `Button variant="secondary"` (белый с `border-slate-300`) не менялся — уже подходит под светлую карточку.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: перевод формы с тёмной темы обратно на светлую не требует менять фон страницы — достаточно поменять `bg` карточки на `bg-white` и убрать проп `dark` у полей, а цвета текста/блоков привести к светлой палитре; цвета индиго-блоков и success/error состояний в apply-form и login-form согласованы между собой.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
