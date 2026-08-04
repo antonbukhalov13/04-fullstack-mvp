@@ -79,7 +79,11 @@ export function Footer() {
                           ? (e) => handleSectionClick(e, link.href.slice(link.href.indexOf('#')))
                           : undefined
                       }
-                      className="inline-flex items-center gap-1.5 text-[13px] text-slate-500 transition-colors hover:text-slate-700 min-h-[20px]"
+                      className={`inline-flex items-center gap-1.5 text-[13px] transition-colors min-h-[20px] ${
+                        link.section
+                          ? 'text-indigo-600 hover:text-indigo-800'
+                          : 'text-slate-500 hover:text-slate-700'
+                      }`}
                     >
                       {link.label}
                     </Link>
