@@ -8,12 +8,14 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePaymentRequestDto } from './dto/create-payment-request.dto';
 import { QueryPaymentRequestsDto } from './dto/query-payment-requests.dto';
 import { resolveDisplayName } from '../../common/utils/applicant-name';
+import { OverdueService } from '../overdue/overdue.service';
 
 @Injectable()
 export class PaymentRequestsService {
   constructor(
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
+    private overdueService: OverdueService,
   ) {}
 
   async create(loanId: string, userId: string, dto: CreatePaymentRequestDto) {
@@ -53,6 +55,8 @@ export class PaymentRequestsService {
   }
 
   async findAll(query: QueryPaymentRequestsDto, take: number, skip: number) {
+    await this.overdueService.checkOverduePayments();
+
     const where: any = {};
 
     if (query.status) {
@@ -102,6 +106,8 @@ export class PaymentRequestsService {
   }
 
   async findUserPaymentRequests(userId: string) {
+    await this.overdueService.checkOverduePayments();
+
     return this.prisma.paymentRequest.findMany({
       where: { userId },
       include: {
