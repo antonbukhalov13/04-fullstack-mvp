@@ -15,9 +15,9 @@ export default function AdminLoginPage() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.06)_1px,transparent_1px)] bg-[size:72px_72px]" />
       </div>
       <ScrollReveal direction="left" className="relative w-full max-w-sm">
-        <div className="rounded-lg border border-indigo-600 bg-slate-900/70 p-6 shadow-sm">
-          <h1 className="text-xl font-bold text-white mb-1">Админ-панель</h1>
-          <p className="text-sm text-slate-400 mb-6">Войдите для управления системой</p>
+        <div className="rounded-lg border border-indigo-600 bg-white p-6 shadow-sm">
+          <h1 className="text-xl font-bold text-slate-900 mb-1">Админ-панель</h1>
+          <p className="text-sm text-slate-500 mb-6">Войдите для управления системой</p>
           <AdminLoginForm />
           <p className="mt-4 text-center text-xs text-slate-500">
             Тестовые данные: admin / admin123 · operator / operator123

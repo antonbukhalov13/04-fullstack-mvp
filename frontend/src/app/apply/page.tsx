@@ -31,7 +31,7 @@ export default function ApplyPage({
           <p className="text-slate-400 mb-6">
             Заполните форму, и мы свяжемся с вами для уточнения деталей
           </p>
-          <div className="rounded-xl border border-indigo-600 bg-slate-900/70 p-6 shadow-sm sm:p-8">
+          <div className="rounded-xl border border-indigo-600 bg-white p-6 shadow-sm sm:p-8">
             <ApplyForm searchParams={searchParams} />
           </div>
         </div>

@@ -22,9 +22,9 @@ export default function LoginPage() {
         />
       </div>
       <ScrollReveal direction="right" className="relative w-full max-w-sm">
-        <div className="rounded-lg border border-indigo-600 bg-slate-900/70 p-6 shadow-sm">
-          <h1 className="text-xl font-bold text-white mb-1">Вход</h1>
-          <p className="text-sm text-slate-400 mb-6">
+        <div className="rounded-lg border border-indigo-600 bg-white p-6 shadow-sm">
+          <h1 className="text-xl font-bold text-slate-900 mb-1">Вход</h1>
+          <p className="text-sm text-slate-500 mb-6">
             Войдите, чтобы управлять заявками и отслеживать статус займа
           </p>
           <LoginForm />

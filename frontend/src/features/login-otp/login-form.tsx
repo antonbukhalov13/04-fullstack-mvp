@@ -157,11 +157,10 @@ export function LoginForm() {
     <>
       {step === 'phone' ? (
           <form onSubmit={phoneForm.handleSubmit(onRequestOtp)} className="space-y-4">
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-slate-500">
               Введите номер телефона, и мы отправим вам код подтверждения
             </p>
             <Input
-              dark
               label="Телефон"
               type="tel"
               placeholder="+353..."
@@ -170,7 +169,7 @@ export function LoginForm() {
             />
 
             {submitState === 'idle' && errorMessage && (
-              <p className="text-sm text-red-400">{errorMessage}</p>
+              <p className="text-sm text-red-600">{errorMessage}</p>
             )}
 
             <Button type="submit" disabled={submitState === 'submitting'}>
@@ -180,26 +179,25 @@ export function LoginForm() {
         ) : (
           <form onSubmit={codeForm.handleSubmit(onVerifyOtp)} className="space-y-4">
             <div>
-              <p className="text-sm text-slate-300">
-                Код отправлен на <span className="font-medium text-slate-100">{phone}</span>
+              <p className="text-sm text-slate-500">
+                Код отправлен на <span className="font-medium text-slate-900">{phone}</span>
               </p>
               {mockOtp && (
-                <p className="mt-1 text-xs text-amber-300 bg-amber-500/10 rounded px-2 py-1">
+                <p className="mt-1 text-xs text-amber-800 bg-amber-50 rounded px-2 py-1">
                   Тестовый код (dev): <span className="font-mono font-semibold">{mockOtp}</span>
                 </p>
               )}
             </div>
 
             {!expired ? (
-              <p className="text-xs text-slate-400">
-                Код действителен ещё <span className="font-medium text-slate-200">{formatted}</span>
+              <p className="text-xs text-slate-500">
+                Код действителен ещё <span className="font-medium text-slate-700">{formatted}</span>
               </p>
             ) : (
-              <p className="text-xs text-red-400">Код истёк</p>
+              <p className="text-xs text-red-600">Код истёк</p>
             )}
 
             <Input
-              dark
               label="Код из SMS"
               placeholder="000000"
               maxLength={6}

@@ -201,19 +201,19 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
 
   if (submitState === 'success') {
     return (
-      <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-8 text-center space-y-4">
-        <p className="text-green-300 font-medium">
+      <div className="rounded-xl border border-green-200 bg-green-50 p-8 text-center space-y-4">
+        <p className="text-green-800 font-medium">
           Заявка отправлена. Мы свяжемся с вами в ближайшее время.
         </p>
         {successId && (
-          <p className="text-sm text-green-400">
+          <p className="text-sm text-green-700">
             Номер заявки: <span className="font-mono">{successId}</span>
           </p>
         )}
         <div className="flex flex-col items-center gap-4 pt-2">
           <button
             onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
-            className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-400 hover:text-slate-200"
+            className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-500 hover:text-slate-700"
           >
             Подать ещё одну заявку
           </button>
@@ -231,7 +231,6 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
   return (
     <form onSubmit={handleFormSubmit} className="space-y-4">
       <Select
-        dark
         label="Тип заявителя"
         value={applicantType}
         onChange={(e) => {
@@ -244,12 +243,11 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
       </Select>
 
       {isAuthenticated ? (
-        <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-4 text-sm text-indigo-200">
+        <div className="rounded-lg bg-indigo-50 p-4 text-sm text-slate-700">
           Заявка будет подана от вашего аккаунта — телефон подставляется автоматически.
         </div>
       ) : (
         <Input
-          dark
           label="Телефон *"
           type="tel"
           placeholder="+353..."
@@ -261,19 +259,16 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
       {applicantType === 'individual' ? (
         <>
           <Input
-            dark
             label="Имя *"
             {...register('firstName')}
             error={errors.firstName?.message}
           />
           <Input
-            dark
             label="Фамилия *"
             {...register('lastName')}
             error={errors.lastName?.message}
           />
           <Input
-            dark
             label="Email"
             type="email"
             {...register('email')}
@@ -283,26 +278,22 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
       ) : (
         <>
           <Input
-            dark
             label="Название компании *"
             {...register('companyName')}
             error={errors.companyName?.message}
           />
           <Input
-            dark
             label="Регистрационный номер *"
             {...register('registrationNumber')}
             error={errors.registrationNumber?.message}
           />
           <Input
-            dark
             label="Email компании"
             type="email"
             {...register('companyEmail')}
             error={errors.companyEmail?.message}
           />
           <Input
-            dark
             label="Телефон компании"
             type="tel"
             {...register('companyPhone')}
@@ -313,7 +304,6 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
-          dark
           label="Сумма (EUR) *"
           type="number"
           placeholder={`${limits.amount.min.toLocaleString()}–${limits.amount.max.toLocaleString()}`}
@@ -321,7 +311,6 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
           error={errors.amount?.message}
         />
         <Input
-          dark
           label="Срок (дней) *"
           type="number"
           placeholder={`${limits.term.min}–${limits.term.max}`}
@@ -331,7 +320,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
       </div>
 
       {watchAmount > 0 && watchTerm > 0 && (
-        <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-4 text-sm text-indigo-200">
+        <div className="rounded-lg bg-indigo-50 p-4 text-sm text-slate-700">
           {(() => {
             const { payment, total } = calculateAnnuity(watchAmount, watchTerm);
             return (
@@ -361,7 +350,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
             <label
               htmlFor="business-files"
               className={[
-                'inline-flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors min-h-[44px]',
+                'inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition-colors min-h-[44px]',
                 isUploading ? 'opacity-50 pointer-events-none' : 'cursor-pointer',
               ].join(' ')}
             >
@@ -370,18 +359,18 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
               </svg>
               {isUploading ? 'Загрузка...' : 'Выбрать файл'}
             </label>
-            <span className="text-sm text-slate-300">Документы (Certificate of Incorporation и т.п.)</span>
+            <span className="text-sm text-slate-700">Документы (Certificate of Incorporation и т.п.)</span>
           </div>
-          {isUploading && <p className="text-xs text-slate-400">Загрузка...</p>}
+          {isUploading && <p className="text-xs text-slate-500">Загрузка...</p>}
           {uploadedFiles.length > 0 && (
             <ul className="space-y-1">
               {uploadedFiles.map((f) => (
-                <li key={f.id} className="flex items-center justify-between text-sm text-slate-300">
+                <li key={f.id} className="flex items-center justify-between text-sm text-slate-700">
                   <span className="truncate">{f.name}</span>
                   <button
                     type="button"
                     onClick={() => removeFile(f.id)}
-                    className="ml-2 text-red-400 hover:text-red-300 text-xs shrink-0 inline-flex items-center min-h-[36px] transition-colors"
+                    className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px] transition-colors"
                   >
                     Удалить
                   </button>
@@ -393,7 +382,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
       )}
 
       {submitState === 'error' && (
-        <p className="text-sm text-red-400">{errorMessage}</p>
+        <p className="text-sm text-red-600">{errorMessage}</p>
       )}
 
       <div className={applicantType === 'individual' ? 'pt-2' : ''}>
