@@ -3538,3 +3538,26 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 163
+
+Goal: Анимация появления секций на всех публичных страницах через компонент ScrollReveal
+
+Prompt: Обернуть контент публичных страниц в `ScrollReveal` (анимация появления при скролле из `shared/ui`): главная (`app/page.tsx`) — каждая секция отдельно; «Как это работает», «Для бизнеса», FAQ, legal-страницы (privacy, cookie-policy, terms, credit-policy, aml-kyc) — блоки с `delay={100}` для каскадного эффекта.
+
+Result:
+
+- `frontend/src/app/page.tsx` — все 14 секций лендинга обёрнуты в `<ScrollReveal>` по отдельности (hero, loan-terms, calculator, when-money-needed, how-it-works, transparent-terms, about-company, credit-history, for-business, trust-block, faq-preview, client-safety, contact-section, contact-details).
+- `frontend/src/app/how-it-works/page.tsx`, `frontend/src/app/business/page.tsx`, `frontend/src/app/faq/page.tsx` — заголовок и смысловые блоки обёрнуты в `ScrollReveal` с `delay={100}` для последовательного появления.
+- `frontend/src/app/privacy/page.tsx`, `frontend/src/app/cookie-policy/page.tsx`, `frontend/src/app/terms/page.tsx`, `frontend/src/app/credit-policy/page.tsx`, `frontend/src/app/aml-kyc/page.tsx` — контент обёрнут в `ScrollReveal`.
+- Стилевых изменений нет: страницы остались на фоне `#f1f5f9`, без белых блоков и градиентов.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `ScrollReveal` (IntersectionObserver + `delay`) достаточно оборачивать вокруг отдельных смысловых блоков, чтобы получить каскадное появление без лишних стейтов; на серверных страницах компонент корректно используется как клиентский остров.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
