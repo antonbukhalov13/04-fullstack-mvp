@@ -28,7 +28,6 @@ const items = [
 export function ClientSafety() {
   return (
     <section className="relative bg-slate-100 py-24 sm:py-28">
-      <div aria-hidden className="pointer-events-none absolute inset-y-8 left-6 w-px bg-indigo-600" />
       <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">

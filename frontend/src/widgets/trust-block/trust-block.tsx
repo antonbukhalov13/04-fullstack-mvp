@@ -8,7 +8,6 @@ const points = [
 export function TrustBlock() {
   return (
     <section className="relative bg-slate-100 py-24 sm:py-28">
-      <div aria-hidden className="pointer-events-none absolute inset-y-8 right-6 w-px bg-indigo-600" />
       <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
         <h2 className="max-w-2xl text-2xl sm:text-3xl font-bold text-slate-900">
           Работаем прозрачно и в рамках закона
