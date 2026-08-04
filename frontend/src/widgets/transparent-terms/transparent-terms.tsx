@@ -24,17 +24,17 @@ const points = [
 
 export function TransparentTerms() {
   return (
-    <section className="py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
+    <section className="relative overflow-hidden bg-[#f1f5f9] py-24 sm:py-28">
+      <div className="relative mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
           Вы заранее знаете все условия
         </h2>
 
-        <div className="mt-10 mx-auto max-w-3xl space-y-4">
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {points.map((point) => (
             <div
               key={point.title}
-              className="flex items-start gap-4 rounded-xl bg-white border border-slate-200 p-5"
+              className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-5"
             >
               <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-700">
                 <svg
@@ -55,7 +55,7 @@ export function TransparentTerms() {
                 <h3 className="text-base font-semibold text-slate-900">
                   {point.title}
                 </h3>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-slate-600">
                   {point.description}
                 </p>
               </div>

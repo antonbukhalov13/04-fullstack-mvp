@@ -7,7 +7,7 @@ export function LoanTerms() {
   ];
 
   return (
-    <section className="py-16">
+    <section className="py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
           Основные условия
