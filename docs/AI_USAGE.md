@@ -3583,3 +3583,23 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 165
+
+Goal: Кнопка «Рассчитать условия» — секция калькулятора центрируется в окне браузера
+
+Prompt: В `frontend/src/widgets/hero/hero.tsx` исправить плавный переход к калькулятору: `scrollIntoView({ behavior: 'smooth' })` без параметра block оставлял большой отступ сверху и мог обрезать форму снизу; добавить `block: 'center'`, чтобы секция `#calculator` вставала по центру экрана.
+
+Result:
+
+- `frontend/src/widgets/hero/hero.tsx` — `handleScrollToCalculator` теперь вызывает `scrollIntoView({ behavior: 'smooth', block: 'center' })`; URL обновляется на `/#calculator` через `replaceState`.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: `scrollIntoView` по умолчанию использует `block: 'start'`; для высоких секций с формой логичнее `block: 'center'`, чтобы форма полностью попадала в видимую область.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
