@@ -3798,3 +3798,19 @@ What I learned: Не любой "пробел в покрытии" одинак�
 Model used: Claude Sonnet 5
 
 Instrument used: Claude.ai
+
+## Request 175
+
+Goal: Добавить hover-эффект карточкам по цвету — фиолетовый для секций с индиго-акцентом, зелёный для секций с зелёными иконками-галочками
+
+Prompt: Для секций Когда деньги нужны сейчас и Безопасность (клиентов) — фиолетовая рамка при наведении (как уже было) и заметный светло-фиолетовый фон. Для секций Вы заранее знаете все условия и Работаем прозрачно и в рамках закона — зелёная рамка при наведении, того же цвета что иконки в этих карточках, и заметный светло-зелёный фон.
+
+Result: frontend/src/widgets/when-money-needed/when-money-needed.tsx — фон hover уточнён bg-indigo-50 → bg-indigo-100 (более заметный). frontend/src/widgets/client-safety/client-safety.tsx — добавлен transition-colors duration-300 hover:border-indigo-300 hover:bg-indigo-100 (у карточек изначально не было hover). frontend/src/widgets/transparent-terms/transparent-terms.tsx — добавлен transition-colors duration-300 hover:border-green-300 hover:bg-green-100 (иконки-галочки в карточках — green-100/text-green-700). frontend/src/widgets/trust-block/trust-block.tsx — hover переведён с фиолетового (предыдущая правка) на зелёный: hover:border-green-300 hover:bg-green-100 (иконки-галочки — green-100/text-green-600).
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Цвет hover-состояния карточек логично привязывать к цвету их собственных акцентных элементов (иконок), а не к единой палитре сайта — тогда наведение визуально согласуется с содержимым карточки, а не выглядит как случайный цвет.
+
+Model used: Claude Sonnet 5
+
+Instrument used: Claude.ai
