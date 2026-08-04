@@ -53,6 +53,7 @@ export function AdminLoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
+        dark
         id="admin-login"
         label="Логин"
         type="text"
@@ -62,6 +63,7 @@ export function AdminLoginForm() {
         required
       />
       <Input
+        dark
         id="admin-password"
         label="Пароль"
         type="password"
@@ -72,7 +74,7 @@ export function AdminLoginForm() {
       />
 
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm text-red-400">{error}</p>
       )}
 
       <Button

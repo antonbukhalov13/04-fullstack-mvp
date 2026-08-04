@@ -1,6 +1,6 @@
 export function AboutCompany() {
   return (
-    <section id="about" className="py-24 sm:py-32 scroll-mt-24">
+    <section id="about" className="bg-slate-50 py-24 sm:py-32 scroll-mt-24">
       <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">

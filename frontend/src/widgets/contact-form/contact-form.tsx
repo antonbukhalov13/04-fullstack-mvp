@@ -97,14 +97,14 @@ export function ContactForm() {
 
   if (submitState === 'success') {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-6 text-center">
-        <p className="text-green-800 font-medium">
+      <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-6 text-center">
+        <p className="text-green-300 font-medium">
           Сообщение отправлено. Мы свяжемся с вами в ближайшее время.
         </p>
         <div className="flex justify-center pt-2">
           <button
             onClick={() => setSubmitState('idle')}
-            className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-500 hover:text-slate-700"
+            className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-400 hover:text-slate-200"
           >
             Отправить ещё
           </button>
@@ -115,20 +115,23 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleFormSubmit} className="space-y-4">
-      <Input label="Имя *" {...register('name')} error={errors.name?.message} />
+      <Input dark label="Имя *" {...register('name')} error={errors.name?.message} />
       <Input
+        dark
         label="Email *"
         type="email"
         {...register('email')}
         error={errors.email?.message}
       />
       <Input
+        dark
         label="Телефон *"
         type="tel"
         {...register('phone')}
         error={errors.phone?.message}
       />
       <Textarea
+        dark
         label="Сообщение *"
         rows={4}
         {...register('message')}
@@ -145,22 +148,22 @@ export function ContactForm() {
         <div className="flex items-center gap-2">
           <label
             htmlFor="contact-file"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition-colors cursor-pointer min-h-[44px]"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer min-h-[44px]"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
             </svg>
             Выбрать файл
           </label>
-          <span className="text-sm text-slate-700">Прикрепление файла</span>
+          <span className="text-sm text-slate-300">Прикрепление файла</span>
         </div>
         {file && (
           <div className="mt-1 flex items-center justify-between">
-            <span className="text-xs text-slate-500 truncate">{file.name}</span>
+            <span className="text-xs text-slate-400 truncate">{file.name}</span>
             <button
               type="button"
               onClick={() => setFile(null)}
-              className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px] transition-colors"
+              className="ml-2 text-red-400 hover:text-red-300 text-xs shrink-0 inline-flex items-center min-h-[36px] transition-colors"
             >
               Удалить
             </button>
@@ -177,15 +180,15 @@ export function ContactForm() {
               setConsent(e.target.checked);
               if (e.target.checked) setConsentError('');
             }}
-            className="h-4 w-4 rounded border-slate-300 accent-indigo-600 text-indigo-600 focus:ring-indigo-600 cursor-pointer"
+            className="h-4 w-4 rounded border-slate-600 accent-indigo-600 text-indigo-600 focus:ring-indigo-600 cursor-pointer"
           />
-          <span className="text-sm text-slate-700">Я согласен на обработку персональных данных</span>
+          <span className="text-sm text-slate-300">Я согласен на обработку персональных данных</span>
         </div>
-        {consentError && <p className="text-xs text-red-600">{consentError}</p>}
+        {consentError && <p className="text-xs text-red-400">{consentError}</p>}
       </div>
 
       {submitState === 'error' && (
-        <p className="text-sm text-red-600">{errorMessage}</p>
+        <p className="text-sm text-red-400">{errorMessage}</p>
       )}
 
       <Button type="submit" disabled={submitState === 'submitting'}>

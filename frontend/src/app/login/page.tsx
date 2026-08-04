@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { LoginForm } from '@/features/login-otp';
+import { ScrollReveal } from '@/shared/ui';
 
 export const metadata: Metadata = {
   title: 'Вход | LumenBridge Finance',
@@ -8,14 +9,27 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <section className="relative overflow-hidden bg-[#f1f5f9]">
-      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col justify-center px-4 py-12">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Вход</h1>
-        <p className="text-slate-600 mb-8">
-          Войдите, чтобы управлять заявками и отслеживать статус займа
-        </p>
-        <LoginForm />
+    <section className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-slate-950 px-4 py-12">
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(123,104,238,0.28),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(49,46,129,0.45),transparent_60%)]" />
+        <div className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)',
+            backgroundSize: '64px 64px',
+          }}
+        />
       </div>
+      <ScrollReveal direction="right" className="relative w-full max-w-sm">
+        <div className="rounded-lg border border-indigo-600 bg-slate-900/70 p-6 shadow-sm">
+          <h1 className="text-xl font-bold text-white mb-1">Вход</h1>
+          <p className="text-sm text-slate-400 mb-6">
+            Войдите, чтобы управлять заявками и отслеживать статус займа
+          </p>
+          <LoginForm />
+        </div>
+      </ScrollReveal>
     </section>
   );
 }

@@ -20,9 +20,9 @@ const questions = [
 
 export function FaqPreview() {
   return (
-    <section className="bg-[#f1f5f9] py-24 sm:py-28">
+    <section className="bg-gradient-to-br from-slate-800 to-slate-900 py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 text-center">
+        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center">
           Часто задаваемые вопросы
         </h2>
 
@@ -30,12 +30,12 @@ export function FaqPreview() {
           {questions.map((item) => (
             <div
               key={item.question}
-              className="rounded-xl border border-slate-200 p-5"
+              className="rounded-xl border border-slate-800 bg-white/5 p-5"
             >
-              <h3 className="text-base font-semibold text-slate-900">
+              <h3 className="text-base font-semibold text-slate-50">
                 {item.question}
               </h3>
-              <p className="mt-2 text-sm text-slate-500">{item.answer}</p>
+              <p className="mt-2 text-sm text-slate-400">{item.answer}</p>
             </div>
           ))}
         </div>
@@ -43,7 +43,7 @@ export function FaqPreview() {
         <div className="mt-8 text-center">
           <Link
             href="/faq"
-            className="text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition-colors inline-flex items-center min-h-[44px]"
+            className="text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors inline-flex items-center min-h-[44px]"
           >
             Смотреть все вопросы →
           </Link>

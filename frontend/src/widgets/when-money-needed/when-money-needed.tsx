@@ -19,11 +19,14 @@ const cards = [
 
 export function WhenMoneyNeeded() {
   return (
-    <section className="py-24 sm:py-28">
+    <section className="bg-slate-100 py-24 sm:py-28">
       <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-          Когда деньги нужны сейчас
-        </h2>
+        <div className="w-fit">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+            Когда деньги нужны сейчас
+          </h2>
+          <div aria-hidden className="mt-4 h-[3px] rounded-full bg-indigo-600" />
+        </div>
         <p className="mt-3 text-slate-500 max-w-2xl">
           Не все финансовые вопросы можно отложить. Иногда важно принять решение
           быстро — без сложных процедур и ожиданий.

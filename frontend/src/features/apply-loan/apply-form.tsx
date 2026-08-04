@@ -17,7 +17,6 @@ import { api, ApiError, getAuthToken, setAuthToken } from '@/shared/api';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent } from '@/shared/ui/card';
 import { INDIVIDUAL_LIMITS, calculateAnnuity } from '@/shared/lib/calculator';
 import { isValidPhone, PHONE_ERROR } from '@/shared/lib/phone';
 
@@ -202,19 +201,19 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
 
   if (submitState === 'success') {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-8 text-center space-y-4">
-        <p className="text-green-800 font-medium">
+      <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-8 text-center space-y-4">
+        <p className="text-green-300 font-medium">
           Заявка отправлена. Мы свяжемся с вами в ближайшее время.
         </p>
         {successId && (
-          <p className="text-sm text-green-700">
+          <p className="text-sm text-green-400">
             Номер заявки: <span className="font-mono">{successId}</span>
           </p>
         )}
         <div className="flex flex-col items-center gap-4 pt-2">
           <button
             onClick={() => { setSubmitState('idle'); setSuccessId(null); }}
-            className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-500 hover:text-slate-700"
+            className="inline-flex items-center justify-center gap-2 rounded-lg font-semibold cursor-pointer transition-colors px-6 py-3 text-sm min-h-[44px] text-slate-400 hover:text-slate-200"
           >
             Подать ещё одну заявку
           </button>
@@ -230,171 +229,178 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
   }
 
   return (
-    <Card>
-      <CardContent>
-        <form onSubmit={handleFormSubmit} className="space-y-4">
-          <Select
-            label="Тип заявителя"
-            value={applicantType}
-            onChange={(e) => {
-              setApplicantType(e.target.value as ApplicantType);
-              setUploadedFiles([]);
-            }}
-          >
-            <option value="individual">Физическое лицо</option>
-            <option value="business">Бизнес</option>
-          </Select>
+    <form onSubmit={handleFormSubmit} className="space-y-4">
+      <Select
+        dark
+        label="Тип заявителя"
+        value={applicantType}
+        onChange={(e) => {
+          setApplicantType(e.target.value as ApplicantType);
+          setUploadedFiles([]);
+        }}
+      >
+        <option value="individual">Физическое лицо</option>
+        <option value="business">Бизнес</option>
+      </Select>
 
-          {isAuthenticated ? (
-            <div className="rounded-lg bg-indigo-50 p-4 text-sm text-slate-700">
-              Заявка будет подана от вашего аккаунта — телефон подставляется автоматически.
-            </div>
-          ) : (
-            <Input
-              label="Телефон *"
-              type="tel"
-              placeholder="+353..."
-              {...register('phone')}
-              error={errors.phone?.message}
-            />
-          )}
+      {isAuthenticated ? (
+        <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-4 text-sm text-indigo-200">
+          Заявка будет подана от вашего аккаунта — телефон подставляется автоматически.
+        </div>
+      ) : (
+        <Input
+          dark
+          label="Телефон *"
+          type="tel"
+          placeholder="+353..."
+          {...register('phone')}
+          error={errors.phone?.message}
+        />
+      )}
 
-          {applicantType === 'individual' ? (
-            <>
-              <Input
-                label="Имя *"
-                {...register('firstName')}
-                error={errors.firstName?.message}
-              />
-              <Input
-                label="Фамилия *"
-                {...register('lastName')}
-                error={errors.lastName?.message}
-              />
-              <Input
-                label="Email"
-                type="email"
-                {...register('email')}
-                error={errors.email?.message}
-              />
-            </>
-          ) : (
-            <>
-              <Input
-                label="Название компании *"
-                {...register('companyName')}
-                error={errors.companyName?.message}
-              />
-              <Input
-                label="Регистрационный номер *"
-                {...register('registrationNumber')}
-                error={errors.registrationNumber?.message}
-              />
-              <Input
-                label="Email компании"
-                type="email"
-                {...register('companyEmail')}
-                error={errors.companyEmail?.message}
-              />
-              <Input
-                label="Телефон компании"
-                type="tel"
-                {...register('companyPhone')}
-                error={errors.companyPhone?.message}
-              />
-            </>
-          )}
+      {applicantType === 'individual' ? (
+        <>
+          <Input
+            dark
+            label="Имя *"
+            {...register('firstName')}
+            error={errors.firstName?.message}
+          />
+          <Input
+            dark
+            label="Фамилия *"
+            {...register('lastName')}
+            error={errors.lastName?.message}
+          />
+          <Input
+            dark
+            label="Email"
+            type="email"
+            {...register('email')}
+            error={errors.email?.message}
+          />
+        </>
+      ) : (
+        <>
+          <Input
+            dark
+            label="Название компании *"
+            {...register('companyName')}
+            error={errors.companyName?.message}
+          />
+          <Input
+            dark
+            label="Регистрационный номер *"
+            {...register('registrationNumber')}
+            error={errors.registrationNumber?.message}
+          />
+          <Input
+            dark
+            label="Email компании"
+            type="email"
+            {...register('companyEmail')}
+            error={errors.companyEmail?.message}
+          />
+          <Input
+            dark
+            label="Телефон компании"
+            type="tel"
+            {...register('companyPhone')}
+            error={errors.companyPhone?.message}
+          />
+        </>
+      )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Сумма (EUR) *"
-              type="number"
-              placeholder={`${limits.amount.min.toLocaleString()}–${limits.amount.max.toLocaleString()}`}
-              {...register('amount', { valueAsNumber: true })}
-              error={errors.amount?.message}
-            />
-            <Input
-              label="Срок (дней) *"
-              type="number"
-              placeholder={`${limits.term.min}–${limits.term.max}`}
-              {...register('termDays', { valueAsNumber: true })}
-              error={errors.termDays?.message}
-            />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Input
+          dark
+          label="Сумма (EUR) *"
+          type="number"
+          placeholder={`${limits.amount.min.toLocaleString()}–${limits.amount.max.toLocaleString()}`}
+          {...register('amount', { valueAsNumber: true })}
+          error={errors.amount?.message}
+        />
+        <Input
+          dark
+          label="Срок (дней) *"
+          type="number"
+          placeholder={`${limits.term.min}–${limits.term.max}`}
+          {...register('termDays', { valueAsNumber: true })}
+          error={errors.termDays?.message}
+        />
+      </div>
+
+      {watchAmount > 0 && watchTerm > 0 && (
+        <div className="rounded-lg border border-indigo-500/30 bg-indigo-500/10 p-4 text-sm text-indigo-200">
+          {(() => {
+            const { payment, total } = calculateAnnuity(watchAmount, watchTerm);
+            return (
+              <>
+                <p>
+                  Платёж: ~<span className="font-semibold">{Math.round(payment)}</span> EUR/день
+                </p>
+                <p>
+                  Итого к возврату: ~<span className="font-semibold">{Math.round(total)}</span> EUR
+                </p>
+              </>
+            );
+          })()}
+        </div>
+      )}
+
+      {applicantType === 'business' && (
+        <div className="space-y-3">
+          <input
+            type="file"
+            onChange={handleFileUpload}
+            disabled={isUploading}
+            className="sr-only"
+            id="business-files"
+          />
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="business-files"
+              className={[
+                'inline-flex items-center gap-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors min-h-[44px]',
+                isUploading ? 'opacity-50 pointer-events-none' : 'cursor-pointer',
+              ].join(' ')}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+              </svg>
+              {isUploading ? 'Загрузка...' : 'Выбрать файл'}
+            </label>
+            <span className="text-sm text-slate-300">Документы (Certificate of Incorporation и т.п.)</span>
           </div>
-
-          {watchAmount > 0 && watchTerm > 0 && (
-            <div className="rounded-lg bg-indigo-50 p-4 text-sm text-slate-700">
-              {(() => {
-                const { payment, total } = calculateAnnuity(watchAmount, watchTerm);
-                return (
-                  <>
-                    <p>
-                      Платёж: ~<span className="font-semibold">{Math.round(payment)}</span> EUR/день
-                    </p>
-                    <p>
-                      Итого к возврату: ~<span className="font-semibold">{Math.round(total)}</span> EUR
-                    </p>
-                  </>
-                );
-              })()}
-            </div>
+          {isUploading && <p className="text-xs text-slate-400">Загрузка...</p>}
+          {uploadedFiles.length > 0 && (
+            <ul className="space-y-1">
+              {uploadedFiles.map((f) => (
+                <li key={f.id} className="flex items-center justify-between text-sm text-slate-300">
+                  <span className="truncate">{f.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(f.id)}
+                    className="ml-2 text-red-400 hover:text-red-300 text-xs shrink-0 inline-flex items-center min-h-[36px] transition-colors"
+                  >
+                    Удалить
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
+        </div>
+      )}
 
-          {applicantType === 'business' && (
-            <div className="space-y-3">
-              <input
-                type="file"
-                onChange={handleFileUpload}
-                disabled={isUploading}
-                className="sr-only"
-                id="business-files"
-              />
-              <div className="flex items-center gap-2">
-                <label
-                  htmlFor="business-files"
-                  className={[
-                    'inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition-colors min-h-[44px]',
-                    isUploading ? 'opacity-50 pointer-events-none' : 'cursor-pointer',
-                  ].join(' ')}
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-                  </svg>
-                  {isUploading ? 'Загрузка...' : 'Выбрать файл'}
-                </label>
-                <span className="text-sm text-slate-700">Документы (Certificate of Incorporation и т.п.)</span>
-              </div>
-              {isUploading && <p className="text-xs text-slate-500">Загрузка...</p>}
-              {uploadedFiles.length > 0 && (
-                <ul className="space-y-1">
-                  {uploadedFiles.map((f) => (
-                    <li key={f.id} className="flex items-center justify-between text-sm text-slate-700">
-                      <span className="truncate">{f.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(f.id)}
-                        className="ml-2 text-red-500 hover:text-red-700 text-xs shrink-0 inline-flex items-center min-h-[36px] transition-colors"
-                      >
-                        Удалить
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+      {submitState === 'error' && (
+        <p className="text-sm text-red-400">{errorMessage}</p>
+      )}
 
-          {submitState === 'error' && (
-            <p className="text-sm text-red-600">{errorMessage}</p>
-          )}
-
-          <div className={applicantType === 'individual' ? 'pt-2' : ''}>
-            <Button type="submit" disabled={submitState === 'submitting' || isUploading}>
-              {submitState === 'submitting' ? 'Отправка...' : 'Отправить заявку'}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+      <div className={applicantType === 'individual' ? 'pt-2' : ''}>
+        <Button type="submit" disabled={submitState === 'submitting' || isUploading}>
+          {submitState === 'submitting' ? 'Отправка...' : 'Отправить заявку'}
+        </Button>
+      </div>
+    </form>
   );
 }

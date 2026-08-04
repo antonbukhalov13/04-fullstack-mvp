@@ -25,28 +25,28 @@ export function Calculator() {
   return (
     <section
       id="calculator"
-      className="scroll-mt-24 bg-[#f1f5f9] py-24 sm:py-28"
+      className="scroll-mt-24 bg-slate-900 py-24 sm:py-28"
     >
       <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+          <h2 className="text-2xl font-bold text-white sm:text-3xl">
             Кредитный калькулятор
           </h2>
-          <p className="mt-3 text-slate-600">
+          <p className="mt-3 text-slate-400">
             Рассчитайте условия займа за несколько секунд — выберите сумму и срок,
             чтобы сразу увидеть итоговую сумму к возврату. Все условия отображаются
             до оформления займа.
           </p>
         </div>
 
-        <div className="mx-auto mt-10 max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="mx-auto mt-10 max-w-xl rounded-2xl border border-indigo-600 bg-slate-950/60 p-6 shadow-sm sm:p-8">
           <div className="space-y-8">
             <div>
               <div className="flex items-baseline justify-between gap-4">
-                <label htmlFor="calc-amount" className="text-sm font-medium text-slate-600">
+                <label htmlFor="calc-amount" className="text-sm font-medium text-slate-400">
                   Сумма (EUR)
                 </label>
-                <span className="text-lg font-bold text-indigo-600">
+                <span className="text-lg font-bold text-indigo-400">
                   {amount.toLocaleString('ru-RU')} EUR
                 </span>
               </div>
@@ -69,10 +69,10 @@ export function Calculator() {
 
             <div>
               <div className="flex items-baseline justify-between gap-4">
-                <label htmlFor="calc-term" className="text-sm font-medium text-slate-600">
+                <label htmlFor="calc-term" className="text-sm font-medium text-slate-400">
                   Срок (дней)
                 </label>
-                <span className="text-lg font-bold text-indigo-600">
+                <span className="text-lg font-bold text-indigo-400">
                   {termDays} дн.
                 </span>
               </div>
@@ -94,17 +94,17 @@ export function Calculator() {
             </div>
           </div>
 
-          <div className="mt-8 rounded-xl border border-indigo-200 bg-indigo-50 p-6 text-center">
-            <p className="text-sm text-slate-500">Ежемесячный платёж</p>
-            <p className="mt-1 text-3xl font-bold text-indigo-600">
+          <div className="mt-8 rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-6 text-center">
+            <p className="text-sm text-slate-400">Ежемесячный платёж</p>
+            <p className="mt-1 text-3xl font-bold text-indigo-400">
               {result.payment.toLocaleString('ru-RU', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2 })}{' '}
               EUR
             </p>
-            <p className="mt-3 text-sm text-slate-500">
+            <p className="mt-3 text-sm text-slate-400">
               Общая сумма к возврату:{' '}
-              <span className="font-medium text-slate-700">
+              <span className="font-medium text-slate-200">
                 {result.total.toLocaleString('ru-RU', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2 })}{' '}
@@ -115,7 +115,7 @@ export function Calculator() {
 
           <Link
             href="/apply"
-            className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-100 transition-colors hover:bg-indigo-700"
+            className="mt-6 inline-flex min-h-[48px] w-full items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-950 transition-colors hover:bg-indigo-700"
           >
             Получить займ
           </Link>

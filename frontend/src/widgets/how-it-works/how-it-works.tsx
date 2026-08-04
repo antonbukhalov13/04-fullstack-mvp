@@ -21,12 +21,12 @@ export function HowItWorks() {
   ];
 
   return (
-    <section className="py-24 sm:py-28">
+    <section className="bg-gradient-to-br from-slate-800 to-slate-900 py-24 sm:py-28">
       <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+        <h2 className="text-2xl sm:text-3xl font-bold text-white">
           Как всё происходит
         </h2>
-        <p className="mt-3 text-slate-500 max-w-2xl">
+        <p className="mt-3 text-slate-400 max-w-2xl">
           Оформление займа занимает всего несколько минут и полностью проходит
           онлайн, без визитов в офис и сложных процедур.
         </p>
@@ -34,13 +34,13 @@ export function HowItWorks() {
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map((step) => (
             <div key={step.number}>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 text-sm font-bold">
                 {step.number}
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-slate-900">
+              <h3 className="mt-4 text-lg font-semibold text-slate-50">
                 {step.title}
               </h3>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-slate-400">
                 {step.description}
               </p>
             </div>

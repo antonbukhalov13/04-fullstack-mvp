@@ -24,7 +24,8 @@ const points = [
 
 export function TransparentTerms() {
   return (
-    <section className="relative overflow-hidden bg-[#f1f5f9] py-24 sm:py-28">
+    <section className="relative overflow-hidden bg-slate-100 py-24 sm:py-28">
+      <div aria-hidden className="pointer-events-none absolute inset-y-8 left-6 w-px bg-indigo-600" />
       <div className="relative mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
           Вы заранее знаете все условия
