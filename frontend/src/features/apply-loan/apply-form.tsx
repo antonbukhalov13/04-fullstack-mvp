@@ -232,7 +232,7 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
   return (
     <Card>
       <CardContent>
-        <form onSubmit={handleFormSubmit} className="space-y-6">
+        <form onSubmit={handleFormSubmit} className="space-y-4">
           <Select
             label="Тип заявителя"
             value={applicantType}
@@ -388,9 +388,11 @@ export function ApplyForm({ searchParams }: { searchParams: Promise<{ type?: str
             <p className="text-sm text-red-600">{errorMessage}</p>
           )}
 
-          <Button type="submit" disabled={submitState === 'submitting' || isUploading}>
-            {submitState === 'submitting' ? 'Отправка...' : 'Отправить заявку'}
-          </Button>
+          <div className={applicantType === 'individual' ? 'pt-2' : ''}>
+            <Button type="submit" disabled={submitState === 'submitting' || isUploading}>
+              {submitState === 'submitting' ? 'Отправка...' : 'Отправить заявку'}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>

@@ -12,9 +12,9 @@ export default function ApplyPage({
   searchParams: Promise<{ type?: string }>;
 }) {
   return (
-    <section className="mx-auto max-w-2xl px-4 py-12 pb-24">
+    <section className="mx-auto w-full max-w-2xl px-4 pt-10 pb-16">
       <h1 className="text-3xl font-bold text-slate-900 mb-2">Подать заявку</h1>
-      <p className="text-slate-600 mb-8">
+      <p className="text-slate-600 mb-6">
         Заполните форму, и мы свяжемся с вами для уточнения деталей
       </p>
       <ApplyForm searchParams={searchParams} />
