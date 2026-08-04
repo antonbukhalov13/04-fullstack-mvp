@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiRequest, ApiError, setAdminAuthToken } from '@/shared/api';
-import { Spinner } from '@/shared/ui';
+import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 
 interface AdminLoginResponse {
@@ -52,34 +52,24 @@ export function AdminLoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="admin-login" className="block text-sm font-medium text-slate-700 mb-1">
-          Логин
-        </label>
-        <input
-          id="admin-login"
-          type="text"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
-          placeholder="Введите логин"
-          required
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
-        />
-      </div>
-      <div>
-        <label htmlFor="admin-password" className="block text-sm font-medium text-slate-700 mb-1">
-          Пароль
-        </label>
-        <input
-          id="admin-password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Введите пароль"
-          required
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
-        />
-      </div>
+      <Input
+        id="admin-login"
+        label="Логин"
+        type="text"
+        value={login}
+        onChange={(e) => setLogin(e.target.value)}
+        placeholder="Введите логин"
+        required
+      />
+      <Input
+        id="admin-password"
+        label="Пароль"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Введите пароль"
+        required
+      />
 
       {error && (
         <p className="text-sm text-red-600">{error}</p>
