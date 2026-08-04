@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ScrollReveal } from '@/shared/ui';
 
 export const metadata: Metadata = {
   title: 'Как работает сервис',
@@ -44,54 +45,60 @@ export default function HowItWorksPage() {
     <main className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
-            Как работает сервис
-          </h1>
-          <p className="mt-4 text-base text-slate-600 leading-relaxed">
-            Мы сделали процесс получения займа максимально простым и понятным. Вам
-            не нужно посещать офис или собирать сложный пакет документов — всё
-            оформляется онлайн за несколько минут.
-          </p>
+          <ScrollReveal>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
+              Как работает сервис
+            </h1>
+            <p className="mt-4 text-base text-slate-600 leading-relaxed">
+              Мы сделали процесс получения займа максимально простым и понятным. Вам
+              не нужно посещать офис или собирать сложный пакет документов — всё
+              оформляется онлайн за несколько минут.
+            </p>
+          </ScrollReveal>
 
-          <h2 className="mt-12 text-xl font-semibold text-slate-900">
-            Как проходит оформление займа
-          </h2>
+          <ScrollReveal delay={100}>
+            <h2 className="mt-12 text-xl font-semibold text-slate-900">
+              Как проходит оформление займа
+            </h2>
 
-          <div className="mt-8 space-y-8">
-            {steps.map((step, i) => (
-              <div key={step.title} className="flex gap-4">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold">
-                  {i + 1}
+            <div className="mt-8 space-y-8">
+              {steps.map((step, i) => (
+                <div key={step.title} className="flex gap-4">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold">
+                    {i + 1}
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-900">
+                      {step.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-semibold text-slate-900">
-                    {step.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-600 leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollReveal>
 
-          <h2 className="mt-12 text-xl font-semibold text-slate-900">
-            Важно знать
-          </h2>
-          <ul className="mt-4 space-y-2">
-            {importantToKnow.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
-                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
-                {item}
-              </li>
-            ))}
-          </ul>
+          <ScrollReveal delay={100}>
+            <h2 className="mt-12 text-xl font-semibold text-slate-900">
+              Важно знать
+            </h2>
+            <ul className="mt-4 space-y-2">
+              {importantToKnow.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
+                  <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
+                  {item}
+                </li>
+              ))}
+            </ul>
 
-          <p className="mt-8 text-sm text-slate-600 leading-relaxed">
-            Весь процесс — от подачи заявки до получения средств — проходит
-            дистанционно, что позволяет сэкономить время и получить доступ к
-            финансированию тогда, когда это действительно нужно.
-          </p>
+            <p className="mt-8 text-sm text-slate-600 leading-relaxed">
+              Весь процесс — от подачи заявки до получения средств — проходит
+              дистанционно, что позволяет сэкономить время и получить доступ к
+              финансированию тогда, когда это действительно нужно.
+            </p>
+          </ScrollReveal>
         </div>
       </div>
     </main>

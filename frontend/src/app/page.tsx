@@ -1,3 +1,4 @@
+import { ScrollReveal } from '@/shared/ui';
 import { Hero } from '@/widgets/hero';
 import { Calculator } from '@/widgets/calculator';
 import { LoanTerms } from '@/widgets/loan-terms';
@@ -16,20 +17,48 @@ import { ContactDetails } from '@/widgets/contact-details';
 export default function Home() {
   return (
     <>
-      <Hero />
-      <Calculator />
-      <LoanTerms />
-      <WhenMoneyNeeded />
-      <HowItWorks />
-      <TransparentTerms />
-      <AboutCompany />
-      <CreditHistory />
-      <ForBusiness />
-      <TrustBlock />
-      <FaqPreview />
-      <ClientSafety />
-      <ContactSection />
-      <ContactDetails />
+      <ScrollReveal>
+        <Hero />
+      </ScrollReveal>
+      <ScrollReveal>
+        <LoanTerms />
+      </ScrollReveal>
+      <ScrollReveal>
+        <Calculator />
+      </ScrollReveal>
+      <ScrollReveal>
+        <WhenMoneyNeeded />
+      </ScrollReveal>
+      <ScrollReveal>
+        <HowItWorks />
+      </ScrollReveal>
+      <ScrollReveal>
+        <TransparentTerms />
+      </ScrollReveal>
+      <ScrollReveal>
+        <AboutCompany />
+      </ScrollReveal>
+      <ScrollReveal>
+        <CreditHistory />
+      </ScrollReveal>
+      <ScrollReveal>
+        <ForBusiness />
+      </ScrollReveal>
+      <ScrollReveal>
+        <TrustBlock />
+      </ScrollReveal>
+      <ScrollReveal>
+        <FaqPreview />
+      </ScrollReveal>
+      <ScrollReveal>
+        <ClientSafety />
+      </ScrollReveal>
+      <ScrollReveal>
+        <ContactSection />
+      </ScrollReveal>
+      <ScrollReveal>
+        <ContactDetails />
+      </ScrollReveal>
     </>
   );
 }

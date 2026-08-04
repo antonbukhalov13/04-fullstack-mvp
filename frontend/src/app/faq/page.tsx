@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Metadata } from 'next';
+import { ScrollReveal } from '@/shared/ui';
 
 const individuals = [
   {
@@ -115,37 +115,43 @@ export default function FaqPage() {
     <main className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
-            Часто задаваемые вопросы
-          </h1>
-          <p className="mt-4 text-base text-slate-600 leading-relaxed">
-            Здесь вы найдете ответы на основные вопросы о займах, условиях и
-            процессе оформления. Если вы не нашли нужную информацию, вы можете
-            связаться с нами через форму обратной связи.
-          </p>
+          <ScrollReveal>
+            <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
+              Часто задаваемые вопросы
+            </h1>
+            <p className="mt-4 text-base text-slate-600 leading-relaxed">
+              Здесь вы найдете ответы на основные вопросы о займах, условиях и
+              процессе оформления. Если вы не нашли нужную информацию, вы можете
+              связаться с нами через форму обратной связи.
+            </p>
+          </ScrollReveal>
 
-          <h2 className="mt-12 text-xl font-semibold text-slate-900">
-            Для физических лиц
-          </h2>
-          <div className="mt-4 space-y-3">
-            {individuals.map((item) => (
-              <AccordionItem key={item.q} q={item.q} a={item.a} />
-            ))}
-          </div>
+          <ScrollReveal delay={100}>
+            <h2 className="mt-12 text-xl font-semibold text-slate-900">
+              Для физических лиц
+            </h2>
+            <div className="mt-4 space-y-3">
+              {individuals.map((item) => (
+                <AccordionItem key={item.q} q={item.q} a={item.a} />
+              ))}
+            </div>
+          </ScrollReveal>
 
-          <h2 className="mt-12 text-xl font-semibold text-slate-900">
-            Для бизнеса
-          </h2>
-          <div className="mt-4 space-y-3">
-            {business.map((item) => (
-              <AccordionItem key={item.q} q={item.q} a={item.a} />
-            ))}
-          </div>
+          <ScrollReveal delay={100}>
+            <h2 className="mt-12 text-xl font-semibold text-slate-900">
+              Для бизнеса
+            </h2>
+            <div className="mt-4 space-y-3">
+              {business.map((item) => (
+                <AccordionItem key={item.q} q={item.q} a={item.a} />
+              ))}
+            </div>
 
-          <p className="mt-12 text-sm text-slate-600 leading-relaxed">
-            Если у вас остались вопросы, свяжитесь с нами через форму обратной
-            связи или используйте указанные контактные данные.
-          </p>
+            <p className="mt-12 text-sm text-slate-600 leading-relaxed">
+              Если у вас остались вопросы, свяжитесь с нами через форму обратной
+              связи или используйте указанные контактные данные.
+            </p>
+          </ScrollReveal>
         </div>
       </div>
     </main>
