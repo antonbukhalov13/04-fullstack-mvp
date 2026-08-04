@@ -3367,3 +3367,25 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 156
+
+Goal: Глобальные стили лендинга (фон `#f1f5f9`, скрытие спиннеров number, стили range-слайдеров) и универсальный компонент анимации появления при скролле
+
+Prompt: В `frontend/src/app/globals.css` задать фон страницы `#f1f5f9`, скрыть нативные спиннеры у number-input и добавить стили для range-слайдеров; создать переиспользуемый компонент анимации появления блоков при скролле `ScrollReveal` и экспортировать его из `shared/ui`.
+
+Result:
+
+- `frontend/src/app/globals.css` — `body` — сплошной фон `#f1f5f9`; скрыты нативные спиннеры у `input[type='number']` (webkit + moz); добавлены стили `input[type='range']`: трек 6px с заливкой через CSS-переменную `--range-fill` (акцент `#624fd2`), круглый ползунок 22px с белой заливкой и фиолетовой рамкой 3px.
+- `frontend/src/shared/ui/scroll-reveal.tsx` — новый клиентский компонент `ScrollReveal` (`"use client"`): `IntersectionObserver` с `threshold: 0.12`, при появлении в вьюпорте меняет класс с `translate-y-8 opacity-0` на `translate-y-0 opacity-100` (`transition-all duration-700 ease-out`), prop `delay` задаёт `transition-delay`, disconnect после первого показа; fallback — сразу `visible` при отсутствии IntersectionObserver.
+- `frontend/src/shared/ui/index.ts` — добавлен `export { ScrollReveal } from './scroll-reveal'`.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: стили фона и слайдеров вынесены в globals.css, чтобы калькулятор и секции не дублировали оформление в классах; компонент анимации на IntersectionObserver переиспользуется для всех секций лендинга.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
