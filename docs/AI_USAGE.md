@@ -3438,3 +3438,29 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 159
+
+Goal: Редизайн hero-секции лендинга — полноэкранная секция с двумя CTA и плавным переходом к калькулятору
+
+Prompt: Переделать `frontend/src/widgets/hero/hero.tsx` в полноэкранную секцию высотой вьюпорта, добавить акцентный заголовок, вторую CTA «Рассчитать условия» с плавным скроллом к калькулятору и обновлением URL, оформить вводный текст как блок-цитату; фон секции — `#f1f5f9`, тёмный градиентный вариант вернётся финальным этапом редизайна.
+
+Result:
+
+- `frontend/src/widgets/hero/hero.tsx`:
+  - Секция — `relative flex min-h-[calc(100dvh-4rem)] items-center`, фон `bg-[#f1f5f9]` (временный; тёмный градиент с радиальными оверлеями и сеткой будет восстановлен на финальном этапе).
+  - Заголовок `text-4xl sm:text-5xl lg:text-6xl text-slate-900` с акцентным словом «действительно» в `text-indigo-600`; подзаголовок и вводный текст переведены на `text-slate-600`.
+  - Вводный абзац оформлен блок-цитатой: `border-l-2 border-indigo-600/60 pl-5 text-left`.
+  - Две CTA: «Получить займ» (`bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100`) и «Рассчитать условия» с `onClick={handleScrollToCalculator}` — smooth-scroll к `#calculator` и `history.replaceState('/#calculator')`. Вторичная CTA приведена к варианту `secondary` из `shared/ui/button.tsx` (`bg-white text-slate-700 border-slate-300 hover:bg-slate-300 hover:text-slate-900 active:bg-slate-400 shadow-sm`) — на финальном тёмном варианте hero будет заменена на светлый/ghost-стиль.
+  - Нижняя строка «Без залога · Быстрое одобрение · Выплата на банковский счёт» — `text-slate-500`.
+  - Восстановлен завершающий перевод строки в конце файла.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: для полноэкранного hero удобно `min-h-[calc(100dvh-4rem)]` с учётом высоты шапки; клик по якорной CTA лучше обрабатывать через `scrollIntoView` + `replaceState`, чтобы не перезагружать страницу.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
