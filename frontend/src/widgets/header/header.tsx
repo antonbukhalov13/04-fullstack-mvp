@@ -45,47 +45,53 @@ export function Header() {
     return () => window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
   }, []);
 
+  const authHref = isLoggedIn ? '/dashboard/applications' : '/login';
+  const authLabel = isLoggedIn ? 'Кабинет' : 'Войти';
+
+  function handleLogoClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.history.replaceState(null, '', '/');
+    }
+  }
+
   return (
-    <header className="sticky top-0 z-50 bg-slate-50 border-b border-slate-200">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-slate-200 bg-slate-50/90 backdrop-blur">
+      <div className="mx-auto max-w-[100rem] px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-1.5">
-            <span className="text-xl font-bold text-indigo-600 -mt-1">LumenBridge</span>
-            <span className="text-sm font-semibold text-slate-600">Finance</span>
+          <Link href="/" onClick={handleLogoClick} className="flex items-start gap-2.5">
+            <img src="/favicon.svg" alt="" className="h-9 w-9 mt-1" />
+            <span className="flex flex-col leading-none">
+              <span className="text-lg font-bold text-indigo-600">LumenBridge</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                Finance
+              </span>
+            </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm text-slate-600 hover:text-slate-900 transition-colors py-2.5"
-              >
-                {item.label}
-              </Link>
-            ))}
+          <div className="flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="py-2.5 text-[13px] text-slate-600 transition-colors hover:text-slate-900"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <span className="hidden lg:block h-5 w-px bg-slate-200" aria-hidden />
+
             <Link
-              href="/apply"
-              className="inline-flex items-center justify-center rounded-lg border border-indigo-600 px-6 py-3 text-sm font-semibold text-indigo-600 transition-colors hover:bg-indigo-600 hover:text-white min-h-[44px]"
+              href={authHref}
+              className="hidden lg:inline-flex py-2.5 text-[13px] font-bold text-slate-600 transition-colors hover:text-slate-900"
             >
-              Получить займ
+              {authLabel}
             </Link>
-            {isLoggedIn ? (
-              <Link
-                href="/dashboard/applications"
-                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 transition-colors min-h-[44px]"
-              >
-                Кабинет
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 transition-colors min-h-[44px]"
-              >
-                Войти
-              </Link>
-            )}
-          </nav>
+          </div>
 
           <button
             type="button"
@@ -107,42 +113,25 @@ export function Header() {
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden border-t border-slate-200 bg-white animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden border-t border-slate-200 bg-white">
           <div className="px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="block rounded-lg px-3 py-3 text-sm text-slate-600 hover:bg-slate-100 min-h-[44px] transition-colors"
+                className="block rounded-lg px-3 py-3 text-[13px] text-slate-600 hover:bg-slate-100 min-h-[44px] transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
             <Link
-              href="/apply"
-              className="block rounded-lg border border-indigo-600 px-6 py-3 text-center text-sm font-semibold text-indigo-600 transition-colors hover:bg-indigo-600 hover:text-white min-h-[44px]"
+              href={authHref}
+              className="block rounded-lg px-3 py-3 text-[13px] font-bold text-slate-600 hover:bg-slate-100 min-h-[44px] transition-colors"
               onClick={() => setMobileOpen(false)}
             >
-              Получить займ
+              {authLabel}
             </Link>
-            {isLoggedIn ? (
-              <Link
-                href="/dashboard/applications"
-                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 min-h-[44px] transition-colors"
-                onClick={() => setMobileOpen(false)}
-              >
-                Кабинет
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="block rounded-lg border border-slate-300 px-6 py-3 text-center text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-300 hover:text-slate-900 hover:border-slate-300 active:bg-slate-400 min-h-[44px] transition-colors"
-                onClick={() => setMobileOpen(false)}
-              >
-                Войти
-              </Link>
-            )}
           </div>
         </div>
       )}
