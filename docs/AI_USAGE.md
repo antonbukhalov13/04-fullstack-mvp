@@ -3603,3 +3603,23 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 166
+
+Goal: В футере визуально разделить ссылки на секции главной и ссылки на другие страницы
+
+Prompt: В `frontend/src/widgets/footer/footer.tsx` пользователю было непонятно, какие ссылки ведут на секции главной (`/#about`, `/#contact`, `/#contact-details`), а какие — на другие страницы. Стрелки-индикаторы добавлять нельзя (убраны ранее по п.17). Сделать различие цветом/стилем: секционные ссылки — индиго (как логотип), страничные — серые.
+
+Result:
+
+- `frontend/src/widgets/footer/footer.tsx` — className ссылок стал условным по `link.section`: секционные (`text-indigo-600 hover:text-indigo-800`), страничные (`text-slate-500 hover:text-slate-700`). Поведение `scrollIntoView({ block: 'center' })` на главной не менялось.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: разделение типов ссылок можно передать чистым цветом без дополнительных иконок — в футере достаточно, чтобы секционные ссылки выделялись фирменным цветом бренда.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
