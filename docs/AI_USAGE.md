@@ -3782,3 +3782,19 @@ What I learned: Оба виджета — server components без хуков, �
 Model used: Claude Sonnet 5
 
 Instrument used: Claude.ai
+
+## Request 174
+
+Goal: Добавить проверку просроченных платежей в read-методы payment-requests module
+
+Prompt: checkOverduePayments() из overdue.service.ts вызывается в loans.service.ts и clients.service.ts, но не в payment-requests.service.ts — списки заявок на оплату могли на короткое время (до 60 сек, до следующего тика cron) показывать устаревший статус loan/schedule. Добавить вызов checkOverduePayments() в read-методы PaymentRequestsService по аналогии с уже применённым паттерном.
+
+Result: backend/src/modules/payment-requests/payment-requests.module.ts — добавлен импорт OverdueModule в imports. backend/src/modules/payment-requests/payment-requests.service.ts — инжектирован OverdueService в конструктор; await this.overdueService.checkOverduePayments() добавлен в начало findAll (админский список заявок на оплату) и findUserPaymentRequests (список пользователя). payments.service.ts не менялся — там нет read-методов, только decidePaymentRequest/recordDirectPayment, а расчёт остатка долга уже одинаково суммирует pending и overdue пункты графика, так что на корректность расчёта отсутствие вызова не влияет. Циклических зависимостей нет — OverdueModule зависит только от PrismaService/EventEmitter2.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: Не любой "пробел в покрытии" одинаково критичен — @Cron(EVERY_MINUTE) в overdue.service.ts уже подстраховывал сценарий с задержкой максимум в минуту, так что реальный риск был не "просрочка не определяется", а кратковременная неконсистентность конкретно в ответах payment-requests эндпоинтов.
+
+Model used: Claude Sonnet 5
+
+Instrument used: Claude.ai
