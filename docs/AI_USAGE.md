@@ -3561,3 +3561,25 @@ Model used: big-pickle
 Provider used: OpenCode Zen
 
 Instrument used: OpenCode
+
+## Request 164
+
+Goal: Редизайн страниц входа — полноэкранные центрированные формы, единые поля ввода
+
+Prompt: Переработать страницы входа: `frontend/src/app/login/page.tsx` и `frontend/src/app/admin/(auth)/login/page.tsx` — полноэкранная центрированная компоновка с фоном `#f1f5f9` (тёмный вариант вернётся финальным этапом); в `frontend/src/features/admin-login/admin-login-form.tsx` заменить сырые `<input>` на общий компонент `Input` из `shared/ui`.
+
+Result:
+
+- `frontend/src/app/login/page.tsx` — секция `relative overflow-hidden bg-[#f1f5f9]`, контент в `min-h-[calc(100vh-4rem)]` с вертикальным центрированием; заголовок `text-slate-900`, подпись `text-slate-600`. Убраны `bg-slate-950` и радиальные оверлеи/сетка (восстановятся на финальном этапе).
+- `frontend/src/app/admin/(auth)/login/page.tsx` — `bg-[#f1f5f9]`, карточка `bg-white border-slate-200 shadow-sm` сохранена; убраны тёмный фон и оверлеи.
+- `frontend/src/features/admin-login/admin-login-form.tsx` — поля «Логин»/«Пароль» переведены на `Input` (`label`, `id`, `type`, controlled `value`/`onChange`), что унифицирует размеры/фокус-стили с остальными формами.
+
+Used as-is / edited manually / rejected: used as-is
+
+What I learned: формы входа в `shared/ui/input.tsx` уже имеют `id`/`label`-поддержку и стили фокуса, поэтому дублировать сырые `<input className=...>` в feature не нужно — достаточно переиспользовать компонент.
+
+Model used: big-pickle
+
+Provider used: OpenCode Zen
+
+Instrument used: OpenCode
